@@ -26,7 +26,6 @@ class Lesson extends Model
         'is_paid',
         'note',
         'is_canceled',
-
     ];
 
     /**

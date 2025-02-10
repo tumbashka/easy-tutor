@@ -119,3 +119,28 @@ if (!function_exists('getLessonPrice')) { // вычисление разницы
     }
 }
 
+if (!function_exists('getRandomRGB')) { // вычисление разницы в неделях по сравнению с текущим временем
+    function getRandomRGB($count = 1, $minColor = 70, $maxColor = 255): array|string
+    {
+        if ($count === 1) {
+            $red = random_int($minColor, $maxColor);
+            $green = random_int($minColor, $maxColor);
+            $blue = random_int($minColor, $maxColor);
+            $str = "rgb({$red}, {$green}, {$blue})";
+            return $str;
+        }
+        $arr = [];
+        if ($count > 1) {
+            for ($i = 0; $i < $count; $i++) {
+                $red = random_int($minColor, $maxColor);
+                $green = random_int($minColor, $maxColor);
+                $blue = random_int($minColor, $maxColor);
+                $str = "rgb({$red}, {$green}, {$blue})";
+                $arr[] = $str;
+            }
+        }
+        return $arr;
+    }
+}
+
+

@@ -139,19 +139,9 @@ $btn-active-border-tint-amount:   10%;
     }
 }
 
-//.table {
-//    .tbody{
-//        .highlight-row {
-//            background-color: rgba(161, 47, 74, 0.5) !important;
-//            border: 2px solid #0a3622 !important; // Объединяем border свойства
-//        }
-//    }
-//}
-
 .table {
     tr.highlight-row {
         position: relative;
-         //Обводка для всей строки (опционально)
         &::after {
             content: '';
             position: absolute;
@@ -167,3 +157,14 @@ $btn-active-border-tint-amount:   10%;
         }
     }
 }
+
+.chart-container {
+    min-height: 200px;
+    max-height: 500px;
+}
+
+.chart {
+    min-height: 200px;
+    max-height: 500px;
+}
+

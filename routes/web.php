@@ -42,9 +42,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{student}/lesson-times/{lessonTime}', [LessonTimeController::class, 'delete'])->name('lesson-time.delete');
     });
 
-    Route::prefix('/user')->name('user.')->group(function () {
-        Route::get('/statistic', [StatisticController::class, 'index'])->name('statistic');
+    Route::prefix('/statistic')->name('statistic.')->group(function () {
+        Route::get('/earnings/period', [StatisticController::class, 'earnings_period'])->name('earnings.period');
+        Route::post('/earnings/period', [StatisticController::class, 'calculate_earnings_period'])->name('earnings.period.calculate');
+        Route::get('/earnings/students', [StatisticController::class, 'earnings_students'])->name('earnings.students');
+        Route::post('/earnings/students', [StatisticController::class, 'calculate_students_period'])->name('earnings.students.calculate');
+        Route::get('/lessons', [StatisticController::class, 'lessons'])->name('lessons');
     });
+
+
 });
 
 require __DIR__ . '/auth.php';

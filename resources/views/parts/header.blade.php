@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md bg-info bg-gradient shadow mb-3">
+<nav class="navbar navbar-expand-lg bg-info bg-gradient shadow mb-3">
     <div class="container ">
         <a class="navbar-brand mb-0 h1 text-white" href="{{ route('home') }}">
             {{ config('app.name') }}
@@ -46,23 +46,27 @@
                 </ul>
             @endguest
             @auth
-                <ul class="justify-content-end nav nav-underline mb-2 mb-lg-0">
+                <ul class="nav nav-underline mb-2 mb-lg-0">
                     @if (auth()->user()->hasVerifiedEmail())
+                        <li class="nav-item dropdown-center">
+                            <a class="nav-link link-light dropdown-toggle {{ activeLink('user*') }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Статистика
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">Доход</h6></li>
+                                <li><hr class="dropdown-divider m-0"></li>
+                                <li><a class="dropdown-item" href="{{ route('statistic.earnings.period') }}">По периодам</a></li>
+                                <li><a class="dropdown-item" href="{{ route('statistic.earnings.students') }}">По ученикам</a></li>
+                                <li><a class="dropdown-item " href="{{ route('statistic.lessons') }}">Ученики123</a></li>
+                            </ul>
+                        </li>
                         <li class="nav-item dropdown-center">
                             <a class="nav-link link-light dropdown-toggle {{ activeLink('user*') }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ auth()->user()->name }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><h6 class="dropdown-header">Пользователь</h6></li>
-                                <li><hr class="dropdown-divider m-0"></li>
                                 <li><a class="dropdown-item" href="#">Профиль</a></li>
                                 <li><a class="dropdown-item" href="#">Настройки</a></li>
-                                <li><hr class="dropdown-divider m-0"></li>
-                                <li><h6 class="dropdown-header">Статистика</h6></li>
-                                <li><hr class="dropdown-divider m-0"></li>
-                                <li><a class="dropdown-item" href="#">Заработок</a></li>
-                                <li><a class="dropdown-item" href="#">Занятия</a></li>
-                                <li><a class="dropdown-item" href="#">Ученики</a></li>
                             </ul>
                         </li>
                     @endif

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
@@ -12,6 +12,11 @@ export default defineConfig({
         }),
     ],
     build: {
-        assetsInlineLimit: 0, // Отключает встраивание шрифтов в base64
+        // assetsInlineLimit: 0, // Отключает встраивание шрифтов в base64
+    },
+    resolve: {
+        alias: {
+            '$': 'jQuery'
+        },
     },
 });

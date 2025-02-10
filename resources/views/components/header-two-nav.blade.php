@@ -16,7 +16,7 @@
         </div>
         <div class="row">
             <div class="col pe-0">
-                <x-link-button class="" href="{{ $left_url }}">
+                <x-link-button href="{{ $left_url }}">
                     {{ $left_text }}
                 </x-link-button>
             </div>
