@@ -10,11 +10,11 @@
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: {{ \Illuminate\Support\Js::from($labels) }},
+                labels: {!! json_encode($labels) !!},
                 datasets: [{
                     label: 'Доходы',
-                    data: {{ \Illuminate\Support\Js::from($numbers) }},
-                    backgroundColor: {{ \Illuminate\Support\Js::from($colors) }},
+                    data: {!! json_encode($numbers) !!},
+                    backgroundColor: {!! json_encode($colors) !!},
                     hoverOffset: 10
                 }]
             },

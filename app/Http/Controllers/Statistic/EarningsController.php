@@ -1,53 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Statistic;
 
 use App\Models\Lesson;
-use App\src\EarningsTimeStatistic;
-use App\src\Statistic;
+use App\src\Statistic\EarningsTimeStatistic;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class StatisticController extends Controller
+class EarningsController extends StatisticController
 {
-    public function earnings_period()
+    public function period()
     {
         $labels = session()->pull('labels');
         $numbers = session()->pull('numbers');
-        return view('statistic.earnings', compact('labels', 'numbers'));
+        return view('statistic.earnings.period', compact('labels', 'numbers'));
     }
 
-    public function calculate_earnings_period(Request $request)
+    public function period_calculate(Request $request)
     {
-        $dates = explode(' — ', $request->range);
-        if (count($dates) < 2) {
-            return redirect()->back()->withErrors(['required' => 'Заполните диапазон для расчета статистики'])->withInput();
-        }
-        $data['start'] = $dates[0];
-        $data['end'] = $dates[1];
-        $data['type'] = $request->type;
-        switch ($data['type']) {
-            case 'day':
-                Validator::make($data, [
-                    'start' => ['required', 'date_format:Y-m-d',],
-                    'end' => ['required', 'date_format:Y-m-d', 'after:start'],
-                    'type' => ['required', 'string'],
-                ])->validate();
-                break;
-            case 'month':
-                Validator::make($data, [
-                    'start' => ['required', 'date_format:Y-m',],
-                    'end' => ['required', 'date_format:Y-m', 'after:start'],
-                    'type' => ['required', 'string'],
-                ])->validate();
-                break;
-            default :
-                return redirect()->back()->withErrors(['required' => 'Заполните диапазон для расчета статистики'])->withInput();
-        }
-        if ($data['type'] == 'month') {
-            $data['start'] = (new Carbon($data['start']))->startOfMonth();
-            $data['end'] = (new Carbon($data['end']))->endOfMonth();
+        $data = $this->getValidatedData($request);
+        if(!is_array($data)){
+            return $data;
         }
 
         $res = Lesson::query()
@@ -55,6 +29,7 @@ class StatisticController extends Controller
             ->where('is_paid', true)
             ->where('date', '>=', $data['start'])
             ->where('date', '<=', $data['end'])
+            ->where('user_id', auth()->user()->id)
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('date_price', 'date')
@@ -68,15 +43,15 @@ class StatisticController extends Controller
         return redirect()->route('statistic.earnings.period')->with(compact('labels', 'numbers'));
     }
 
-    public function earnings_students()
+    public function students()
     {
         $labels = session()->pull('labels');
         $numbers = session()->pull('numbers');
         $colors = session()->pull('colors');
-        return view('statistic.students', compact('labels', 'numbers', 'colors'));
+        return view('statistic.earnings.students', compact('labels', 'numbers', 'colors'));
     }
 
-    public function calculate_students_period(Request $request)
+    public function students_calculate(Request $request)
     {
         Validator::make($request->all(), [
             'type' => ['required', 'string'],
@@ -88,6 +63,7 @@ class StatisticController extends Controller
         if ($request->type === 'all') {
             $res = Lesson::query()
                 ->selectRaw('student_name, SUM(price) as student_price')
+                ->where('user_id', auth()->user()->id)
                 ->where('is_paid', true)
                 ->groupBy('student_name')
                 ->orderBy('student_price')
@@ -112,6 +88,7 @@ class StatisticController extends Controller
             }
             $res = Lesson::query()
                 ->selectRaw('student_name, SUM(price) as student_price')
+                ->where('user_id', auth()->user()->id)
                 ->where('is_paid', true)
                 ->where('date', '>=', $start)
                 ->where('date', '<=', $end)
@@ -125,11 +102,5 @@ class StatisticController extends Controller
         $colors = getRandomRGB(count($labels));
 
         return redirect()->route('statistic.earnings.students')->with(compact('labels', 'numbers', 'colors'));
-
-    }
-
-    public function lessons()
-    {
-        return view('statistic.lessons');
     }
 }

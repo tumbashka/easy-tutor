@@ -1,15 +1,11 @@
 <?php
 
-namespace App\src;
+namespace App\src\Statistic;
 
 use Illuminate\Support\Carbon;
 
 class EarningsTimeStatistic extends Statistic
 {
-    public function __construct(array $input_data, string $type)
-    {
-        parent::__construct($input_data, $type);
-    }
 
     public function calculate(): void
     {

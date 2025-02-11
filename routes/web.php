@@ -3,12 +3,9 @@
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonTimeController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\StatisticController;
+use App\Http\Controllers\Statistic\EarningsController;
+use App\Http\Controllers\Statistic\LessonsController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegistrationController;
-use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
 
@@ -42,18 +39,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{student}/lesson-times/{lessonTime}', [LessonTimeController::class, 'delete'])->name('lesson-time.delete');
     });
 
-    Route::prefix('/statistic')->name('statistic.')->group(function () {
-        Route::get('/earnings/period', [StatisticController::class, 'earnings_period'])->name('earnings.period');
-        Route::post('/earnings/period', [StatisticController::class, 'calculate_earnings_period'])->name('earnings.period.calculate');
-        Route::get('/earnings/students', [StatisticController::class, 'earnings_students'])->name('earnings.students');
-        Route::post('/earnings/students', [StatisticController::class, 'calculate_students_period'])->name('earnings.students.calculate');
-        Route::get('/lessons', [StatisticController::class, 'lessons'])->name('lessons');
-    });
-
-
 });
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/statistic.php';
 
 
 Route::fallback(function () {

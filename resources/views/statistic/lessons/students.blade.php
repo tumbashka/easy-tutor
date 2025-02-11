@@ -1,16 +1,16 @@
 @extends('layouts.main')
 
-@section('title', 'Статистика дохода по студентам')
+@section('title', 'Статистика занятий по студентам')
 
 @section('main.content')
     <x-form-container>
         <x-error-alert/>
         <x-statistic.selector
-            :name="'Статистика дохода по ученикам'"
+            :name="'Статистика занятий по студентам'"
             :first_tab_name="'За период'"
             :second_tab_name="'Всё время'">
             <x-slot:first_tab_data_slot>
-                <form action="{{ route('statistic.earnings.students.calculate') }}" method="POST">
+                <form action="{{ route('statistic.lessons.students_calculate') }}" method="POST">
                     @csrf
                     <input type="hidden" name="type" value="month" autocomplete="off">
                     <div class="row m-1 mb-3">
@@ -22,7 +22,7 @@
                 </form>
             </x-slot:first_tab_data_slot>
             <x-slot:second_tab_data_slot>
-                <form action="{{ route('statistic.earnings.students.calculate') }}" method="POST">
+                <form action="{{ route('statistic.lessons.students_calculate') }}" method="POST">
                     @csrf
                     <input type="hidden" name="type" value="all" autocomplete="off">
                     <div class="row m-1">
@@ -32,14 +32,17 @@
             </x-slot:second_tab_data_slot>
         </x-statistic.selector>
     </x-form-container>
-    @isset($numbers)
+    @isset($labels)
         <div class="container">
             <div class="row">
-                <div class="col-12">
-                    <x-chart.doughnut
-                        :numbers="$numbers"
+                <div class="col-12 ">
+                    <x-chart.two_bars_group
                         :labels="$labels"
-                        :colors="$colors"
+                        :first_name="'Проведенные'"
+                        :second_name="'Отменённые'"
+                        :first_data="$first_data"
+                        :second_data="$second_data"
+                        :y_name="'Занятия'"
                     />
                 </div>
             </div>

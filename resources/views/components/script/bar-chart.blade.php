@@ -9,10 +9,10 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: {{ \Illuminate\Support\Js::from($labels) }},
+                labels: {!! json_encode($labels) !!},
                 datasets: [{
                     label: 'Доходы',
-                    data: {{ \Illuminate\Support\Js::from($numbers) }},
+                    data: {!! json_encode($numbers) !!},
                     backgroundColor: 'rgb(255,151,54)',
                     // borderColor: 'rgb(189,117,63)',
                     // borderWidth: 2

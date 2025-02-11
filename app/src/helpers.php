@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
 use \Illuminate\Support\Facades\Route;
 

@@ -1,8 +1,6 @@
 <?php
 
-namespace App\src;
-
-use Illuminate\Support\Carbon;
+namespace App\src\Statistic;
 
 abstract class Statistic
 {

@@ -32,6 +32,6 @@
     </td>
     <td style="width: 74px;" class="text-end align-self-center">
         {{ $lesson->price }}
-        <input class="form-check-input m-0 " style="width: 24px; height: 24px;" type="checkbox" value="">
+        <livewire:payment-switcher :lesson_id="$lesson->id" :is-paid="$lesson->is_paid"  />
     </td>
 </tr>

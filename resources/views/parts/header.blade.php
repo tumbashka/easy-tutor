@@ -53,11 +53,18 @@
                                 Статистика
                             </a>
                             <ul class="dropdown-menu">
-                                <li><h6 class="dropdown-header">Доход</h6></li>
                                 <li><hr class="dropdown-divider m-0"></li>
+                                <li><h6 class="dropdown-header">Доходы</h6></li>
                                 <li><a class="dropdown-item" href="{{ route('statistic.earnings.period') }}">По периодам</a></li>
                                 <li><a class="dropdown-item" href="{{ route('statistic.earnings.students') }}">По ученикам</a></li>
-                                <li><a class="dropdown-item " href="{{ route('statistic.lessons') }}">Ученики123</a></li>
+                                <li><hr class="dropdown-divider m-0"></li>
+                                <li><h6 class="dropdown-header">Занятия</h6></li>
+                                <li><a class="dropdown-item" href="{{ route('statistic.lessons.period') }}">По периодам</a></li>
+                                <li><a class="dropdown-item" href="{{ route('statistic.lessons.students') }}">По ученикам</a></li>
+                                <li><hr class="dropdown-divider m-0"></li>
+                                <li><h6 class="dropdown-header">Рабочие часы</h6></li>
+                                <li><a class="dropdown-item" href="{{ route('statistic.earnings.period') }}">По периодам</a></li>
+                                <li><a class="dropdown-item" href="{{ route('statistic.earnings.students') }}">По ученикам</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown-center">
