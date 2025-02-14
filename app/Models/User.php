@@ -32,7 +32,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Lesson::class);
     }
-
+    public function freeTimes(): HasMany
+    {
+        return $this->hasMany(FreeTime::class);
+    }
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
+    }
     protected $fillable = [
         'name',
         'email',

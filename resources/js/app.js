@@ -1,11 +1,17 @@
 import './bootstrap';
 
 import jQuery from 'jquery';
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import flatpickr from "flatpickr";
+import {Russian} from "flatpickr/dist/l10n/ru.js";
+import monthSelectPlugin from "flatpickr/dist/plugins/monthSelect";
+import ClipboardJS from 'clipboard';
+
 window.$ = jQuery;
 
-import Chart from 'chart.js/auto';
 window.Chart = Chart;
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 window.Chart.register(ChartDataLabels);
 
 Chart.defaults.set('plugins.datalabels', {
@@ -24,10 +30,6 @@ Chart.defaults.set('plugins.datalabels', {
         return value; // Display the actual data value
     }
 });
-
-import flatpickr from "flatpickr";
-import { Russian } from "flatpickr/dist/l10n/ru.js";
-import monthSelectPlugin from "flatpickr/dist/plugins/monthSelect";
 
 flatpickr(".datepicker", {
     dateFormat: "Y-m-d",
@@ -48,12 +50,14 @@ flatpickr(".month-picker", {
 });
 
 flatpickr(".range-picker", {
+    disableMobile: "true",
     locale: Russian,
     mode: "range",
     dateFormat: "Y-m-d",
 });
 
 flatpickr(".month-range-picker", {
+    disableMobile: "true",
     locale: Russian,
     mode: "range",
     dateFormat: "Y-m",
@@ -63,8 +67,36 @@ flatpickr(".month-range-picker", {
 });
 
 
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    const clipboard = new ClipboardJS('.btn-copy', {
+        text: function(trigger) {
+            return trigger.previousElementSibling.value;
+        }
+    });
 
+    clipboard.on('success', function(e) {
+        showCopyFeedback(e.trigger, true);
+        e.clearSelection();
+    });
 
+    clipboard.on('error', function(e) {
+        showCopyFeedback(e.trigger, false);
+    });
+});
 
+// Функция для отображения обратной связи
+function showCopyFeedback(element, success) {
+    const originalHtml = element.innerHTML;
+    element.innerHTML = success ?
+        '<i class="fas fa-check"></i> Скопировано!' :
+        '<i class="fas fa-times"></i> Ошибка!';
+    element.classList.add(success ? 'copied-success' : 'copied-error');
+
+    setTimeout(() => {
+        element.innerHTML = originalHtml;
+        element.classList.remove('copied-success', 'copied-error');
+    }, 2000);
+}
 
 

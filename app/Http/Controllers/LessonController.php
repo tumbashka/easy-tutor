@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLessonRequest;
+use App\Http\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\Student;
@@ -59,10 +60,10 @@ class LessonController extends Controller
         return view('lesson.edit', compact('day', 'students', 'lesson'));
     }
 
-    public function update(StoreLessonRequest $request, $day, $lesson)
+    public function update(UpdateLessonRequest $request, $day, Lesson $lesson)
     {
         $student_name = Student::find($request->student)->name;
-        $lesson = Lesson::find($lesson);
+
         $lesson->student_id = $request->student;
         $lesson->student_name = $student_name;
         $lesson->start = $request->start;
@@ -75,10 +76,11 @@ class LessonController extends Controller
         } else {
             session(['error' => 'Ошибка изменения занятия!']);
         }
-        return redirect()->route('schedule.show', compact('day'));
+        $week = getWeekOffset(new Carbon($day));
+        return redirect()->route('schedule.index', compact('week'));
     }
 
-    public function change($day, $lesson)
+    public function change_status($day, $lesson)
     {
         $lesson = Lesson::find($lesson);
         $lesson->is_canceled = !$lesson->is_canceled;

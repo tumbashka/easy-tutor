@@ -4,7 +4,7 @@
 ])
 
 <button {{ $attributes->class([
-    "m-2 btn btn-{$color}",
+    "btn btn-{$color}",
     "btn-{$size}",
 ])->merge([
     'type' => 'button',

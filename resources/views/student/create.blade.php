@@ -2,15 +2,19 @@
 
 @section('title', 'Добавление ученика')
 
+@php
+$back = $free_time ? route('free-time.set-student', compact('free_time')) : route('student.index');
+@endphp
+
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('student.store') }}" method="post">
+        <form action="{{ route('student.store', compact('free_time')) }}" method="post">
             @csrf
             <x-card.card>
                 <x-card.header-nav
                     :title="'Добавление ученика'"
                     :text="'Назад'"
-                    :url="route('student.index')"
+                    :url="$back"
                 />
                 <x-card.body>
                     <x-student.form/>

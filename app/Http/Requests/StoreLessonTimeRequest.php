@@ -11,7 +11,7 @@ class StoreLessonTimeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->id == $this->student->user_id;
+        return $this->student && $this->user()->can('update', $this->student);
     }
 
     /**

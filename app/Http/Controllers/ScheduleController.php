@@ -14,8 +14,11 @@ class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'week' => ['nullable', 'integer'],
+        ]);
         $weekOffset = (int)$request->week;
-        $weekDays = getWeekDays($weekOffset);// ['0-6' => Carbon]
+        $weekDays = getWeekDays($weekOffset);// ['0-6' => Carbon obj]
         $previous = getPreviousWeeks($weekOffset, 10);
         $next = getNextWeeks($weekOffset, 10);
 
@@ -47,6 +50,7 @@ class ScheduleController extends Controller
                                 'date' => $day,
                                 'start' => $lessonTime->start,
                                 'end' => $lessonTime->end,
+                                'is_paid' => false,
                                 'price' => getLessonPrice($lessonTime->start, $lessonTime->end, $lessonTime->student->price),
                                 'lesson_time_id' => $lessonTime->id,
                             ]);

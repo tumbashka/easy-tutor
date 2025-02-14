@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Statistic;
 
-use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\src\Statistic\LessonsTimeStatistic;
 use Carbon\Carbon;
@@ -16,7 +15,8 @@ class LessonsController extends StatisticController
         $labels = session()->pull('labels');
         $first_data = session()->pull('first_data');
         $second_data = session()->pull('second_data');
-        return view('statistic.lessons.period', compact('labels', 'first_data', 'second_data'));
+        $total = session()->pull('total');
+        return view('statistic.lessons.period', compact('labels', 'first_data', 'second_data', 'total'));
     }
 
     public function period_calculate(Request $request)
@@ -27,8 +27,7 @@ class LessonsController extends StatisticController
         }
         $all = Lesson::query()
             ->selectRaw('date, count(*) as count_all')
-            ->where('date', '>=', $data['start'])
-            ->where('date', '<=', $data['end'])
+            ->whereBetween('date', [$data['start'], $data['end']])
             ->where('date', '<=', now())
             ->where('user_id', auth()->user()->id)
             ->groupBy('date')
@@ -39,8 +38,7 @@ class LessonsController extends StatisticController
         $canceled = Lesson::query()
             ->selectRaw('date, count(*) as count_all')
             ->where('is_canceled', true)
-            ->where('date', '>=', $data['start'])
-            ->where('date', '<=', $data['end'])
+            ->whereBetween('date', [$data['start'], $data['end']])
             ->where('date', '<=', now())
             ->where('user_id', auth()->user()->id)
             ->groupBy('date')
@@ -54,7 +52,11 @@ class LessonsController extends StatisticController
         $second_data = $statistic->get_numbers()[1];
         $labels = $statistic->get_labels();
 
-        return redirect()->route('statistic.lessons.period')->with(compact('labels', 'first_data', 'second_data'));
+        $total['accepted'] = array_sum($first_data);
+        $total['canceled'] = array_sum($second_data);
+
+
+        return redirect()->route('statistic.lessons.period')->with(compact('labels', 'first_data', 'second_data', 'total'));
     }
 
     public function students()
@@ -113,8 +115,7 @@ class LessonsController extends StatisticController
             $all_lessons = Lesson::query()
                 ->select('student_name')
                 ->selectRaw('COUNT(*) as total_lessons')
-                ->where('date', '>=', $start)
-                ->where('date', '<=', $end)
+                ->whereBetween('date', [$start, $end])
                 ->where('date', '<=', now())
                 ->where('user_id', auth()->user()->id)
                 ->groupBy('student_name')
@@ -124,8 +125,7 @@ class LessonsController extends StatisticController
             $canceled_lessons = Lesson::query()
                 ->select('student_name')
                 ->selectRaw('COUNT(*) as total_lessons')
-                ->where('date', '>=', $start)
-                ->where('date', '<=', $end)
+                ->whereBetween('date', [$start, $end])
                 ->where('date', '<=', now())
                 ->where('user_id', auth()->user()->id)
                 ->where('is_canceled', true)

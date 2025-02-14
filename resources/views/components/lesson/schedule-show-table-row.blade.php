@@ -15,7 +15,7 @@
         </a>
     </td>
     <td style="width: 35px;">
-        <a href="{{ route('schedule.lesson.change', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}">
+        <a href="{{ route('schedule.lesson.change_status', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}">
             @if($lesson->is_canceled)
                 <i class="fa-solid fa-trash-arrow-up link-info fa-xl"></i>
             @else

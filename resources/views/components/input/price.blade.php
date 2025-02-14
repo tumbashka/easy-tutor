@@ -12,5 +12,4 @@
         <option value="800">
         <option value="900">
     </datalist>
-
 </div>

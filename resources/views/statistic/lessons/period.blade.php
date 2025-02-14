@@ -48,6 +48,10 @@
                         :second_data="$second_data"
                         :y_name="'Занятия'"
                     />
+                    <div class="text-center">
+                        <h6>Проведено: {{ $total['accepted'] }}</h6>
+                        <h6>Отменено: {{ $total['canceled'] }}</h6>
+                    </div>
                 </div>
             </div>
         </div>

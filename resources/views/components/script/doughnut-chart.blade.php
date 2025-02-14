@@ -7,7 +7,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('{{ $name }}').getContext('2d');
-        new Chart(ctx, {
+        new Chart(ctx,{
             type: 'doughnut',
             data: {
                 labels: {!! json_encode($labels) !!},

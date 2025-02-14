@@ -5,8 +5,8 @@
     'text_body' => 'Удалить ученика?',
     'id' => '',
 ])
-<div class="shadow d-grid bg-info bg-gradient rounded-2 border">
-    <button type="button" class="m-2 btn btn-outline-light btn-xl mx-4 my-3 " data-bs-toggle="modal"
+<div class="shadow d-grid bg-info bg-gradient rounded-2 border mb-3">
+    <button type="button" class="btn btn-outline-light btn-xl mx-3 my-2 " data-bs-toggle="modal"
             data-bs-target="#deleteModal{{ $id }}">
         {{ $text_btn }}
     </button>

@@ -38,10 +38,11 @@
     </x-form-container>
     @isset($numbers)
         <div class="container">
-            <div class="row">
+            <div class="row text-center">
                 <div class="col-12 ">
-                    <x-chart.bar :numbers="$numbers" :labels="$labels" :name="'myChart'"/>
+                    <x-chart.bar :numbers="$numbers" :labels="$labels" :name="'myChart'" :label_data="$label"/>
                 </div>
+                <h6>Итого: {{ $total }}р.</h6>
             </div>
         </div>
     @endisset

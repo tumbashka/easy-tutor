@@ -2,6 +2,7 @@
     'name' => 'myChart',
     'labels' => [],
     'numbers' => [],
+    'label_data' => '',
 ])
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -11,7 +12,7 @@
             data: {
                 labels: {!! json_encode($labels) !!},
                 datasets: [{
-                    label: 'Доходы',
+                    label: '{{ $label_data }}',
                     data: {!! json_encode($numbers) !!},
                     backgroundColor: 'rgb(255,151,54)',
                     // borderColor: 'rgb(189,117,63)',

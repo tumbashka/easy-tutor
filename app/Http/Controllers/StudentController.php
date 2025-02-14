@@ -34,9 +34,9 @@ class StudentController extends Controller
         return view('student.index', compact('studentsOnClasses'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('student.create');
+        return view('student.create', ['free_time' => $request->free_time]);
     }
 
     public function store(StoreStudentRequest $request)
@@ -54,6 +54,9 @@ class StudentController extends Controller
             session(['error' => 'Ошибка добавления ученика!']);
         }
 
+        if($request->free_time){
+            return redirect()->route('free-time.set-student', ['free_time' => $request->free_time]);
+        }
         return redirect()->route('student.show', $student);
     }
 

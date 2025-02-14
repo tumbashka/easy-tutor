@@ -4,14 +4,17 @@
 @extends('layouts.main')
 
 @section('title', $title)
+@php
+    $back = $backUrl ?? url()->previous();
+@endphp
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('student.lesson-time.update', compact('student', 'lessonTime')) }}" method="post">
+        <form action="{{ route('student.lesson-time.update', compact('student', 'lessonTime', 'backUrl')) }}" method="post">
             @csrf
             @method('PUT')
             <x-card.card>
-                <x-card.header-nav :title="$title" :url="url()->previous()">
+                <x-card.header-nav :title="$title" :url="$back">
                     <x-slot:text>
                         Назад
                     </x-slot:text>
@@ -27,7 +30,7 @@
             </x-card.card>
         </form>
         <x-button-modal-delete
-            :action="route('student.lesson-time.delete', compact('student', 'lessonTime'))"
+            :action="route('student.lesson-time.delete', compact('student', 'lessonTime', 'backUrl'))"
             :text_body="'Удалить занятие?'"
         />
     </x-form-container>

@@ -143,3 +143,37 @@ if (!function_exists('getRandomRGB')) { // вычисление разницы �
 }
 
 
+if (!function_exists('getHiFormatTime')) { // вычисление разницы в неделях по сравнению с текущим временем
+    function getHiFormatTime($time): string
+    {
+        $carbon = new Carbon($time);
+        return $carbon->format('H:i');
+    }
+}
+
+if (!function_exists('getLessonType')) { // вычисление разницы в неделях по сравнению с текущим временем
+    function getLessonType($type): string
+    {
+        return match ($type) {
+            'online' => 'Онлайн',
+            'face-to-face' => 'Очно',
+            'all' => 'Онлайн/Очно',
+            default => '',
+        };
+    }
+}
+
+if (!function_exists('getLessonStatus')) { // вычисление разницы в неделях по сравнению с текущим временем
+    function getLessonStatus($status): string
+    {
+        return match ($status) {
+            'free' => 'Время не занято',
+            'trial' => 'Назначено пробное занятие',
+            default => '',
+        };
+    }
+}
+
+
+
+

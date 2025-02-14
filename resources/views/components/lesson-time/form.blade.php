@@ -9,7 +9,7 @@
     </div>
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'week_day'"/>
-        <select name="week_day" class="form-select" aria-label="Default select example">
+        <select name="week_day" class="form-select">
             @for($i = 0; $i <= 6; $i++)
                 <option
                     {{ (old('week_day') == $i) ? 'selected' : (isset($lessonTime->week_day) && $i == $lessonTime->week_day ? 'selected' : '') }} value="{{ $i }}">{{ getDayName($i) }}

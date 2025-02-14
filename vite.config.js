@@ -19,4 +19,7 @@ export default defineConfig({
             '$': 'jQuery'
         },
     },
+    optimizeDeps: {
+        include: ['clipboard'],
+    },
 });

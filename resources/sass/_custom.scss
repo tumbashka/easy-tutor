@@ -1,27 +1,27 @@
 
-.table-35{
+.table-35 {
     width: 35px;
 }
 
-.highlight{
+.highlight {
     background-color: rgba(161, 47, 74, 0.5) !important;
     border-color: #0a3622 !important;
     border-width: 2px !important;
 }
 
-.table>tbody>tr.red-row{
+.table > tbody > tr.red-row {
     background-color: rgba(161, 47, 74, 0.5) !important;
     color: #664d03 !important;
     color-scheme: dark !important;
-    border-bottom-left-radius: 5px  !important;
+    border-bottom-left-radius: 5px !important;
     border-color: #0a3622 !important;
     border-width: 2px !important;
     //box-shadow: 10px 5px 5px red !important;
-    box-shadow:  revert !important;
+    box-shadow: revert !important;
     //border: #0a53be !important;
 }
 
-.bg-pink{
+.bg-pink {
     background: rgba(161, 47, 74, 0.02);
 }
 
@@ -42,7 +42,7 @@ $primary-hover: $info;
     //border-collapse: separate;
     border-spacing: 5px;
     border-radius: 5px;
-    border-style: none ;
+    border-style: none;
     border-width: revert;
     //&.big-table {
     //    table-layout: fixed;
@@ -54,28 +54,36 @@ $primary-hover: $info;
             text-overflow: ellipsis;
         }
     }
-    th:first-child{
+
+    th:first-child {
         border-left-color: transparent;
         border-right-color: transparent;
     }
-    td:first-child{
+
+    td:first-child {
         border-left-color: transparent;
     }
-    td:last-child{
+
+    td:last-child {
         border-right-color: transparent;
     }
-    tr:last-child{
+
+    tr:last-child {
         border-bottom-color: transparent;
     }
-    tr:first-child{
+
+    tr:first-child {
         border-top-color: transparent;
     }
+
     tr:only-child th:only-child, tr:only-child td:only-child {
         border-radius: 5px 5px 0 0;
     }
+
     tr:last-child td:first-child {
         border-radius: 0 0 0 5px;
     }
+
     tr:last-child td:last-child {
         border-radius: 0 0 5px 0;
     }
@@ -83,14 +91,14 @@ $primary-hover: $info;
 
 //$btn-transition:              color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
-$btn-hover-bg-shade-amount:       15%;
-$btn-hover-bg-tint-amount:        15%;
-$btn-hover-border-shade-amount:   20%;
-$btn-hover-border-tint-amount:    10%;
-$btn-active-bg-shade-amount:      20%;
-$btn-active-bg-tint-amount:       20%;
-$btn-active-border-shade-amount:  25%;
-$btn-active-border-tint-amount:   10%;
+$btn-hover-bg-shade-amount: 15%;
+$btn-hover-bg-tint-amount: 15%;
+$btn-hover-border-shade-amount: 20%;
+$btn-hover-border-tint-amount: 10%;
+$btn-active-bg-shade-amount: 20%;
+$btn-active-bg-tint-amount: 20%;
+$btn-active-border-shade-amount: 25%;
+$btn-active-border-tint-amount: 10%;
 
 @mixin button-outline-variant(
     $color,
@@ -139,24 +147,63 @@ $btn-active-border-tint-amount:   10%;
     }
 }
 
-.table {
-    tr.highlight-row {
-        position: relative;
-        &::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border: 4px solid rgba(161, 47, 74, 0.75);
-            border-radius: 4px;
-            pointer-events: none;
-            z-index: 0;
-            filter: drop-shadow(0 0 1px rgba(161, 47, 74, 0.75));
-        }
+.highlight-element {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border: 4px solid rgba(161, 47, 74, 0.75);
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 0;
+        filter: drop-shadow(0 0 5px rgba(161, 47, 74, 0.75));
     }
 }
+
+.highlight-element-green {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border: 4px solid rgba(24, 189, 0, 0.25);
+        background-color: rgba(24, 189, 0, 0.1);
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 0;
+        filter: drop-shadow(0 0 5px rgba(24, 189, 0, 0.25));
+    }
+}
+
+.highlight-element-yellow {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border: 4px solid rgba(189, 164, 0, 0.25);
+        background-color: rgba(189, 164, 0, 0.1);
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 0;
+        filter: drop-shadow(0 0 5px rgba(189, 164, 0, 0.25));
+    }
+}
+
+
 
 .chart-container {
     min-height: 200px;
@@ -168,3 +215,18 @@ $btn-active-border-tint-amount:   10%;
     max-height: 500px;
 }
 
+.btn-copy {
+    transition: all 0.3s ease;
+}
+
+.btn-copy.copied-success {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: #ffffff !important;
+}
+
+.btn-copy.copied-error {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #ffffff !important;
+}

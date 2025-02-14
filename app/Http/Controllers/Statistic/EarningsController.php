@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Statistic;
 
 use App\Models\Lesson;
 use App\src\Statistic\EarningsTimeStatistic;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Number;
 
 class EarningsController extends StatisticController
 {
@@ -14,7 +15,10 @@ class EarningsController extends StatisticController
     {
         $labels = session()->pull('labels');
         $numbers = session()->pull('numbers');
-        return view('statistic.earnings.period', compact('labels', 'numbers'));
+        $label = session()->pull('label');
+        $total = session()->pull('total');
+
+        return view('statistic.earnings.period', compact('labels', 'numbers', 'label', 'total'));
     }
 
     public function period_calculate(Request $request)
@@ -23,12 +27,10 @@ class EarningsController extends StatisticController
         if(!is_array($data)){
             return $data;
         }
-
         $res = Lesson::query()
             ->selectRaw('date, SUM(price) as date_price')
             ->where('is_paid', true)
-            ->where('date', '>=', $data['start'])
-            ->where('date', '<=', $data['end'])
+            ->whereBetween('date', [$data['start'], $data['end']])
             ->where('user_id', auth()->user()->id)
             ->groupBy('date')
             ->orderBy('date')
@@ -40,7 +42,14 @@ class EarningsController extends StatisticController
         $labels = $statistic->get_labels();
         $numbers = $statistic->get_numbers();
 
-        return redirect()->route('statistic.earnings.period')->with(compact('labels', 'numbers'));
+        $total = array_sum($numbers);
+        $total = Number::format($total, 2, locale: 'ru');
+
+        $data['start'] = (new Carbon($data['start']))->format('Y-m-d');
+        $data['end'] = (new Carbon($data['end']))->format('Y-m-d');
+        $label = "Доходы за период: с {$data['start']} по {$data['end']}";
+
+        return redirect()->route('statistic.earnings.period')->with(compact('labels', 'numbers', 'label', 'total'));
     }
 
     public function students()
@@ -90,8 +99,8 @@ class EarningsController extends StatisticController
                 ->selectRaw('student_name, SUM(price) as student_price')
                 ->where('user_id', auth()->user()->id)
                 ->where('is_paid', true)
-                ->where('date', '>=', $start)
-                ->where('date', '<=', $end)
+                ->whereBetween('date', [$start, $end])
+
                 ->groupBy('student_name')
                 ->orderBy('student_price')
                 ->pluck('student_price', 'student_name')
