@@ -22,22 +22,22 @@ abstract class StatisticController extends Controller
             switch ($data['type']) {
                 case 'day':
                     Validator::make($data, [
-                        'start' => ['required', 'date_format:Y-m-d',],
+                        'start' => ['required', 'date_format:Y-m-d'],
                         'end' => ['required', 'date_format:Y-m-d', 'after:start'],
                         'type' => ['required', 'string'],
                     ])->validate();
                     break;
                 case 'month':
                     Validator::make($data, [
-                        'start' => ['required', 'date_format:Y-m',],
+                        'start' => ['required', 'date_format:Y-m'],
                         'end' => ['required', 'date_format:Y-m', 'after:start'],
                         'type' => ['required', 'string'],
                     ])->validate();
                     break;
-                default :
+                default:
                     return redirect()->back()->withErrors(['required' => 'Заполните диапазон для расчета статистики'])->withInput();
             }
-        }elseif (count($dates) == 1){
+        } elseif (count($dates) == 1) {
             $data['end'] = (new Carbon($dates[0]))->endOfDay();
         }
 

@@ -1,7 +1,7 @@
 @extends('layouts.base')
 
 @section('content')
-    <div class="container justify-content-center">
+    <div class="container-fluid justify-content-center custom-padding">
         <x-alert/>
         @yield('main.content')
     </div>

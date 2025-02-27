@@ -3,51 +3,16 @@
     width: 35px;
 }
 
-.highlight {
-    background-color: rgba(161, 47, 74, 0.5) !important;
-    border-color: #0a3622 !important;
-    border-width: 2px !important;
-}
-
-.table > tbody > tr.red-row {
-    background-color: rgba(161, 47, 74, 0.5) !important;
-    color: #664d03 !important;
-    color-scheme: dark !important;
-    border-bottom-left-radius: 5px !important;
-    border-color: #0a3622 !important;
-    border-width: 2px !important;
-    //box-shadow: 10px 5px 5px red !important;
-    box-shadow: revert !important;
-    //border: #0a53be !important;
-}
-
 .bg-pink {
     background: rgba(161, 47, 74, 0.02);
 }
 
-
-$primary-hover: $info;
-.btn-outline-light {
-    background-color: $primary;
-    border-color: $primary;
-
-    &:hover {
-        background-color: $primary-hover;
-        border-color: $primary-hover;
-    }
-}
-
 .rounded-table {
     border-top: 0px solid #eaeaea;
-    //border-collapse: separate;
     border-spacing: 5px;
     border-radius: 5px;
     border-style: none;
     border-width: revert;
-    //&.big-table {
-    //    table-layout: fixed;
-    //    min-width: 1000px;
-    //}
     thead, tbody {
         th, td {
             white-space: normal;
@@ -86,64 +51,6 @@ $primary-hover: $info;
 
     tr:last-child td:last-child {
         border-radius: 0 0 5px 0;
-    }
-}
-
-//$btn-transition:              color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-
-$btn-hover-bg-shade-amount: 15%;
-$btn-hover-bg-tint-amount: 15%;
-$btn-hover-border-shade-amount: 20%;
-$btn-hover-border-tint-amount: 10%;
-$btn-active-bg-shade-amount: 20%;
-$btn-active-bg-tint-amount: 20%;
-$btn-active-border-shade-amount: 25%;
-$btn-active-border-tint-amount: 10%;
-
-@mixin button-outline-variant(
-    $color,
-    $color-hover: color-contrast($color),
-    $active-background: $color,
-    $active-border: $color,
-    $active-color: color-contrast($active-background)
-) {
-    color: $color;
-    border-color: $color;
-
-    &:hover {
-        color: $color-hover;
-        background-color: $active-background;
-        border-color: $active-border;
-    }
-
-    .btn-check:focus + &,
-    &:focus {
-        box-shadow: 0 0 0 $btn-focus-width rgba($color, .5);
-    }
-
-    .btn-check:checked + &,
-    .btn-check:active + &,
-    &:active,
-    &.active,
-    &.dropdown-toggle.show {
-        color: $active-color;
-        background-color: $active-background;
-        border-color: $active-border;
-
-        &:focus {
-            @if $enable-shadows {
-                @include box-shadow($btn-active-box-shadow, 0 0 0 $btn-focus-width rgba($color, .5));
-            } @else {
-                // Avoid using mixin so we can pass custom focus shadow properly
-                box-shadow: 0 0 0 $btn-focus-width rgba($color, .5);
-            }
-        }
-    }
-
-    &:disabled,
-    &.disabled {
-        color: $color;
-        background-color: transparent;
     }
 }
 
@@ -203,18 +110,6 @@ $btn-active-border-tint-amount: 10%;
     }
 }
 
-
-
-.chart-container {
-    min-height: 200px;
-    max-height: 500px;
-}
-
-.chart {
-    min-height: 200px;
-    max-height: 500px;
-}
-
 .btn-copy {
     transition: all 0.3s ease;
 }
@@ -230,3 +125,20 @@ $btn-active-border-tint-amount: 10%;
     border-color: #dc3545 !important;
     color: #ffffff !important;
 }
+
+.required-input:after {
+    content: ' *';
+    color: red;
+}
+
+.badge.large-badge {
+    font-size: 1.1em;
+}
+
+@media (min-width: 1800px) {
+    .container-fluid.custom-padding {
+        padding-left: 15rem;
+        padding-right: 15rem;
+    }
+}
+

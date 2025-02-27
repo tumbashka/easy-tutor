@@ -4,18 +4,18 @@
 
 <div class="row align-items-center">
     <div class="col-sm-3">
-        <p class="mb-0">Имя</p>
+        <p class="mb-0 required-input">Имя</p>
     </div>
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'name'"/>
-        <input type="text" name="name" value="{{ old('name')?? $student['name']?? '' }}" required
+        <input type="text" autofocus name="name" value="{{ old('name')?? $student['name']?? '' }}" required
                class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}">
     </div>
 </div>
 <hr>
 <div class="row align-items-center">
     <div class="col-sm-3">
-        <p class="mb-0">Класс</p>
+        <p class="mb-0 required-input">Класс</p>
     </div>
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'class'"/>
@@ -25,7 +25,7 @@
 <hr>
 <div class="row align-items-center">
     <div class="col-sm-3 d-flex ">
-        <div class="mb-0 me-2 d-inline-block">Стоимость</div>
+        <div class="mb-0 me-2 d-inline-block required-input">Стоимость</div>
     </div>
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'price'"/>

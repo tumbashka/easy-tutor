@@ -16,13 +16,14 @@ class LessonsController extends StatisticController
         $first_data = session()->pull('first_data');
         $second_data = session()->pull('second_data');
         $total = session()->pull('total');
+
         return view('statistic.lessons.period', compact('labels', 'first_data', 'second_data', 'total'));
     }
 
     public function period_calculate(Request $request)
     {
         $data = $this->getValidatedData($request);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
         $all = Lesson::query()
@@ -55,7 +56,6 @@ class LessonsController extends StatisticController
         $total['accepted'] = array_sum($first_data);
         $total['canceled'] = array_sum($second_data);
 
-
         return redirect()->route('statistic.lessons.period')->with(compact('labels', 'first_data', 'second_data', 'total'));
     }
 
@@ -64,6 +64,7 @@ class LessonsController extends StatisticController
         $labels = session()->pull('labels');
         $first_data = session()->pull('first_data');
         $second_data = session()->pull('second_data');
+
         return view('statistic.lessons.students', compact('labels', 'first_data', 'second_data'));
     }
 
@@ -153,5 +154,4 @@ class LessonsController extends StatisticController
 
         return redirect()->route('statistic.lessons.students')->with(compact('labels', 'first_data', 'second_data'));
     }
-
 }

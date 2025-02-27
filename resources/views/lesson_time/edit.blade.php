@@ -5,12 +5,12 @@
 
 @section('title', $title)
 @php
-    $back = $backUrl ?? url()->previous();
+    $back = $backUrl ?? route('students.show', compact('student'));
 @endphp
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('student.lesson-time.update', compact('student', 'lessonTime', 'backUrl')) }}" method="post">
+        <form action="{{ route('students.lesson-times.update', compact('student', 'lesson_time', 'backUrl')) }}" method="post">
             @csrf
             @method('PUT')
             <x-card.card>
@@ -20,7 +20,7 @@
                     </x-slot:text>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson-time.form :student="$student" :lesson-time="$lessonTime" />
+                    <x-lesson-time.form :student="$student" :lesson_time="$lesson_time" />
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">
@@ -30,7 +30,7 @@
             </x-card.card>
         </form>
         <x-button-modal-delete
-            :action="route('student.lesson-time.delete', compact('student', 'lessonTime', 'backUrl'))"
+            :action="route('students.lesson-times.destroy', compact('student', 'lesson_time', 'backUrl'))"
             :text_body="'Удалить занятие?'"
         />
     </x-form-container>

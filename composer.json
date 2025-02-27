@@ -9,13 +9,15 @@
         "ext-intl": "*",
         "doctrine/dbal": "^3.9",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image-laravel": "^1.5",
         "laravel/fortify": "^1.25",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.6",
         "livewire/livewire": "^3.5",
-        "predis/predis": "^2.3"
+        "predis/predis": "^2.3",
+        "propaganistas/laravel-phone": "^5.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

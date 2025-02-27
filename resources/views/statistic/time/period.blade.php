@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.statistic')
 
 @section('title', 'Статистика рабочего времени по периодам')
 

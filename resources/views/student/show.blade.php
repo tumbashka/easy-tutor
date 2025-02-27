@@ -9,7 +9,7 @@
     <x-form-container>
 
         <x-card.card>
-            <x-card.header-nav :title="$title" :url="route('student.index')">
+            <x-card.header-nav :title="$title" :url="route('students.index')">
                 <x-slot:text>
                     Назад
                     <i class="fa-light fa-arrow-left-from-bracket fa-lg"></i>
@@ -19,7 +19,7 @@
                 <x-student.profile :student="$student"/>
             </x-card.body>
             <x-card.footer>
-                <x-link-button href="{{ route('student.edit', $student) }}">
+                <x-link-button href="{{ route('students.edit', $student) }}">
                     Редактировать
                     <i class="fa-light fa-pen-to-square fa-lg"></i>
                 </x-link-button>
@@ -41,7 +41,7 @@
                 @endif
             </x-card.body>
             <x-card.footer>
-                <x-link-button href="{{ route('student.lesson-time.create', $student) }}">
+                <x-link-button href="{{ route('students.lesson-times.create', $student) }}">
                     Добавить
                     <i class="fa-light fa-circle-plus fa-lg"></i>
                 </x-link-button>

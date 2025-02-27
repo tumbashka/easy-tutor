@@ -4,7 +4,9 @@
     'text' => '',
     ])
 
-<div class="d-flex flex-row align-items-center mb-4">
+<div {{ $attributes->class([
+   'd-flex flex-row align-items-center'
+]) }}>
     <i class="{{ $icon }} text-info "></i>
     <div class="">
         <input class="form-check-input me-2" type="checkbox" value="{{ $name }}" id="{{ $name }}" name="{{ $name }}">

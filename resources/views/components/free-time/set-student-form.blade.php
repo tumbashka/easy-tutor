@@ -5,7 +5,7 @@
 
 <div class="row align-items-center">
     <div class="col-sm-3">
-        <p class="mb-0">Ученик</p>
+        <p class="mb-0 required-input">Ученик</p>
     </div>
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'student'"/>

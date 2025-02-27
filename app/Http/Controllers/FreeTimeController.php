@@ -10,6 +10,8 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 
 class FreeTimeController extends Controller
@@ -22,7 +24,7 @@ class FreeTimeController extends Controller
 
         $user = auth()->user();
 
-        $all_lesson_slots_on_days = FreeTime::getAllLessonSlotsOnWeekDays($user);
+        $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
 
         return view('free-time.index', compact('week_days', 'all_lesson_slots_on_days', 'encrypted_url'));
     }
@@ -33,6 +35,7 @@ class FreeTimeController extends Controller
             'day' => ['nullable', 'integer', 'min:0', 'max:6'],
         ]);
         $day = $request->day;
+
         return view('free-time.create', compact('day'));
     }
 
@@ -48,6 +51,8 @@ class FreeTimeController extends Controller
             'user_id' => auth()->user()->id,
         ]);
         if ($free_time) {
+            $user = auth()->user();
+            Cache::forget("all_lesson_slots_{$user->id}");
             session(['success' => 'Окно успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления окна!']);
@@ -71,6 +76,8 @@ class FreeTimeController extends Controller
         $freeTime->note = $request->input('note');
 
         if ($freeTime->save()) {
+            $user = auth()->user();
+            Cache::forget("all_lesson_slots_{$user->id}");
             session(['success' => 'Окно успешно обновлено!']);
         } else {
             session(['error' => 'Ошибка обновления окна!']);
@@ -81,12 +88,15 @@ class FreeTimeController extends Controller
 
     public function delete(FreeTime $freeTime)
     {
-        if(auth()->user()->can('delete', $freeTime)){
+        if (auth()->user()->can('delete', $freeTime)) {
             if ($freeTime->delete()) {
+                $user = auth()->user();
+                Cache::forget("all_lesson_slots_{$user->id}");
                 session(['success' => 'Окно успешно удалено!']);
             } else {
                 session(['error' => 'Ошибка удаления!']);
             }
+
             return redirect()->route('free-time.index');
         }
         abort(403);
@@ -95,24 +105,27 @@ class FreeTimeController extends Controller
     public function set_student(FreeTime $freeTime)
     {
         $students = auth()->user()->students;
-        return view('free-time.set_student', compact('freeTime' , 'students'));
+
+        return view('free-time.set_student', compact('freeTime', 'students'));
     }
 
     public function set_student_process(Request $request, FreeTime $freeTime)
     {
         $validated = $request->validate([
-           'student' => ['required', 'exists:App\Models\Student,id'],
+            'student' => ['required', 'exists:App\Models\Student,id'],
         ]);
         $student = Student::find($validated['student']);
-        $lessonTime = LessonTime::create([
+        $lesson_time = LessonTime::create([
             'student_id' => $student->id,
             'week_day' => $freeTime->week_day,
             'start' => $freeTime->start,
             'end' => $freeTime->end,
         ]);
 
-        if ($lessonTime) {
-            Student::updateLessonsPriceOnStudentChanges($student);
+        if ($lesson_time) {
+            $student->updateLessons();
+            $user = auth()->user();
+            Cache::forget("all_lesson_slots_{$user->id}");
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -126,7 +139,7 @@ class FreeTimeController extends Controller
     public function generate_encrypted_url(Request $request)
     {
         $validated = $request->validate([
-           'expire_time' => ['required', 'integer', 'min:1', 'max:62']
+            'expire_time' => ['required', 'integer', 'min:1', 'max:62'],
         ]);
 
         $encrypted_url = Crypt::encrypt([
@@ -134,25 +147,27 @@ class FreeTimeController extends Controller
             'expires' => now()->addDays($validated['expire_time'])->timestamp,
         ]);
         $encrypted_url = url()->route('free-time.show_shared_page', ['token' => $encrypted_url]);
+
         return redirect()->route('free-time.index', compact('encrypted_url'));
     }
+
     public function show_shared_page($token)
     {
         try {
-            $data  = Crypt::decrypt($token);
-            if($data['expires'] < now()->timestamp){
+            $data = Crypt::decrypt($token);
+            if ($data['expires'] < now()->timestamp) {
                 abort(410, 'Ссылка устарела');
             }
 
             $user = User::find($data['user_id']);
 
-            $all_lesson_slots_on_days = FreeTime::getAllLessonSlotsOnWeekDays($user);
+            $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
 
-            return view('free-time.shared-page', compact('all_lesson_slots_on_days', 'user'));
-        }catch (DecryptException $exception){
+            $expires = (new Carbon($data['expires']))->longAbsoluteDiffForHumans(now());
+
+            return view('free-time.shared-page', compact('all_lesson_slots_on_days', 'user', 'expires'));
+        } catch (DecryptException $exception) {
             abort(404);
         }
     }
-
-
 }

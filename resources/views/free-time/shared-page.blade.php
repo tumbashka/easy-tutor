@@ -4,7 +4,10 @@
 
 @section('main.content')
     <x-header>
-        Расписание пользователя: {{ $user->name }}
+        Расписание пользователя: <a class="text-light link-underline-light link-underline-opacity-25 link-underline-opacity-75-hover"
+                                    href="{{ route('user.show', $user) }}">{{ $user->name }}</a>
+        <br>
+        Ссылка действительна: <u>{{ $expires }}</u>
     </x-header>
 
     <x-free-time.week-shared

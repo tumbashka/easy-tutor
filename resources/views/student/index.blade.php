@@ -6,7 +6,7 @@
     <x-header-two-nav
         :title="'Список учеников'"
         :left_url="route('schedule.index')"
-        :right_url="route('student.create')">
+        :right_url="route('students.create')">
         <x-slot:left_text>
             На главную
             <i class="fa-light fa-home fa-lg"></i>

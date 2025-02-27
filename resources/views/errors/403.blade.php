@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Страница не найдена')
+@section('title', 'Доступ запрещён')
 
 @section('main.content')
     <x-form-container>
@@ -11,6 +11,7 @@
                 <p class="lead">
                     Доступ к запрашиваемому ресурсу запрещён.
                 </p>
+                <h2>{{ $exception->getMessage() }}</h2>
                 <a href="{{ route('home') }}" class="btn btn-primary">На главную</a>
             </div>
         </div>

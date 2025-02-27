@@ -7,7 +7,7 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('student.lesson-time.store', $student) }}" method="post">
+        <form action="{{ route('students.lesson-times.store', $student) }}" method="post">
             @csrf
             <x-card.card>
                 <x-card.header-nav :title="$title" :url="url()->previous()">

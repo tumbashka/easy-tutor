@@ -25,7 +25,7 @@
                     {{ $right_text }}
                 </x-link-button>
             </div>
-
         </div>
+            {{ $slot }}
     </div>
 </div>

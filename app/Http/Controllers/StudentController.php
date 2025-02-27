@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
-use App\Models\Lesson;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class StudentController extends Controller
 {
@@ -27,10 +27,11 @@ class StudentController extends Controller
             $students = $user->students()
                 ->where('class', $class)
                 ->with('lesson_times')->get()->toArray();
-//            dd($students);
+            //            dd($students);
             $studentsOnClasses[$class] = $students;
         }
-//        dd($studentsOnClasses);
+
+        //        dd($studentsOnClasses);
         return view('student.index', compact('studentsOnClasses'));
     }
 
@@ -54,15 +55,17 @@ class StudentController extends Controller
             session(['error' => 'Ошибка добавления ученика!']);
         }
 
-        if($request->free_time){
+        if ($request->free_time) {
             return redirect()->route('free-time.set-student', ['free_time' => $request->free_time]);
         }
-        return redirect()->route('student.show', $student);
+
+        return redirect()->route('students.show', $student);
     }
 
     public function show(Student $student)
     {
         $lesson_times = $student->lesson_times;
+
         return view('student.show', compact('student', 'lesson_times'));
     }
 
@@ -79,19 +82,18 @@ class StudentController extends Controller
         $student->note = $request->note;
 
         if ($student->save()) {
-
-            Student::updateLessonsNameOnStudentChanges($student);
-            Student::updateLessonsPriceOnStudentChanges($student);
-
+            $student->updateLessons();
+            $user = auth()->user();
+            Cache::tags(["lessons_{$user->id}"])->flush();
             session(['success' => 'Ученик успешно обновлён!']);
         } else {
             session(['error' => 'Ошибка обновления ученика!']);
         }
 
-        return redirect()->route('student.show', $student);
+        return redirect()->route('students.show', $student);
     }
 
-    public function delete(Student $student)
+    public function destroy(Student $student)
     {
         $lessons = $student->lessons()
             ->where('date', '>', now())
@@ -105,12 +107,13 @@ class StudentController extends Controller
             ->delete();
 
         if ($student->delete()) {
+            $user = auth()->user();
+            Cache::tags(["lessons_{$user->id}"])->flush();
             session(['success' => 'Ученик успешно удалён!']);
-
         } else {
             session(['error' => 'Ошибка удаления ученика!']);
         }
-        return redirect()->route('student.index');
-    }
 
+        return redirect()->route('students.index');
+    }
 }

@@ -5,17 +5,44 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
-use App\Models\LessonTime;
 use App\Models\Student;
+use App\src\Schedule\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class LessonController extends Controller
 {
+    public function index(Request $request)
+    {
+        $validated = $request->validate([
+            'week' => ['nullable', 'integer'],
+        ]);
+        $weekOffset = (int)$request->week;
+        $weekDays = getWeekDays($weekOffset); // ['0-6' => Carbon obj]
+        $previous = getPreviousWeeks($weekOffset, 10);
+        $next = getNextWeeks($weekOffset, 10);
+
+        $schedule = new Schedule($weekOffset);
+        $lessonsOnDays = $schedule->getWeekLessonsOnDays();
+
+        return view('schedule.index', compact('weekOffset', 'weekDays', 'previous', 'next', 'lessonsOnDays'));
+    }
+
     public function show(Request $request, $day)
     {
         $day = new Carbon($day);
-        $lessons = Lesson::where('date', $day->format('Y-m-d'))->get();
+        $lessons = Lesson::where('date', $day->format('Y-m-d'))
+            ->where('user_id', auth()->user()->id)
+            ->get();
+        $arr = [];
+        foreach ($lessons as $lesson) {
+            $arr[] = $lesson;
+        }
+        $lessons = $arr;
+        usort($lessons, function ($a, $b) {
+            return $a['start'] <=> $b['start']; // Сортировка по времени
+        });
 
         return view('schedule.show', compact('day', 'lessons'));
     }
@@ -24,6 +51,7 @@ class LessonController extends Controller
     {
         $day = new Carbon($day);
         $students = Student::where('user_id', auth()->id())->get();
+
         return view('lesson.create', compact('day', 'students'));
     }
 
@@ -42,7 +70,10 @@ class LessonController extends Controller
             'price' => $request->price,
             'note' => $request->note,
         ]);
+
         if ($lesson) {
+            $user = auth()->user();
+            Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -72,11 +103,14 @@ class LessonController extends Controller
         $lesson->note = $request->note;
 
         if ($lesson->update()) {
+            $user = auth()->user();
+            Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
             session(['success' => 'Занятие успешно сохранено!']);
         } else {
             session(['error' => 'Ошибка изменения занятия!']);
         }
         $week = getWeekOffset(new Carbon($day));
+
         return redirect()->route('schedule.index', compact('week'));
     }
 
@@ -85,6 +119,8 @@ class LessonController extends Controller
         $lesson = Lesson::find($lesson);
         $lesson->is_canceled = !$lesson->is_canceled;
         $lesson->save();
+        $user = auth()->user();
+        Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
         return redirect()->back();
     }
 }

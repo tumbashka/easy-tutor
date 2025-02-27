@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('email', 100)->unique();
             $table->string('password', 255);
             $table->boolean('is_admin')->default(false);
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
             $table->dateTime('email_verified_at')->nullable();
             $table->rememberToken();
         });

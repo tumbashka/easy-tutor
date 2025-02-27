@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Statistic;
 
-use App\Http\Controllers\Controller;
 use App\Models\Lesson;
-use App\src\Statistic\LessonsTimeStatistic;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 
 class TimeController extends StatisticController
 {
@@ -18,13 +14,14 @@ class TimeController extends StatisticController
         $numbers = session()->pull('numbers');
         $label = session()->pull('label');
         $total = session()->pull('total');
+
         return view('statistic.time.period', compact('labels', 'numbers', 'label', 'total'));
     }
 
     public function period_calculate(Request $request)
     {
         $data = $this->getValidatedData($request);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
 

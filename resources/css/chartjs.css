@@ -1,0 +1,9 @@
+.chart-container {
+    min-height: 200px;
+    max-height: 500px;
+}
+
+.chart {
+    min-height: 200px;
+    max-height: 500px;
+}

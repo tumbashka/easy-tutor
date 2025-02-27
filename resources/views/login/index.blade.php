@@ -21,11 +21,12 @@
                             :type="'password'"
                             :text="'Пароль'"
                             :name="'password'"/>
-                        <x-form.checkbox
+                        <x-form.checkbox class="mb-0"
                             :icon="'fas fa-regular fa-bookmark fa-lg me-3 fa-fw'"
                             :text="'Запомнить меня'"
                             :name="'remember'"
                         />
+                        <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end" href="{{ route('password.forgot.show') }}">Забыли пароль?</a>
                     </div>
                 </x-card.body>
                 <x-card.footer>

@@ -8,9 +8,9 @@
             <x-card.header-nav
                 :title="'Редактирование ученика'"
                 :text="'Назад'"
-                :url="route('student.show', $student)"
+                :url="route('students.show', $student)"
             />
-            <form action="{{ route('student.update',  $student['id']) }}" method="post">
+            <form action="{{ route('students.update',  $student['id']) }}" method="post">
                 @method('PUT')
                 @csrf
                 <x-card.body>
@@ -25,7 +25,7 @@
                 </x-card.footer>
             </form>
         </x-card.card>
-        <x-button-modal-delete :action="route('student.delete', $student['id'])"/>
+        <x-button-modal-delete :action="route('students.destroy', $student['id'])"/>
     </x-form-container>
 @endsection
 

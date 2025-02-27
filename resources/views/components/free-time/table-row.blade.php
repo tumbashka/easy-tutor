@@ -12,9 +12,9 @@
         };
         $edit_url = route('free-time.edit', ['free_time' => $lesson_slot['id']]);
     }else{
-        $edit_url = route('student.lesson-time.edit', [
+        $edit_url = route('students.lesson-times.edit', [
             'student' => $lesson_slot['student']['id'],
-            'lessonTime' => $lesson_slot['id'],
+            'lesson_time' => $lesson_slot['id'],
             'backUrl' => url()->current()
             ]);
     }

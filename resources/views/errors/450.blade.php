@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Вход')
+@section('title', 'Email не доступен')
 
 @section('main.content')
     <x-form-container>

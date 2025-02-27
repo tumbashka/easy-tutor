@@ -10,19 +10,22 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="/images/icons/book-192x192.png">
-    <link rel="icon" href="/images/icons/book_purple.png" type="image/png">
+    <link rel="icon" href="/images/icons/book-192x192.png" type="image/png">
     <link href="/fontawesome/css/all.css" rel="stylesheet">
     @vite(['resources/sass/app.scss' , 'resources/js/app.js'])
     @stack('css')
-    <title>@yield('title', config('app.name'))</title>
+    <title>{{ config('app.name') }} - @yield('title', config('app.name'))</title>
 </head>
 <body class="bg-pink">
-@include('parts.header')
+@if(isAdminLink())
+    @include('admin.parts.header')
+@else
+    @include('parts.header')
+@endif
 
 @yield('content')
 
 @include('parts.footer')
-@stack('js')
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Страница не найдена')
+@section('title', 'Ресурс недоступен')
 
 @section('main.content')
     <x-form-container>

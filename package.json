@@ -24,6 +24,8 @@
         "chartjs-plugin-datalabels": "^2.2.0",
         "clipboard": "^2.0.11",
         "flatpickr": "^4.6.13",
-        "jquery": "^3.7.1"
+        "inputmask": "^5.0.9",
+        "jquery": "^3.7.1",
+        "tom-select": "^2.4.3"
     }
 }

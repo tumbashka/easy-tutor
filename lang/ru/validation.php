@@ -183,6 +183,8 @@ return [
         'student' => 'Ученик',
         'status' => 'Статус',
         'type' => 'Вид',
+        'deadline' => 'Дедлайн',
+        'categories' => 'Категории',
     ],
 
 ];

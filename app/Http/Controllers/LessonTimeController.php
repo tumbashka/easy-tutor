@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLessonTimeRequest;
-use App\Http\Requests\UpdateLessonTimeRequest;
 use App\Models\FreeTime;
 use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\Student;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class LessonTimeController extends Controller
 {
@@ -20,89 +19,97 @@ class LessonTimeController extends Controller
 
     public function store(StoreLessonTimeRequest $request, Student $student)
     {
-        $lessonTime = LessonTime::create([
+        $lesson_time = LessonTime::create([
             'student_id' => $student->id,
             'week_day' => $request->week_day,
             'start' => $request->start,
             'end' => $request->end,
         ]);
 
-        if ($lessonTime) {
-            Student::updateLessonsPriceOnStudentChanges($student);
+        if ($lesson_time) {
+            $user = auth()->user();
+            Cache::tags(["lessons_{$user->id}"])->flush();
+            Cache::forget("all_lesson_slots_{$user->id}");
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
         }
 
-        return redirect()->route('student.show', $student);
+        return redirect()->route('students.show', $student);
     }
 
-    public function edit(Student $student, LessonTime $lessonTime, Request $request)
+    public function edit(Student $student, LessonTime $lesson_time, Request $request)
     {
-//        dd($student);
+
         $backUrl = $request->backUrl;
         $students = auth()->user()->students()->get();
-//        dd($students);
-        return view('lesson_time.edit', compact('lessonTime', 'student', 'students', 'backUrl'));
+
+        return view('lesson_time.edit', compact('lesson_time', 'student', 'students', 'backUrl'));
     }
 
-    public function update(StoreLessonTimeRequest $request, Student $student, LessonTime $lessonTime)
+    public function update(StoreLessonTimeRequest $request, Student $student, LessonTime $lesson_time)
     {
-        $lessonTime->week_day = $request->week_day;
-        $lessonTime->start = $request->start;
-        $lessonTime->end = $request->end;
+        $lesson_time->week_day = $request->week_day;
+        $lesson_time->start = $request->start;
+        $lesson_time->end = $request->end;
 
-        if ($lessonTime->save()) {
-            Student::updateLessonTimeOnLessonTimeChanges($student, $lessonTime);
-            Student::updateLessonsPriceOnStudentChanges($student);
+        if ($lesson_time->save()) {
+            $lesson_time->updateLessons();
+            $user = auth()->user();
+            Cache::tags(["lessons_{$user->id}"])->flush();
+            Cache::forget("all_lesson_slots_{$user->id}");
             session(['success' => 'Обновление успешно!']);
         } else {
             session(['error' => 'Ошибка обновления!']);
         }
 
-
-        if ($backUrl = $request->backUrl){
+        if ($backUrl = $request->backUrl) {
             return redirect($backUrl);
         }
 
-        return redirect()->route('student.show', $student);
+        return redirect()->route('students.show', $student);
     }
 
-    public function delete(Student $student, LessonTime $lessonTime, Request $request)
+    public function destroy(Student $student, LessonTime $lesson_time, Request $request)
     {
         $user = auth()->user();
-        if(!($user->can('update', $student) && $lessonTime->student_id == $student->id)){
+        if (! ($user->can('update', $student) && $lesson_time->student_id == $student->id)) {
             abort(403);
         }
+
         $lessons = Lesson::where('date', '>', now())
-            ->where('lesson_time_id', $lessonTime->id)
+            ->where('lesson_time_id', $lesson_time->id)
             ->where('user_id', auth()->user()->id)
             ->delete();
+
         $todayLessons = Lesson::where('date', now()->format('Y-m-d'))
             ->where('start', '>', now()->format('H:i:s'))
-            ->where('lesson_time_id', $lessonTime->id)
+            ->where('lesson_time_id', $lesson_time->id)
             ->where('user_id', auth()->user()->id)
             ->delete();
 
         $free_time = FreeTime::create([
-            'week_day' => $lessonTime->week_day,
-            'start' => $lessonTime->start,
-            'end' => $lessonTime->end,
+            'week_day' => $lesson_time->week_day,
+            'start' => $lesson_time->start,
+            'end' => $lesson_time->end,
             'status' => 'free',
             'type' => 'all',
             'user_id' => auth()->user()->id,
         ]);
 
-        if ($lessonTime->delete()) {
+        if ($lesson_time->delete()) {
+            $user = auth()->user();
+            Cache::tags(["lessons_{$user->id}"])->flush();
+            Cache::forget("all_lesson_slots_{$user->id}");
             session(['success' => 'Удаление успешно!']);
         } else {
             session(['error' => 'Ошибка удаления!']);
         }
         $backUrl = $request->backUrl;
-        if ($backUrl){
+        if ($backUrl) {
             return redirect($backUrl);
         }
 
-        return redirect()->route('student.show', $student);
+        return redirect()->route('students.show', $student);
     }
 }

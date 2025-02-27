@@ -19,7 +19,7 @@
             <div class="d-sm-none d-inline text-info">
                 Редактировать
             </div>
-            <a href="{{ route('student.lesson-time.edit', ['student' => $lesson_time->student_id, 'lessonTime' => $lesson_time]) }}"
+            <a href="{{ route('students.lesson-times.edit', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time]) }}"
                class="me-2 d-inline"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
         </div>
         <div>
@@ -27,7 +27,7 @@
                 Удалить
             </div>
             <x-icon-modal-delete
-                :action="route('student.lesson-time.delete', ['student' => $lesson_time->student_id, 'lessonTime' => $lesson_time])"
+                :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
                 :text_body="'Удалить занятие?'"
                 :id="$lesson_time->id"
             />

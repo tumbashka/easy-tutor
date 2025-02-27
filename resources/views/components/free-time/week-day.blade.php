@@ -18,10 +18,18 @@
         </tr>
         </thead>
         <tbody class="text-center align-middle">
-        @if(count($all_lesson_slots_on_day))
+        @if($all_lesson_slots_on_day)
             @foreach($all_lesson_slots_on_day as $lesson_slot)
                 <x-free-time.table-row :lesson_slot="$lesson_slot"/>
             @endforeach
+        @else
+            <tr>
+                <td>
+                    <div class="m-2">
+                        Занятий нет
+                    </div>
+                </td>
+            </tr>
         @endif
         </tbody>
     </table>

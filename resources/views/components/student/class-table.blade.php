@@ -29,7 +29,7 @@
             <tr>
                 <td>
                     <x-table.link
-                        href="{{ route('student.show', $student['id']) }}">{{ $student['name'] }}</x-table.link>
+                        href="{{ route('students.show', $student['id']) }}">{{ $student['name'] }}</x-table.link>
                 </td>
                 @php
                     $lesson_days = [];

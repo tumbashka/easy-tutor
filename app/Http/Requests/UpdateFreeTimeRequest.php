@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateFreeTimeRequest extends FormRequest
 {
@@ -27,10 +26,11 @@ class UpdateFreeTimeRequest extends FormRequest
             'start' => ['required', 'date_format:H:i'],
             'end' => ['required', 'date_format:H:i', 'after:start'],
             'status' => ['required', 'string', 'in:free,trial'],
-            'type' => ['required', 'string','in:online,face-to-face,all'],
+            'type' => ['required', 'string', 'in:online,face-to-face,all'],
             'note' => ['nullable', 'string', 'max:65000'],
         ];
     }
+
     public function messages(): array
     {
         return [

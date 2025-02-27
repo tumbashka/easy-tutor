@@ -24,7 +24,7 @@ class EarningsController extends StatisticController
     public function period_calculate(Request $request)
     {
         $data = $this->getValidatedData($request);
-        if(!is_array($data)){
+        if (! is_array($data)) {
             return $data;
         }
         $res = Lesson::query()
@@ -57,6 +57,7 @@ class EarningsController extends StatisticController
         $labels = session()->pull('labels');
         $numbers = session()->pull('numbers');
         $colors = session()->pull('colors');
+
         return view('statistic.earnings.students', compact('labels', 'numbers', 'colors'));
     }
 
@@ -100,7 +101,6 @@ class EarningsController extends StatisticController
                 ->where('user_id', auth()->user()->id)
                 ->where('is_paid', true)
                 ->whereBetween('date', [$start, $end])
-
                 ->groupBy('student_name')
                 ->orderBy('student_price')
                 ->pluck('student_price', 'student_name')

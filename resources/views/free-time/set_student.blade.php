@@ -20,7 +20,7 @@
                     <x-free-time.set-student-form :$students/>
                 </x-card.body>
                 <x-card.footer>
-                    <x-link-button class="mb-2" :href="route('student.create', ['free_time' => $freeTime])">Добавить нового ученика</x-link-button>
+                    <x-link-button class="mb-2" :href="route('students.create', ['free_time' => $freeTime])">Добавить нового ученика</x-link-button>
                     <x-button type="submit">
                         Назначить
                     </x-button>

@@ -20,6 +20,9 @@
                     </x-link-button>
                 </div>
             </div>
+            <div class="row">
+                {{ $slot }}
+            </div>
         </div>
     </div>
 </div>

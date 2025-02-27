@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +22,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($validated, $request->filled('remember'))) {
             $request->session()->regenerate();
+
             return redirect()->route('schedule.index');
         }
 
@@ -39,5 +39,4 @@ class LoginController extends Controller
 
         return redirect()->route('login');
     }
-
 }

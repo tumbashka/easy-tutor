@@ -1,10 +1,11 @@
-<nav class="navbar navbar-expand-lg bg-info bg-gradient shadow mb-3">
+<nav class="navbar navbar-dark navbar-expand-lg bg-info bg-gradient shadow mb-3">
     <div class="container ">
         <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
             <img src="/images/icons/book_white.svg" height="28px">
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler  " type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -18,13 +19,15 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white {{ activeLink('student*') }}"
-                               href="{{ route('student.index') }}">Ученики</a>
+                               href="{{ route('students.index') }}">Ученики</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white {{ activeLink('homework*') }}" href="#">Домашняя работа</a>
+                            <a class="nav-link text-white {{ activeLink('free-time*') }}"
+                               href="{{ route('free-time.index') }}">Окна</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white {{ activeLink('free-time*') }}" href="{{ route('free-time.index') }}">Окна</a>
+                            <a class="nav-link text-white {{ activeLink('tasks*') }}" href="{{ route('tasks.index') }}">Список
+                                дел</a>
                         </li>
                     </ul>
                 @endif
@@ -47,6 +50,14 @@
             @auth
                 <ul class="nav nav-underline mb-2 mb-lg-0">
                     @if (auth()->user()->hasVerifiedEmail())
+                        @can('admin-access')
+                            <li class="nav-item">
+                                <a class="nav-link text-white"
+                                    href="{{ route('admin.dashboard') }}">
+                                    Админ панель
+                                </a>
+                            </li>
+                        @endcan
                         <li class="nav-item dropdown-center">
                             <a class="nav-link link-light dropdown-toggle {{ activeLink('statistic*') }}" href="#"
                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -77,18 +88,17 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown-center">
-                            <a class="nav-link link-light dropdown-toggle {{ activeLink('user*') }}" href="#"
-                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ auth()->user()->name }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Профиль</a></li>
-                                <li><a class="dropdown-item" href="#">Настройки</a></li>
-                                <li><a class="dropdown-item" href="{{ route('logout') }}">Выйти</a></li>
-                            </ul>
-                        </li>
                     @endif
+                    <li class="nav-item dropdown-center">
+                        <a class="nav-link link-light dropdown-toggle {{ activeLink('user*') }}" href="#"
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ auth()->user()->name }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('user.index') }}">Профиль</a></li>
+                            <li><a class="dropdown-item" href="{{ route('logout') }}">Выйти</a></li>
+                        </ul>
+                    </li>
                 </ul>
             @endauth
         </div>

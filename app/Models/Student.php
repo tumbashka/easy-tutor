@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Ramsey\Collection\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class Student extends Model
 {
@@ -32,7 +32,7 @@ class Student extends Model
         'name',
         'class',
         'note',
-        'price'
+        'price',
     ];
 
     /**
@@ -53,42 +53,24 @@ class Student extends Model
         'price' => 'integer',
     ];
 
-    public static function updateLessonsPriceOnStudentChanges(self $student): void
+    public function updateLessons(): void
     {
-        $futureLessons = self::getStudentFutureLessons($student);
-        $futureLessons->each(function ($lesson) use ($student) {
-            $lesson->price = getLessonPrice($lesson->start, $lesson->end, $student->price);
-            $lesson->save();
-        });
-    }
-    public static function updateLessonsNameOnStudentChanges(self $student): void
-    {
-        $futureLessons = self::getStudentFutureLessons($student);
-        $futureLessons->each(function ($lesson) use ($student) {
-            $lesson->student_name = $student->name;
+        $futureLessons = $this->getFutureLessons();
+        $futureLessons->each(function ($lesson) {
+            $lesson->price = getLessonPrice($lesson->start, $lesson->end, $this->price);
+            $lesson->student_name = $this->name;
             $lesson->save();
         });
     }
 
-    public static function updateLessonTimeOnLessonTimeChanges(self $student, LessonTime $changedLessonTime): void
+    public function getFutureLessons()
     {
-        $futureLessons = Student::getStudentFutureLessons($student);
-        $futureLessons->each(function ($lesson) use ($changedLessonTime){
-            if($lesson->lesson_time_id == $changedLessonTime->id){
-                $lesson->start = $changedLessonTime->start;
-                $lesson->end = $changedLessonTime->end;
-                $lesson->save();
-            }
-        });
-    }
-    public static function getStudentFutureLessons(self $student)
-    {
-        $fromTomorrowFutureLessons = $student->lessons()
+        $fromTomorrowFutureLessons = $this->lessons()
             ->where('date', '>', now())
             ->where('user_id', auth()->user()->id)
             ->get();
 
-        $todayFutureLessons = $student->lessons()
+        $todayFutureLessons = $this->lessons()
             ->where('date', now()->format('Y-m-d'))
             ->where('start', '>', now()->format('H:i:s'))
             ->where('user_id', auth()->user()->id)
@@ -96,4 +78,5 @@ class Student extends Model
 
         return $fromTomorrowFutureLessons->concat($todayFutureLessons);
     }
+
 }

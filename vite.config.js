@@ -6,13 +6,17 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/sass/app.scss',
+                'resources/sass/admin.scss',
                 'resources/js/app.js',
+                'resources/js/tom-select.js',
+                'resources/js/flatpickr.js',
+                'resources/js/chartjs.js',
             ],
             refresh: true,
         }),
     ],
     build: {
-        // assetsInlineLimit: 0, // Отключает встраивание шрифтов в base64
+
     },
     resolve: {
         alias: {

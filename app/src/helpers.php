@@ -10,6 +10,13 @@ if (!function_exists('activeLink')) { // выделение активной с�
     }
 }
 
+if (!function_exists('isAdminLink')) { // выделение активной ссылки в навбаре
+    function isAdminLink(): bool
+    {
+        return Route::is('admin*');
+    }
+}
+
 if (!function_exists('getShortDayName')) {
     function getShortDayName(Carbon|int $dayOfWeek): string // получение сокращённого название дня недели с большой буквы
     {
@@ -80,16 +87,6 @@ if (!function_exists('getNextWeeks')) { // получение массива с�
             $res[$i + $weekOffset] = getWeekBorders($weekOffset + $i);
         }
         return $res;
-    }
-}
-
-if (!function_exists('isPast')) { // обёртка для определения прошедшей даты
-    function isPast(Carbon $day): bool
-    {
-        if ($day->lt(now())) {
-            return true;
-        }
-        return false;
     }
 }
 
@@ -173,6 +170,29 @@ if (!function_exists('getLessonStatus')) { // вычисление разниц�
         };
     }
 }
+
+if (!function_exists('getRGBFromHex')) { // вычисление разницы в неделях по сравнению с текущим временем
+    function getRGBFromHex($hex_color): array
+    {
+        return sscanf($hex_color, "#%02x%02x%02x");
+    }
+}
+
+
+if (!function_exists('getTextContrastColor')) { // вычисление разницы в неделях по сравнению с текущим временем
+    function getTextContrastColor($hex_color): string
+    {
+        $rgb = getRGBFromHex($hex_color);
+        $brightness = ($rgb[0] * 299 + $rgb[1] * 587 + $rgb[2] * 114) / 1000;
+
+        if($brightness < 170){
+            return 'text-light';
+        }else{
+            return 'text-dark';
+        }
+    }
+}
+
 
 
 

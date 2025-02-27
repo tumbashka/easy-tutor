@@ -5,7 +5,7 @@ use App\Http\Controllers\Statistic\LessonsController;
 use App\Http\Controllers\Statistic\TimeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::prefix('/statistic')->name('statistic.')->group(function () {
         Route::prefix('/earnings')->name('earnings.')->group(function () {
             Route::get('/period', [EarningsController::class, 'period'])->name('period');
