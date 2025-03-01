@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\FreeTime\FreeTimeAdded;
+use App\Events\FreeTime\FreeTimeDeleted;
+use App\Events\FreeTime\FreeTimeUpdated;
+use App\Events\LessonTime\LessonTimeAdded;
 use App\Http\Requests\StoreFreeTimeRequest;
 use App\Http\Requests\UpdateFreeTimeRequest;
 use App\Models\FreeTime;
@@ -11,7 +15,6 @@ use App\Models\User;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 
 class FreeTimeController extends Controller
@@ -31,7 +34,7 @@ class FreeTimeController extends Controller
 
     public function create(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'day' => ['nullable', 'integer', 'min:0', 'max:6'],
         ]);
         $day = $request->day;
@@ -51,8 +54,7 @@ class FreeTimeController extends Controller
             'user_id' => auth()->user()->id,
         ]);
         if ($free_time) {
-            $user = auth()->user();
-            Cache::forget("all_lesson_slots_{$user->id}");
+            FreeTimeAdded::dispatch($free_time);
             session(['success' => 'Окно успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления окна!']);
@@ -76,8 +78,7 @@ class FreeTimeController extends Controller
         $freeTime->note = $request->input('note');
 
         if ($freeTime->save()) {
-            $user = auth()->user();
-            Cache::forget("all_lesson_slots_{$user->id}");
+            FreeTimeUpdated::dispatch($freeTime);
             session(['success' => 'Окно успешно обновлено!']);
         } else {
             session(['error' => 'Ошибка обновления окна!']);
@@ -90,8 +91,7 @@ class FreeTimeController extends Controller
     {
         if (auth()->user()->can('delete', $freeTime)) {
             if ($freeTime->delete()) {
-                $user = auth()->user();
-                Cache::forget("all_lesson_slots_{$user->id}");
+                FreeTimeDeleted::dispatch($freeTime);
                 session(['success' => 'Окно успешно удалено!']);
             } else {
                 session(['error' => 'Ошибка удаления!']);
@@ -123,9 +123,7 @@ class FreeTimeController extends Controller
         ]);
 
         if ($lesson_time) {
-            $student->updateLessons();
-            $user = auth()->user();
-            Cache::forget("all_lesson_slots_{$user->id}");
+            LessonTimeAdded::dispatch($lesson_time);
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -151,7 +149,7 @@ class FreeTimeController extends Controller
         return redirect()->route('free-time.index', compact('encrypted_url'));
     }
 
-    public function show_shared_page($token)
+    public function show_shared_page(#[\SensitiveParameter] $token)
     {
         try {
             $data = Crypt::decrypt($token);

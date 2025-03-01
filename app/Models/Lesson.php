@@ -14,6 +14,10 @@ class Lesson extends Model
     {
         return $this->belongsTo(Student::class);
     }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
     protected $fillable = [
         'student_id',
         'lesson_time_id',

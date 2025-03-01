@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Lesson\LessonAdded;
+use App\Events\Lesson\LessonUpdated;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
@@ -9,7 +11,6 @@ use App\Models\Student;
 use App\src\Schedule\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class LessonController extends Controller
 {
@@ -72,8 +73,7 @@ class LessonController extends Controller
         ]);
 
         if ($lesson) {
-            $user = auth()->user();
-            Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
+            LessonAdded::dispatch($lesson);
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -103,8 +103,7 @@ class LessonController extends Controller
         $lesson->note = $request->note;
 
         if ($lesson->update()) {
-            $user = auth()->user();
-            Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
+            LessonUpdated::dispatch($lesson);
             session(['success' => 'Занятие успешно сохранено!']);
         } else {
             session(['error' => 'Ошибка изменения занятия!']);
@@ -119,8 +118,7 @@ class LessonController extends Controller
         $lesson = Lesson::find($lesson);
         $lesson->is_canceled = !$lesson->is_canceled;
         $lesson->save();
-        $user = auth()->user();
-        Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
+        LessonUpdated::dispatch($lesson);
         return redirect()->back();
     }
 }

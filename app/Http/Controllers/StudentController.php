@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Student\StudentDeleted;
+use App\Events\Student\StudentUpdated;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Models\LessonTime;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class StudentController extends Controller
 {
@@ -27,11 +29,9 @@ class StudentController extends Controller
             $students = $user->students()
                 ->where('class', $class)
                 ->with('lesson_times')->get()->toArray();
-            //            dd($students);
             $studentsOnClasses[$class] = $students;
         }
 
-        //        dd($studentsOnClasses);
         return view('student.index', compact('studentsOnClasses'));
     }
 
@@ -64,8 +64,9 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        $lesson_times = $student->lesson_times;
-
+        $lesson_times = $student->lesson_times->sortBy(function ($lesson_time){
+            return [$lesson_time->week_day, $lesson_time->start];
+        });
         return view('student.show', compact('student', 'lesson_times'));
     }
 
@@ -82,9 +83,7 @@ class StudentController extends Controller
         $student->note = $request->note;
 
         if ($student->save()) {
-            $student->updateLessons();
-            $user = auth()->user();
-            Cache::tags(["lessons_{$user->id}"])->flush();
+            StudentUpdated::dispatch($student);
             session(['success' => 'Ученик успешно обновлён!']);
         } else {
             session(['error' => 'Ошибка обновления ученика!']);
@@ -107,8 +106,7 @@ class StudentController extends Controller
             ->delete();
 
         if ($student->delete()) {
-            $user = auth()->user();
-            Cache::tags(["lessons_{$user->id}"])->flush();
+            StudentDeleted::dispatch($student);
             session(['success' => 'Ученик успешно удалён!']);
         } else {
             session(['error' => 'Ошибка удаления ученика!']);

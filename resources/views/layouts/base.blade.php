@@ -26,6 +26,6 @@
 @yield('content')
 
 @include('parts.footer')
-
+@stack('js')
 </body>
 </html>

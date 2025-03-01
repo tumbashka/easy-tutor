@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LessonTime\LessonTimeAdded;
+use App\Events\LessonTime\LessonTimeDeleted;
+use App\Events\LessonTime\LessonTimeUpdated;
 use App\Http\Requests\StoreLessonTimeRequest;
 use App\Models\FreeTime;
 use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class LessonTimeController extends Controller
 {
@@ -27,9 +29,7 @@ class LessonTimeController extends Controller
         ]);
 
         if ($lesson_time) {
-            $user = auth()->user();
-            Cache::tags(["lessons_{$user->id}"])->flush();
-            Cache::forget("all_lesson_slots_{$user->id}");
+            LessonTimeAdded::dispatch($lesson_time);
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -54,10 +54,7 @@ class LessonTimeController extends Controller
         $lesson_time->end = $request->end;
 
         if ($lesson_time->save()) {
-            $lesson_time->updateLessons();
-            $user = auth()->user();
-            Cache::tags(["lessons_{$user->id}"])->flush();
-            Cache::forget("all_lesson_slots_{$user->id}");
+            LessonTimeUpdated::dispatch($lesson_time);
             session(['success' => 'Обновление успешно!']);
         } else {
             session(['error' => 'Ошибка обновления!']);
@@ -98,9 +95,7 @@ class LessonTimeController extends Controller
         ]);
 
         if ($lesson_time->delete()) {
-            $user = auth()->user();
-            Cache::tags(["lessons_{$user->id}"])->flush();
-            Cache::forget("all_lesson_slots_{$user->id}");
+            LessonTimeDeleted::dispatch($lesson_time);
             session(['success' => 'Удаление успешно!']);
         } else {
             session(['error' => 'Ошибка удаления!']);

@@ -60,4 +60,6 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('tasks/{task}/change_completed', [TaskController::class, 'change_completed'])->name('tasks.change-completed');
 });
 
-
+require_once __DIR__.'/admin.php';
+require_once __DIR__.'/auth.php';
+require_once __DIR__.'/statistic.php';

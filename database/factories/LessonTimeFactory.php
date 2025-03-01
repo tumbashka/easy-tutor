@@ -13,13 +13,19 @@ class LessonTimeFactory extends Factory
 
     public function definition(): array
     {
-        $start = fake()->time('H:i', '20:00');
-        $end = date('H:i', strtotime($start) + rand(1800, 7200));
+        $startHour = fake()->numberBetween(8, 21);
+        $startMinute = fake()->numberBetween(0, 59);
+        $start = Carbon::createFromTime($startHour, $startMinute);
+        $durationMinutes = fake()->numberBetween(30, 120);
+        $end = $start->copy()->addMinutes($durationMinutes);
+
+        $startTime = $start->format('H:i');
+        $endTime = $end->format('H:i');
         return [
             'student_id' => Student::factory(),
-            'week_day' => fake()->numberBetween(0,6),
-            'start' => $start,
-            'end' => $end,
+            'week_day' => fake()->numberBetween(0, 6),
+            'start' => $startTime,
+            'end' => $endTime,
         ];
     }
 }
