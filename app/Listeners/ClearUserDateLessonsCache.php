@@ -6,7 +6,7 @@ use App\Events\Lesson\LessonAdded;
 use App\Events\Lesson\LessonUpdated;
 use Illuminate\Support\Facades\Cache;
 
-class ClearDateLessonsCache
+class ClearUserDateLessonsCache
 {
     /**
      * Create the event listener.
@@ -23,6 +23,6 @@ class ClearDateLessonsCache
     {
         $lesson = $event->lesson;
         $user = $event->user;
-        Cache::forget("lessons_{$user->id}_{$lesson->date->format('Y-m-d')}");
+        $res = Cache::tags("lessons_{$user->id}")->forget("lessons_{$user->id}_{$lesson->date}");
     }
 }

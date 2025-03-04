@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(new MiddlewareHandler())
     ->withExceptions(new ExceptionHandler())
     ->withSchedule(new ScheduleHandler())
+    ->withCommands([__DIR__ . '/../app/Console/Commands'])
     ->withRouting(
         web: __DIR__ . '/../routes/web/main.php',
         api: __DIR__ . '/../routes/api.php',

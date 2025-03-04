@@ -142,7 +142,7 @@ class FreeTimeController extends Controller
 
         $encrypted_url = Crypt::encrypt([
             'user_id' => auth()->user()->id,
-            'expires' => now()->addDays($validated['expire_time'])->timestamp,
+            'expires' => now()->addDays((int)$validated['expire_time'])->timestamp,
         ]);
         $encrypted_url = url()->route('free-time.show_shared_page', ['token' => $encrypted_url]);
 
@@ -157,7 +157,12 @@ class FreeTimeController extends Controller
                 abort(410, 'Ссылка устарела');
             }
 
-            $user = User::find($data['user_id']);
+            if (null === $user = User::find($data['user_id'])){
+                abort(404);
+            }
+            if (!$user->is_active){
+                abort(404);
+            }
 
             $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
 

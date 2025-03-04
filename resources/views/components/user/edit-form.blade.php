@@ -43,7 +43,7 @@
                 <label>О себе</label>
             </div>
             <x-form.input-error-alert :name="'phone'"/>
-            <div class="d-flex flex-row align-items-center mb-4">
+            <div class="d-flex flex-row align-items-center mb-0">
                 <div class="form-floating flex-fill mb-0">
                     <input type="tel" id="phone" name="phone"
                            value="{{ old('phone') ?? $user->phone ?? '' }}"
@@ -51,15 +51,6 @@
                            placeholder="+7 (___) ___-__-__"
                            pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$">
                     <label class="form-label">Номер телефона</label>
-                </div>
-            </div>
-            <x-form.input-error-alert :name="'telegram'"/>
-            <div class="d-flex flex-row align-items-center mb-4">
-                <div class="form-floating flex-fill mb-0">
-                    <input type="text" name="telegram"
-                           value="{{ old('telegram') ?? $user->telegram ?? '' }}"
-                           class="form-control" placeholder="Ник в Telegram">
-                    <label class="form-label">Ник в Telegram</label>
                 </div>
             </div>
         </div>

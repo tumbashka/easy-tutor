@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Http\Middleware;
 
 use Illuminate\Foundation\Configuration\Middleware as BaseMiddleware;
+use Illuminate\Support\Facades\Log;
 
 class Handler
 {
@@ -26,6 +27,7 @@ class Handler
 
     public function __invoke(BaseMiddleware $middleware): BaseMiddleware
     {
+
         if ($this->aliases) {
             $middleware->alias($this->aliases);
         }

@@ -12,13 +12,23 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->string('name', 100);
-            $table->string('email', 100)->unique();
-            $table->string('password', 255);
             $table->boolean('is_admin')->default(false);
             $table->boolean('is_active')->default(false);
             $table->dateTime('email_verified_at')->nullable();
+
+            $table->string('name', 100);
+            $table->string('email', 100)->unique();
+            $table->string('password', 255);
+
+            $table->string('avatar')->nullable();
+            $table->mediumText('about')->nullable();
+            $table->string('phone', 20)->nullable();
+
+            $table->string('telegram_username', 50)->nullable();
+            $table->string('telegram_chat_id', 255)->nullable();
+            $table->string('telegram_token', 64)->nullable();
+
+            $table->timestamps();
             $table->rememberToken();
         });
     }

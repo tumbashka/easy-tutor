@@ -31,24 +31,6 @@ class LessonTime extends Model
         'end',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'start' => 'datetime:H:i',
-        'end' => 'datetime:H:i',
-    ];
-
     protected function casts(): array
     {
         return [

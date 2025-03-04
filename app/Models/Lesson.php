@@ -32,23 +32,13 @@ class Lesson extends Model
         'is_canceled',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'start' => 'datetime:H:i',
-        'end' => 'datetime:H:i',
-        'is_paid' => 'boolean',
-        'is_canceled' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'start' => 'datetime:H:i',
+            'end' => 'datetime:H:i',
+            'is_paid' => 'boolean',
+            'is_canceled' => 'boolean',
+        ];
+    }
 }

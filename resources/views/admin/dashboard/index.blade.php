@@ -18,14 +18,14 @@
             :value="$students_count"
             :label="'Всего учеников'"
             :icon="'fa-children'"
-            :link_url="route('admin.users.students')"
+            :link_url="'#'"
         />
         <x-admin.dashboard-box
             :color="'#F68E00'"
             :value="$lessons_count"
             :label="'Всего проведённых занятий'"
             :icon="'fa-person-chalkboard'"
-            :link_url="route('admin.users.dashboard')"
+            :link_url="'#'"
         />
         <x-admin.dashboard-box
             :color="'#CE1F1F'"

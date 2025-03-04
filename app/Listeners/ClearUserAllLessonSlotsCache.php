@@ -10,7 +10,7 @@ use App\Events\LessonTime\LessonTimeDeleted;
 use App\Events\LessonTime\LessonTimeUpdated;
 use Illuminate\Support\Facades\Cache;
 
-class ClearLessonSlotsCache
+class ClearUserAllLessonSlotsCache
 {
     /**
      * Create the event listener.

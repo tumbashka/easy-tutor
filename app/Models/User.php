@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
 use Laravel\Sanctum\HasApiTokens;
@@ -74,6 +75,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->is_admin;
     }
 
+    public static function getUserByTelegramChatID($chat_id): self
+    {
+        return self::where('is_active', true)
+            ->firstWhere('telegram_chat_id', $chat_id);
+    }
+
     protected $guarded = ['is_admin'];
 
     protected $fillable = [
@@ -81,7 +88,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'avatar',
         'about',
-        'telegram',
+        'telegram_username',
+        'telegram_chat_id',
+        'telegram_token',
         'phone',
         'password',
         'remember_token',
@@ -102,12 +111,15 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'is_admin' => 'bool',
-        'is_active' => 'bool',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_admin' => 'bool',
+            'is_active' => 'bool',
+        ];
+    }
 
     public function sendEmailVerificationNotification()
     {
@@ -198,5 +210,32 @@ class User extends Authenticatable implements MustVerifyEmail
         Storage::put($path, $image);
 
         return $this->update(['avatar' => $path]);
+    }
+
+    public function get_telegram_url(): string
+    {
+        if (!$this->telegram_token) {
+            $this->generate_telegram_token();
+        }
+        $bot_username = config('telegram.bots.mybot.username');
+        return "https://t.me/{$bot_username}?start={$this->telegram_token}";
+    }
+
+    public function generate_telegram_token(): void
+    {
+        while (true) {
+            $telegram_token = Str::random(64);
+            $user = User::firstWhere('telegram_token', $telegram_token);
+            if (!$user) {
+                break;
+            }
+        }
+        $this->telegram_token = $telegram_token;
+        $this->update();
+    }
+
+    public function remember_user_telegram()
+    {
+
     }
 }

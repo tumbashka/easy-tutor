@@ -10,7 +10,7 @@ use App\Events\Student\StudentUpdated;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class ClearUserLessonsCache
+class ClearUserAllLessonsCache
 {
     /**
      * Create the event listener.

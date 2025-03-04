@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
 
 class Student extends Model
@@ -27,6 +28,11 @@ class Student extends Model
         return $this->hasMany(Lesson::class);
     }
 
+    public function homework(): HasMany
+    {
+        return $this->HasMany(Homework::class);
+    }
+
     protected $fillable = [
         'user_id',
         'name',
@@ -35,23 +41,13 @@ class Student extends Model
         'price',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'class' => 'integer',
-        'price' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'class' => 'integer',
+            'price' => 'integer',
+        ];
+    }
 
     public function updateLessons(): void
     {

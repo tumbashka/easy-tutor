@@ -55,7 +55,7 @@ class Schedule
                     return $a['start'] <=> $b['start'];
                 });
 
-                Cache::tags("lessons_{$this->user->id}")->put("lessons_{$this->user->id}_{$date->format('Y-m-d')}", $lessons_on_date, 60 * 60 * 12);
+                Cache::tags("lessons_{$this->user->id}")->put("lessons_{$this->user->id}_{$date->format('Y-m-d')}", $lessons_on_date, 3600);
             }
             $this->lessons_on_days[$week_day_id] = $lessons_on_date;
         }

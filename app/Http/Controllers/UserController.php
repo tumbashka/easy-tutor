@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
@@ -13,8 +14,13 @@ class UserController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $user->generate_telegram_token();
+        $telegram_connect_url = $user->get_telegram_url();
 
-        return view('user.profile', compact('user'));
+        $bot_username = config('telegram.bots.mybot.username');
+        $telegram_bot_url = "https://t.me/{$bot_username}";
+
+        return view('user.profile', compact('user', 'telegram_connect_url', 'telegram_bot_url'));
     }
 
     public function edit(User $user)
@@ -51,10 +57,12 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        if (! $user->is_active) {
+        if (!$user->is_active) {
             abort(404);
         }
 
         return view('user.profile', compact('user'));
     }
+
+
 }

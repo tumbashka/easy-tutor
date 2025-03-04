@@ -6,30 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class FreeTime extends Model
+class Homework extends Model
 {
     use HasFactory;
-
-    public function user(): BelongsTo
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Student::class);
     }
     protected $fillable = [
-        'user_id',
-        'week_day',
-        'start',
-        'end',
-        'status',
-        'type',
-        'note',
+        'student_id',
+        'description',
+        'completed_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'start' => 'datetime:H:i',
-            'end' => 'datetime:H:i',
+            'completed_at' => 'timestamp',
         ];
     }
-
 }
