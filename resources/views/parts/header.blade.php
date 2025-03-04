@@ -50,6 +50,7 @@
             @auth
                 <ul class="nav nav-underline mb-2 mb-lg-0">
                     @if (auth()->user()->hasVerifiedEmail())
+
                         @can('admin-access')
                             <li class="nav-item">
                                 <a class="nav-link text-white"
@@ -95,7 +96,9 @@
                             {{ auth()->user()->name }}
                         </a>
                         <ul class="dropdown-menu">
+                            @can('active-account')
                             <li><a class="dropdown-item" href="{{ route('user.index') }}">Профиль</a></li>
+                            @endcan
                             <li><a class="dropdown-item" href="{{ route('logout') }}">Выйти</a></li>
                         </ul>
                     </li>

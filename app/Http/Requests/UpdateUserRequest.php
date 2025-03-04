@@ -28,7 +28,6 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'password' => ['nullable', 'string', 'min:7', 'confirmed'],
             'about' => ['nullable', 'string', 'max:16700000'],
-            'telegram' => ['nullable', 'string', 'max:50'],
             'phone' => ['nullable', 'string', 'max:20', (new Phone)->country('RU')->mobile()],
         ];
     }

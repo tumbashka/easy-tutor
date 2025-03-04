@@ -19,7 +19,6 @@ class EmailVerificationPromptController extends Controller
         }
 
         $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('status', 'verification-link-sent');
+        return \view('login.email-verify');
     }
 }

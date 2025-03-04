@@ -16,5 +16,6 @@ return [
     'Verify Email Address' => 'Подтверждение электронного адреса',
     'Please click the button below to verify your email address.' => 'Нажмите на кнопку ниже, чтобы подтвердить email.',
     'If you did not create an account, no further action is required.' => 'Если вы не создавали аккаунт, проигнорируйте это письмо.',
+    'verification-link-sent' => 'Ссылка отправлена на почту.',
 
 ];

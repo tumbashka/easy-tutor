@@ -43,7 +43,6 @@ class UserController extends Controller
         }
         $user->name = $request->name;
         $user->about = $request->about;
-        $user->telegram = $request->telegram;
         $user->phone = $request->phone;
 
         if ($user->save()) {

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::permanentRedirect('/home', '/schedule')->name('home');
 Route::permanentRedirect('/', '/schedule');
 
-Route::middleware('auth')->name('user.')->group(function () {
+Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
     Route::get('user/profile', [UserController::class, 'index'])->name('index');
     Route::get('user/{user}/edit', [UserController::class, 'edit'])->name('edit');
     Route::put('user/{user}/update', [UserController::class, 'update'])->name('update');

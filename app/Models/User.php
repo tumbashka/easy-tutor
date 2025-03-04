@@ -121,7 +121,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function sendEmailVerificationNotification()
+    #[\Override] public function sendEmailVerificationNotification(): void
     {
         try {
             $this->notify(new MyVerifyMail);

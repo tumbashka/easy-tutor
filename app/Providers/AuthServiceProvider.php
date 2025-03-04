@@ -25,5 +25,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('admin-access', function (User $user){
             return $user->is_admin;
         });
+        Gate::define('active-account', function (User $user){
+            return $user->is_active && $user->email_verified_at;
+        });
     }
 }
