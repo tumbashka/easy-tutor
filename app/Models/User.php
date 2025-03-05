@@ -26,6 +26,45 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $guarded = ['is_admin'];
+
+    protected $fillable = [
+        'name',
+        'email',
+        'avatar',
+        'about',
+        'telegram_username',
+        'telegram_id',
+        'telegram_token',
+        'phone',
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_admin' => 'bool',
+            'is_active' => 'bool',
+        ];
+    }
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
@@ -75,51 +114,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->is_admin;
     }
 
-    public static function getUserByTelegramChatID($chat_id): self
+    public static function getUserByTelegramID($telegram_id)
     {
-        return self::where('is_active', true)
-            ->firstWhere('telegram_chat_id', $chat_id);
+        return self::query()->where('is_active', true)
+            ->firstWhere('telegram_id', $telegram_id);
     }
 
-    protected $guarded = ['is_admin'];
-
-    protected $fillable = [
-        'name',
-        'email',
-        'avatar',
-        'about',
-        'telegram_username',
-        'telegram_chat_id',
-        'telegram_token',
-        'phone',
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_admin' => 'bool',
-            'is_active' => 'bool',
-        ];
-    }
 
     #[\Override] public function sendEmailVerificationNotification(): void
     {

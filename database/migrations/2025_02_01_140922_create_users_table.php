@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->string('phone', 20)->nullable();
 
             $table->string('telegram_username', 50)->nullable();
-            $table->string('telegram_chat_id', 255)->nullable();
+            $table->string('telegram_id', 255)->nullable();
             $table->string('telegram_token', 64)->nullable();
 
             $table->timestamps();

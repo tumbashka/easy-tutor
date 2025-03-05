@@ -14,6 +14,7 @@
     <link href="/fontawesome/css/all.css" rel="stylesheet">
     @vite(['resources/sass/app.scss' , 'resources/js/app.js'])
     @stack('css')
+    @livewireStyles
     <title>{{ config('app.name') }} - @yield('title', config('app.name'))</title>
 </head>
 <body class="bg-pink">
@@ -27,5 +28,6 @@
 
 @include('parts.footer')
 @stack('js')
+@livewireScripts
 </body>
 </html>

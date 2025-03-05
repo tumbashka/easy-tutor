@@ -16,21 +16,26 @@
     </div>
     <div class="col-sm-2 my-sm-auto  mb-2 d-flex justify-content-around">
         <div class="align-self-center">
-            <div class="d-sm-none d-inline text-info">
-                Редактировать
-            </div>
             <a href="{{ route('students.lesson-times.edit', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time]) }}"
-               class="me-2 d-inline"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
+               class="me-2 d-inline link-underline link-underline-opacity-0">
+                <div class="d-sm-none d-inline text-info">
+                    Редактировать
+                </div>
+                <i class="fa-solid fa-pen-to-square fa-xl"></i></a>
         </div>
         <div>
-            <div class="d-sm-none d-inline text-info">
-                Удалить
-            </div>
-            <x-icon-modal-delete
-                :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
+            <button type="button" class="btn text-info" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal{{ $lesson_time->id }}">
+                <div class="d-sm-none d-inline text-info">
+                    Удалить
+                </div>
+                <i class="fa-solid fa-trash-can fa-xl"></i>
+            </button>
+
+            <x-modal-dialog
                 :text_body="'Удалить занятие?'"
-                :id="$lesson_time->id"
-            />
+                :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
+                :id="$lesson_time->id"/>
         </div>
     </div>
 

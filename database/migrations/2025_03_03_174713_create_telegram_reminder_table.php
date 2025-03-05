@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('telegram_reminders', function (Blueprint $table) {
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->id();
             $table->timestamps();
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('chat_id');
             $table->boolean('is_enabled')->default(true);
             $table->unsignedInteger('before_lesson_minutes')->default(60);
-            $table->time('homework_reminder_time');
+            $table->time('homework_reminder_time')->default('09:00:00');
         });
     }
 

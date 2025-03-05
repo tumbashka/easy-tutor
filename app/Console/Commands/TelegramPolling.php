@@ -33,7 +33,6 @@ class TelegramPolling extends Command
 
                 foreach ($updates as $update) {
                     $this->info('Dispatch update');
-                    $this->info($update->objectType());
                     ProcessTelegramUpdate::dispatch($update);
                     $lastUpdateId = $update->updateId;
                 }

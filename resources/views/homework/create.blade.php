@@ -1,5 +1,5 @@
 @props([
-    'title' => 'Добавление занятия',
+    'title' => 'Добавление домашней работы',
 ])
 @extends('layouts.main')
 
@@ -7,16 +7,16 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('students.lesson-times.store', $student) }}" method="post">
+        <form action="{{ route('students.homeworks.store', $student) }}" method="post">
             @csrf
             <x-card.card>
-                <x-card.header-nav :title="$title" :url="route('students.show', $student)">
+                <x-card.header-nav :title="$title" :url="url()->previous()">
                     <x-slot:text>
                         Назад
                     </x-slot:text>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson-time.form/>
+                    <x-homework.form/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">

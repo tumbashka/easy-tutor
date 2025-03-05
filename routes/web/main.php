@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FreeTimeController;
+use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonTimeController;
 use App\Http\Controllers\StudentController;
@@ -40,7 +41,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
     Route::resource('students', StudentController::class);
     Route::resource('students.lesson-times', LessonTimeController::class)->except(['index', 'show']);
-
+    Route::resource('students.homeworks', HomeworkController::class)->except('index', 'show');
     Route::prefix('/free-time')->name('free-time.')->group(function () {
         Route::get('/', [FreeTimeController::class, 'index'])->name('index');
         Route::get('/create', [FreeTimeController::class, 'create'])->name('create');

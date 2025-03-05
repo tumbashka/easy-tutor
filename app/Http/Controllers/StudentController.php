@@ -67,7 +67,10 @@ class StudentController extends Controller
         $lesson_times = $student->lesson_times->sortBy(function ($lesson_time){
             return [$lesson_time->week_day, $lesson_time->start];
         });
-        return view('student.show', compact('student', 'lesson_times'));
+
+        $reminder = $student->telegram_reminder;
+        $homeworks = $student->homework;
+        return view('student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));
     }
 
     public function edit(Student $student)

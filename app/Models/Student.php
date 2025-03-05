@@ -33,6 +33,11 @@ class Student extends Model
         return $this->HasMany(Homework::class);
     }
 
+    public function telegram_reminder(): HasOne
+    {
+        return $this->hasOne(TelegramReminder::class);
+    }
+
     protected $fillable = [
         'user_id',
         'name',

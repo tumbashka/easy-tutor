@@ -185,6 +185,10 @@ return [
         'type' => 'Вид',
         'deadline' => 'Дедлайн',
         'categories' => 'Категории',
+
+        'homework_reminder_time' => 'Время',
+        'before_lesson_minutes' => 'Время до начала урока',
+        'is_enabled' => 'Переключатель',
     ],
 
 ];
