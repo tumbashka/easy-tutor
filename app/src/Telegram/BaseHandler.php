@@ -92,6 +92,14 @@ abstract class BaseHandler
                 [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu'],],
                 [['text' => '❌ Закрыть ❌', 'callback_data' => 'close'],],
             ];
+
+            Telegram::sendMessage([
+                'chat_id' => $this->chat->id,
+                'text' => 'Ученик для группы не назначен',
+                'parse_mode' => 'Markdown',
+                'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+            ]);
+            return;
         }
 
         if ($telegram_reminder->is_enabled) {

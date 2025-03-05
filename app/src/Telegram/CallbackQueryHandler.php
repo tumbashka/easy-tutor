@@ -129,6 +129,10 @@ class CallbackQueryHandler extends BaseHandler
             return;
         }
         $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
+        if(!$telegram_reminder){
+            $this->send_message('Ошибка, ученик не подключен к этой группе.');
+            return;
+        }
         $telegram_reminder->is_enabled = false;
         $telegram_reminder->update();
         $this->telegram->deleteMessage([

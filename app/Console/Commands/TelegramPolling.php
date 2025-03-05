@@ -40,6 +40,7 @@ class TelegramPolling extends Command
                 sleep(1);
             } catch (\Exception $e) {
                 $this->error('Error: ' . $e->getMessage());
+                dd($e);
                 sleep(5);
             }
         }
