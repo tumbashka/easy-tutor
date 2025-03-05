@@ -55,17 +55,25 @@ abstract class BaseHandler
             'parse_mode' => 'Markdown',
         ]);
     }
+
     protected function send_confirmed_user_error(): void
     {
         $this->send_message('Данная команда разрешена только для подтверждённого аккаунта преподавателя');
     }
+
     protected function send_private_error(): void
     {
         $this->send_message('Данная команда разрешена только в личной переписке с ботом');
     }
+
     protected function send_group_error(): void
     {
         $this->send_message('Данная команда разрешена только в групповом чате');
+    }
+    protected function send_student_dont_connect_error(): void
+    {
+        $this->send_message('Ошибка, ученик не подключен к этой группе.');
+
     }
 
     protected function sendGroupSetting(): void
@@ -149,6 +157,43 @@ abstract class BaseHandler
             'text' => 'Выберите ученика для группы:',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard])
         ]);
+    }
+
+    protected function sendHomeworkMenu(): void
+    {
+        if (!$this->is_confirmed_user()) {
+            $this->send_confirmed_user_error();
+            return;
+        }
+        if (!$this->is_group()) {
+            $this->send_group_error();
+            return;
+        }
+
+        $keyboard[] = [['text' => 'Добавить задание ➕', 'callback_data' => 'add_homework']];
+        $keyboard[] = [['text' => 'Просмотреть задания 👀', 'callback_data' => 'get_homework']];
+        $keyboard[] = [['text' => 'Отметить всё как выполненное ✅', 'callback_data' => 'complete_homework']];
+        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
+        Telegram::sendMessage([
+            'chat_id' => $this->chat->id,
+            'text' => 'Домашнее задание:',
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard])
+        ]);
+
+    }
+
+    protected function getTelegramReminder()
+    {
+        return TelegramReminder::firstWhere('chat_id', $this->chat->id);
+    }
+
+    protected function getStudent()
+    {
+        $reminder = $this->getTelegramReminder();
+        if($reminder){
+            return $reminder->student;
+        }
+        return null;
     }
 
 }

@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 
 use App\src\Telegram\CallbackQueryHandler;
-use App\src\Telegram\CommandHandler;
+use App\src\Telegram\MessageHandler;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -28,13 +28,11 @@ class ProcessTelegramUpdate implements ShouldQueue
 
         if ($this->update->objectType() === "message") {
             $message = $this->update->message;
-
-            $commandHandler = new CommandHandler($telegram, $message);
+            $commandHandler = new MessageHandler($telegram, $message);
             $commandHandler->process();
         }
         if ($this->update->objectType() === "callback_query") {
             $callbackQuery = $this->update->callbackQuery;
-            dump($callbackQuery);
             $callbackQueryHandler = new CallbackQueryHandler($telegram, $callbackQuery);
             $callbackQueryHandler->process();
         }

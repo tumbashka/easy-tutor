@@ -6,6 +6,7 @@ use App\Events\Student\StudentDeleted;
 use App\Events\Student\StudentUpdated;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Models\Homework;
 use App\Models\LessonTime;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -64,12 +65,35 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        $lesson_times = $student->lesson_times->sortBy(function ($lesson_time){
+        $lesson_times = $student->lesson_times->sortBy(function ($lesson_time) {
             return [$lesson_time->week_day, $lesson_time->start];
         });
 
         $reminder = $student->telegram_reminder;
         $homeworks = $student->homework;
+        $homeworks = Homework::query()
+            ->where('student_id', $student->id)
+            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1
+                                        ELSE 0
+                                        END ASC, created_at DESC')
+            ->paginate(4);
+
+
+//        $tasks = Task::query()
+//            ->with('task_categories')
+//            ->where('user_id', $user->id)
+//            ->whereHas('task_categories', function ($query) use ($category_name) {
+//                $query->where('name', $category_name);
+//            })
+//            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1
+//                                        ELSE 0
+//                                        END ASC,
+//                                    CASE
+//                                        WHEN deadline IS NULL THEN 1
+//                                        ELSE 0
+//                                    END ASC,
+//                                    deadline ASC, created_at DESC')
+//            ->paginate()->appends(compact('task_category'));
         return view('student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));
     }
 
