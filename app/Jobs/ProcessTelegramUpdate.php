@@ -17,15 +17,13 @@ class ProcessTelegramUpdate implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $queue = 'telegram';
     public function __construct(private Update $update)
     {
     }
 
     public function handle(Api $telegram): void
     {
-//        $test = $this->update->message->;
-//        dd($test);
-
         if ($this->update->objectType() === "message") {
             $message = $this->update->message;
             $commandHandler = new MessageHandler($telegram, $message);
@@ -36,6 +34,5 @@ class ProcessTelegramUpdate implements ShouldQueue
             $callbackQueryHandler = new CallbackQueryHandler($telegram, $callbackQuery);
             $callbackQueryHandler->process();
         }
-
     }
 }

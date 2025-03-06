@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SendEventReminder;
+use App\Jobs\SendTelegramReminder;
 use Illuminate\Console\Command;
 
 class CheckReminders extends Command
@@ -13,6 +13,6 @@ class CheckReminders extends Command
     public function handle()
     {
         $this->info('Checking reminders...');
-//        SendEventReminder::dispatch();
+        SendTelegramReminder::dispatch();
     }
 }

@@ -70,10 +70,16 @@ abstract class BaseHandler
     {
         $this->send_message('Данная команда разрешена только в групповом чате');
     }
+
     protected function send_student_dont_connect_error(): void
     {
         $this->send_message('Ошибка, ученик не подключен к этой группе.');
 
+    }
+
+    protected function send_start_token_error(): void
+    {
+        $this->send_message('Для привязки к аккаунту, отправьте мне токен из настроек профиля в формате `/start <token>`');
     }
 
     protected function sendGroupSetting(): void
@@ -137,6 +143,7 @@ abstract class BaseHandler
     {
         if (!$this->is_confirmed_user()) {
             $this->send_confirmed_user_error();
+            $this->send_start_token_error();
             return;
         }
         if (!$this->is_group()) {
@@ -163,6 +170,7 @@ abstract class BaseHandler
     {
         if (!$this->is_confirmed_user()) {
             $this->send_confirmed_user_error();
+            $this->send_start_token_error();
             return;
         }
         if (!$this->is_group()) {
@@ -190,7 +198,7 @@ abstract class BaseHandler
     protected function getStudent()
     {
         $reminder = $this->getTelegramReminder();
-        if($reminder){
+        if ($reminder) {
             return $reminder->student;
         }
         return null;

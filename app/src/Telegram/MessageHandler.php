@@ -57,13 +57,12 @@ class MessageHandler extends BaseHandler
 
     private function handleStart(): void
     {
-        echo 'handleStart';
         if (!$this->is_private()) {
             $this->send_private_error();
             return;
         }
         if (!$this->param) {
-            $this->send_message('Для привязки к аккаунту, отправьте токен в формате `/start <token>`');
+            $this->send_start_token_error();
             return;
         }
 
@@ -82,6 +81,7 @@ class MessageHandler extends BaseHandler
     {
         if (!$this->is_confirmed_user()) {
             $this->send_confirmed_user_error();
+            $this->send_start_token_error();
             return;
         }
         if ($this->is_group()) {
@@ -96,16 +96,18 @@ class MessageHandler extends BaseHandler
     {
         if (!$this->is_confirmed_user()) {
             $this->send_confirmed_user_error();
-            return;
-        }
-        if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->send_start_token_error();
             return;
         }
         if (!$this->is_group()) {
             $this->send_group_error();
             return;
         }
+        if (!$this->getTelegramReminder()) {
+            $this->send_student_dont_connect_error();
+            return;
+        }
+
 
         $this->sendHomeworkMenu();
 

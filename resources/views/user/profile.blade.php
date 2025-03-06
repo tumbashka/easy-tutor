@@ -23,12 +23,22 @@
                 <x-card.card>
                     <x-card.header :title="'Привязка Telegram'"/>
                     <x-card.body>
-                        @if($user->telegram_chat_id)
-                            <h6>Telegram аккаунт:{{ $user->telegram_username }} успешно привязан.</h6>
-                            <p>Для смены телеграмм аккаунта, отправьте команду, располагающуюся ниже, <a href="{{ $telegram_bot_url }}">боту</a>, либо перейдите по ссылке.</p>
+                        @if($user->telegram_id)
+                            <h6>Telegram аккаунт: {{ $user->telegram_username }} успешно привязан.</h6>
+                            <p>Для смены телеграмм аккаунта, отправьте команду, <b>
+                                    <a class="link-underline link-underline-opacity-0 link-opacity-75-hover link-underline-opacity-75-hover"
+                                       href="{{ $telegram_bot_url }}">
+                                        боту
+                                    </a>
+                                </b>, либо перейдите по ссылке.</p>
                         @else
                             <h6>Telegram аккаунт не привязан к профилю.</h6>
-                            <p>Для привязки телеграмм аккаунта, отправьте команду, располагающуюся ниже, <a href="{{ $telegram_bot_url }}">боту</a>, либо перейдите по ссылке.</p>
+                            <p>Для привязки телеграмм аккаунта, отправьте команду, <b>
+                                    <a class="link-underline link-underline-opacity-0 link-opacity-75-hover link-underline-opacity-75-hover"
+                                       href="{{ $telegram_bot_url }}">
+                                        боту
+                                    </a>
+                                </b>, либо перейдите по ссылке.</p>
                         @endif
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" id="encrypted_url"
