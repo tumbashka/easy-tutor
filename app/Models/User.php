@@ -41,11 +41,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
-//    protected $dispatchesEvents = [
-//        'saved' => UserSaved::class,
-//        'deleted' => UserDeleted::class,
-//    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *

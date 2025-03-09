@@ -4,7 +4,9 @@ namespace App\Listeners;
 
 use App\Events\Lesson\LessonAdded;
 use App\Events\Lesson\LessonUpdated;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ClearUserDateLessonsCache
 {
@@ -19,10 +21,16 @@ class ClearUserDateLessonsCache
     /**
      * Handle the event.
      */
-    public function handle(LessonAdded|LessonUpdated $event): void
+    public function handle(Model $model): void
     {
-        $lesson = $event->lesson;
-        $user = $event->user;
-        $res = Cache::tags("lessons_{$user->id}")->forget("lessons_{$user->id}_{$lesson->date}");
+        Log::info('Clear User Date Lesson Cache');
+        if ($model instanceof \App\Models\Lesson) {
+            $lesson = $model;
+        } else {
+            return;
+        }
+
+        Log::info("очистка кэша занятий на {$lesson->date} у {$lesson->user->email}");
+        Cache::tags("lessons_{$lesson->user->id}")->forget("lessons_{$lesson->user->id}_{$lesson->date}");
     }
 }

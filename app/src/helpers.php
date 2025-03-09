@@ -47,10 +47,10 @@ if (!function_exists('getWeekDays')) {
     function getWeekDays($weekOffset = 0): array // получение массива дней недели
     {
         $startDate = now();
-        $currentWeekStart = $startDate->addWeeks($weekOffset)->startOfWeek()->addHours(23)->addMinutes(59);
+        $currentWeekDay = $startDate->addWeeks($weekOffset)->startOfWeek()->endOfDay();
         $weekDays = [];
         for ($i = 0; $i <= 6; $i++) {
-            $weekDays[] = $currentWeekStart->copy()->addDays($i);
+            $weekDays[] = $currentWeekDay->copy()->addDays($i);
         }
         return $weekDays;
     }

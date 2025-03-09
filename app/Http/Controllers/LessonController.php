@@ -75,7 +75,6 @@ class LessonController extends Controller
         ]);
 
         if ($lesson) {
-            LessonAdded::dispatch($lesson);
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -105,7 +104,6 @@ class LessonController extends Controller
         $lesson->note = $request->note;
 
         if ($lesson->update()) {
-            LessonUpdated::dispatch($lesson);
             session(['success' => 'Занятие успешно сохранено!']);
         } else {
             session(['error' => 'Ошибка изменения занятия!']);
@@ -120,7 +118,6 @@ class LessonController extends Controller
         $lesson = Lesson::find($lesson);
         $lesson->is_canceled = !$lesson->is_canceled;
         $lesson->save();
-        LessonUpdated::dispatch($lesson);
         return redirect()->back();
     }
 }

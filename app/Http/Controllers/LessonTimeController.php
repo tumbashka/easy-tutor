@@ -29,7 +29,6 @@ class LessonTimeController extends Controller
         ]);
 
         if ($lesson_time) {
-            LessonTimeAdded::dispatch($lesson_time);
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);
@@ -54,7 +53,6 @@ class LessonTimeController extends Controller
         $lesson_time->end = $request->end;
 
         if ($lesson_time->save()) {
-            LessonTimeUpdated::dispatch($lesson_time);
             session(['success' => 'Обновление успешно!']);
         } else {
             session(['error' => 'Ошибка обновления!']);
@@ -95,7 +93,6 @@ class LessonTimeController extends Controller
         ]);
 
         if ($lesson_time->delete()) {
-            LessonTimeDeleted::dispatch($lesson_time);
             session(['success' => 'Удаление успешно!']);
         } else {
             session(['error' => 'Ошибка удаления!']);

@@ -33,17 +33,16 @@ class Schedule
 
     public function getDateLessons(Carbon $date): \Illuminate\Database\Eloquent\Collection
     {
-        $weekDayId = getWeekDayIndex($date);
-
         $lessonsOnDate = $this->lessonRepository->getLessonsOnDate($date);
 
         if ($this->shouldGenerateLessons($date)) {
+            $weekDayId = getWeekDayIndex($date);
             $lessonTimes = $this->lessonRepository->getWeekDayLessonTimes($weekDayId);
 
             $existingLessonTimeIds = $lessonsOnDate->pluck('lesson_time_id');
 
             foreach ($lessonTimes as $lessonTime) {
-                if (!$existingLessonTimeIds->contains($lessonTime->id)) {
+                if (!$existingLessonTimeIds->contains($lessonTime->id) && $this->createdBefore($lessonTime, $date)) {
 
                     $lessonData = $this->lessonRepository->generateLessonData($date, $lessonTime);
 
@@ -59,6 +58,11 @@ class Schedule
     private function shouldGenerateLessons(Carbon $date): bool
     {
         return $date->isFuture() || $this->isAfterStartDate($date);
+    }
+
+    private function createdBefore(LessonTime $lessonTime, Carbon $date): bool
+    {
+        return $lessonTime->created_at->lte($date);
     }
 
     private function isAfterStartDate(Carbon $date): bool

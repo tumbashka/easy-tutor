@@ -110,7 +110,6 @@ class StudentController extends Controller
         $student->note = $request->note;
 
         if ($student->save()) {
-            StudentUpdated::dispatch($student);
             session(['success' => 'Ученик успешно обновлён!']);
         } else {
             session(['error' => 'Ошибка обновления ученика!']);
@@ -133,7 +132,6 @@ class StudentController extends Controller
             ->delete();
 
         if ($student->delete()) {
-            StudentDeleted::dispatch($student);
             session(['success' => 'Ученик успешно удалён!']);
         } else {
             session(['error' => 'Ошибка удаления ученика!']);

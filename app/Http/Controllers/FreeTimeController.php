@@ -26,7 +26,6 @@ class FreeTimeController extends Controller
         $week_days = getWeekDays();
 
         $user = auth()->user();
-
         $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
 
         return view('free-time.index', compact('week_days', 'all_lesson_slots_on_days', 'encrypted_url'));
@@ -54,7 +53,6 @@ class FreeTimeController extends Controller
             'user_id' => auth()->user()->id,
         ]);
         if ($free_time) {
-            FreeTimeAdded::dispatch($free_time);
             session(['success' => 'Окно успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления окна!']);
@@ -78,7 +76,6 @@ class FreeTimeController extends Controller
         $freeTime->note = $request->input('note');
 
         if ($freeTime->save()) {
-            FreeTimeUpdated::dispatch($freeTime);
             session(['success' => 'Окно успешно обновлено!']);
         } else {
             session(['error' => 'Ошибка обновления окна!']);
@@ -91,7 +88,6 @@ class FreeTimeController extends Controller
     {
         if (auth()->user()->can('delete', $freeTime)) {
             if ($freeTime->delete()) {
-                FreeTimeDeleted::dispatch($freeTime);
                 session(['success' => 'Окно успешно удалено!']);
             } else {
                 session(['error' => 'Ошибка удаления!']);
@@ -123,7 +119,6 @@ class FreeTimeController extends Controller
         ]);
 
         if ($lesson_time) {
-            LessonTimeAdded::dispatch($lesson_time);
             session(['success' => 'Занятие успешно добавлено!']);
         } else {
             session(['error' => 'Ошибка добавления занятия!']);

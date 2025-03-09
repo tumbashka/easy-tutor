@@ -25,11 +25,6 @@ class LessonTime extends Model
         return $this->hasMany(Lesson::class);
     }
 
-//    protected $dispatchesEvents = [
-//        'created' => LessonTimeAdded::class,
-//        'deleted' => UserDeleted::class,
-//    ];
-
     protected $fillable = [
         'student_id',
         'week_day',
