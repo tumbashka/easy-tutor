@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\LessonTime\LessonTimeAdded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,11 @@ class LessonTime extends Model
     {
         return $this->hasMany(Lesson::class);
     }
+
+//    protected $dispatchesEvents = [
+//        'created' => LessonTimeAdded::class,
+//        'deleted' => UserDeleted::class,
+//    ];
 
     protected $fillable = [
         'student_id',

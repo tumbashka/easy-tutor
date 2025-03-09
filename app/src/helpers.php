@@ -56,6 +56,19 @@ if (!function_exists('getWeekDays')) {
     }
 }
 
+if (!function_exists('getWeekDayIndex')) {
+    function getWeekDayIndex(Carbon $date): int // получение индекса дня недели 0-ПН ... 6-ВСК
+    {
+        $index = $date->weekday();
+        $index -= 1;
+        if ($index < 0) {
+            $index = 6;
+        }
+
+        return $index;
+    }
+}
+
 if (!function_exists('getWeekBorders')) { // получение строки вида: "{дата понедельника} - {дата воскресенья}"
     function getWeekBorders($weekOffset = 0): string
     {
@@ -98,11 +111,11 @@ if (!function_exists('getWeekOffset')) { // вычисление разницы 
         $startOfCurrentWeek = $now->copy()->startOfWeek();
         $startOfInputWeek = $day->copy()->startOfWeek();
 
-        return $startOfCurrentWeek->diffInWeeks($startOfInputWeek, false);
+        return $startOfCurrentWeek->diffInWeeks($startOfInputWeek);
     }
 }
 
-if (!function_exists('getLessonPrice')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getLessonPrice')) { // Вычисление стоимости занятия
     function getLessonPrice($start, $end, int $price_on_hour): int
     {
         $start = new Carbon($start);
@@ -115,7 +128,7 @@ if (!function_exists('getLessonPrice')) { // вычисление разницы
     }
 }
 
-if (!function_exists('getRandomRGB')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getRandomRGB')) { // Получение случайного RBG цвета
     function getRandomRGB($count = 1, $minColor = 70, $maxColor = 255): array|string
     {
         if ($count === 1) {
@@ -140,7 +153,7 @@ if (!function_exists('getRandomRGB')) { // вычисление разницы �
 }
 
 
-if (!function_exists('getHiFormatTime')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getHiFormatTime')) { // Получение строки времени в формате H:i
     function getHiFormatTime($time): string
     {
         $carbon = new Carbon($time);
@@ -148,7 +161,7 @@ if (!function_exists('getHiFormatTime')) { // вычисление разниц�
     }
 }
 
-if (!function_exists('getLessonType')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getLessonType')) { // Получение названия для типа занятия
     function getLessonType($type): string
     {
         return match ($type) {
@@ -160,7 +173,7 @@ if (!function_exists('getLessonType')) { // вычисление разницы 
     }
 }
 
-if (!function_exists('getLessonStatus')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getLessonStatus')) { // Получение строки статуса занятия
     function getLessonStatus($status): string
     {
         return match ($status) {
@@ -171,7 +184,7 @@ if (!function_exists('getLessonStatus')) { // вычисление разниц�
     }
 }
 
-if (!function_exists('getRGBFromHex')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getRGBFromHex')) { // получение массива цветов по каналам(R,G,B) из HEX цвета
     function getRGBFromHex($hex_color): array
     {
         return sscanf($hex_color, "#%02x%02x%02x");
@@ -179,15 +192,15 @@ if (!function_exists('getRGBFromHex')) { // вычисление разницы 
 }
 
 
-if (!function_exists('getTextContrastColor')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getTextContrastColor')) { // Вычисление строки стиля для текста, контрастного на фоне
     function getTextContrastColor($hex_color): string
     {
         $rgb = getRGBFromHex($hex_color);
         $brightness = ($rgb[0] * 299 + $rgb[1] * 587 + $rgb[2] * 114) / 1000;
 
-        if($brightness < 170){
+        if ($brightness < 170) {
             return 'text-light';
-        }else{
+        } else {
             return 'text-dark';
         }
     }

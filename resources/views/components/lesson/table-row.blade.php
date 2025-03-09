@@ -9,7 +9,12 @@
         </a>
     </td>
 
-    <td class="text-start">{{ $lesson->student_name }}</td>
+    <td class="text-start">
+        <a href="{{ $lesson->student_id != null ? route('students.show', ['student' => $lesson->student_id]) : '#' }}"
+        class="link-dark link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover ">
+            {{ $lesson->student_name }}
+        </a>
+    </td>
     <td style="width: 35px;">
         @if($lesson->note)
             <a href="{{ route('schedule.lesson.edit', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}">

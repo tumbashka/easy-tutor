@@ -14,8 +14,6 @@ class SendTelegramReminder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $queue = 'reminder';
-
     public function handle(Api $telegram)
     {
         $reminders = Reminder::where('is_notified', false)->get();

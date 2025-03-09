@@ -4,7 +4,9 @@ namespace App\src\Telegram;
 
 
 use App\Models\TelegramReminder;
+use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\User;
 use Telegram\Bot\Api;
 use Telegram\Bot\Objects\Chat;
@@ -12,9 +14,10 @@ use Telegram\Bot\Objects\Chat;
 abstract class BaseHandler
 {
     public function __construct(
-        protected Api  $telegram,
-        protected Chat $chat,
-        protected User $from,
+        protected Api     $telegram,
+        protected Chat    $chat,
+        protected User    $from,
+        protected Message $message,
     )
     {
 
@@ -22,7 +25,7 @@ abstract class BaseHandler
 
     abstract function process();
 
-    protected function is_confirmed_user(): bool
+    protected function isConfirmedUser(): bool
     {
         $user = \App\Models\User::getUserByTelegramID($this->from->id);
         if ($user) {
@@ -31,7 +34,7 @@ abstract class BaseHandler
         return false;
     }
 
-    protected function is_private(): bool
+    protected function isPrivate(): bool
     {
         if ($this->chat->type == 'private') {
             return true;
@@ -39,7 +42,7 @@ abstract class BaseHandler
         return false;
     }
 
-    protected function is_group(): bool
+    protected function isGroup(): bool
     {
         if ($this->chat->type == 'group') {
             return true;
@@ -47,7 +50,7 @@ abstract class BaseHandler
         return false;
     }
 
-    protected function send_message($text): void
+    protected function sendTextMessage($text): void
     {
         $this->telegram->sendMessage([
             'chat_id' => $this->chat->id,
@@ -56,30 +59,38 @@ abstract class BaseHandler
         ]);
     }
 
-    protected function send_confirmed_user_error(): void
+    protected function deleteMessage(): void
     {
-        $this->send_message('Данная команда разрешена только для подтверждённого аккаунта преподавателя');
+        $this->telegram->deleteMessage([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
+        ]);
     }
 
-    protected function send_private_error(): void
+    protected function sendConfirmedUserError(): void
     {
-        $this->send_message('Данная команда разрешена только в личной переписке с ботом');
+        $this->sendTextMessage('Данная команда разрешена только для подтверждённого аккаунта преподавателя');
     }
 
-    protected function send_group_error(): void
+    protected function sendPrivateError(): void
     {
-        $this->send_message('Данная команда разрешена только в групповом чате');
+        $this->sendTextMessage('Данная команда разрешена только в личной переписке с ботом');
     }
 
-    protected function send_student_dont_connect_error(): void
+    protected function sendGroupError(): void
     {
-        $this->send_message('Ошибка, ученик не подключен к этой группе.');
+        $this->sendTextMessage('Данная команда разрешена только в групповом чате');
+    }
+
+    protected function sendStudentDontConnectError(): void
+    {
+        $this->sendTextMessage('Ошибка, ученик не подключен к этой группе.');
 
     }
 
-    protected function send_start_token_error(): void
+    protected function sendStartTokenError(): void
     {
-        $this->send_message('Для привязки к аккаунту, отправьте мне токен из настроек профиля в формате `/start <token>`');
+        $this->sendTextMessage('Для привязки к аккаунту, отправьте мне токен из настроек профиля в формате `/start <token>`');
     }
 
     protected function sendGroupSetting(): void
@@ -141,13 +152,13 @@ abstract class BaseHandler
 
     protected function sendKeyboardSetStudent(): void
     {
-        if (!$this->is_confirmed_user()) {
-            $this->send_confirmed_user_error();
-            $this->send_start_token_error();
+        if (!$this->isConfirmedUser()) {
+            $this->sendConfirmedUserError();
+            $this->sendStartTokenError();
             return;
         }
-        if (!$this->is_group()) {
-            $this->send_group_error();
+        if (!$this->isGroup()) {
+            $this->sendGroupError();
             return;
         }
 
@@ -168,19 +179,19 @@ abstract class BaseHandler
 
     protected function sendHomeworkMenu(): void
     {
-        if (!$this->is_confirmed_user()) {
-            $this->send_confirmed_user_error();
-            $this->send_start_token_error();
+        if (!$this->isConfirmedUser()) {
+            $this->sendConfirmedUserError();
+            $this->sendStartTokenError();
             return;
         }
-        if (!$this->is_group()) {
-            $this->send_group_error();
+        if (!$this->isGroup()) {
+            $this->sendGroupError();
             return;
         }
 
         $keyboard[] = [['text' => 'Добавить задание ➕', 'callback_data' => 'add_homework']];
-        $keyboard[] = [['text' => 'Просмотреть задания 👀', 'callback_data' => 'get_homework']];
-        $keyboard[] = [['text' => 'Отметить всё как выполненное ✅', 'callback_data' => 'complete_homework']];
+        $keyboard[] = [['text' => 'Просмотреть задания 👀', 'callback_data' => 'get_list_homework']];
+        $keyboard[] = [['text' => 'Отметить выполнение ✅', 'callback_data' => 'get_complete_homework_menu']];
         $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
         Telegram::sendMessage([
             'chat_id' => $this->chat->id,
@@ -204,4 +215,23 @@ abstract class BaseHandler
         return null;
     }
 
+    protected function putToCacheData(string $key, mixed $data): void
+    {
+        Cache::put("telegram_data_{$this->chat->id}_{$key}", $data, now()->addMinutes());
+    }
+
+    protected function getCachedData(string $key)
+    {
+        return Cache::get("telegram_data_{$this->chat->id}_{$key}");
+    }
+
+    protected function pullCachedData(string $key)
+    {
+        return Cache::pull("telegram_data_{$this->chat->id}_{$key}");
+    }
+
+    protected function forgetCachedData(string $key): void
+    {
+        Cache::forget("telegram_data_{$this->chat->id}_{$key}");
+    }
 }

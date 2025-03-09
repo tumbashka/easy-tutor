@@ -8,6 +8,7 @@ use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\Student;
+use App\Repositories\LessonRepository;
 use App\src\Schedule\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -16,7 +17,7 @@ class LessonController extends Controller
 {
     public function index(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'week' => ['nullable', 'integer'],
         ]);
         $weekOffset = (int)$request->week;
@@ -24,8 +25,9 @@ class LessonController extends Controller
         $previous = getPreviousWeeks($weekOffset, 10);
         $next = getNextWeeks($weekOffset, 10);
 
-        $schedule = new Schedule($weekOffset);
-        $lessonsOnDays = $schedule->getWeekLessonsOnDays();
+        $user = auth()->user();
+        $schedule = new Schedule($user);
+        $lessonsOnDays = $schedule->getWeekLessonsOnDays($weekDays);
 
         return view('schedule.index', compact('weekOffset', 'weekDays', 'previous', 'next', 'lessonsOnDays'));
     }

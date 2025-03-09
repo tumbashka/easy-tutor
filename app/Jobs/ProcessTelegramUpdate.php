@@ -17,7 +17,6 @@ class ProcessTelegramUpdate implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $queue = 'telegram';
     public function __construct(private Update $update)
     {
     }

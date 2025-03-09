@@ -10,14 +10,13 @@ use Telegram\Bot\Objects\Message;
 
 class MessageHandler extends BaseHandler
 {
-    private Message $message;
     private string|null $text;
     private string|null $command;
     private string|null $param;
 
     public function __construct(Api $telegram, Message $message)
     {
-        parent::__construct($telegram, $message->chat, $message->from);
+        parent::__construct($telegram, $message->chat, $message->from, $message);
 
         $this->message = $message;
         $this->text = $message->text;
@@ -57,12 +56,12 @@ class MessageHandler extends BaseHandler
 
     private function handleStart(): void
     {
-        if (!$this->is_private()) {
-            $this->send_private_error();
+        if (!$this->isPrivate()) {
+            $this->sendPrivateError();
             return;
         }
         if (!$this->param) {
-            $this->send_start_token_error();
+            $this->sendStartTokenError();
             return;
         }
 
@@ -70,41 +69,41 @@ class MessageHandler extends BaseHandler
             $user->telegram_id = $this->from->id;
             $user->telegram_username = $this->from->username;
             $user->update();
-            $this->send_message("Телеграмм аккаунт: ***{$user->telegram_username}*** успешно привязан к аккаунту: ***{$user->name}***");
+            $this->sendTextMessage("Телеграмм аккаунт: ***{$user->telegram_username}*** успешно привязан к аккаунту: ***{$user->name}***");
         } else {
-            $this->send_message("Токен не действителен");
+            $this->sendTextMessage("Токен не действителен");
         }
     }
 
 
     private function handleSettings(): void
     {
-        if (!$this->is_confirmed_user()) {
-            $this->send_confirmed_user_error();
-            $this->send_start_token_error();
+        if (!$this->isConfirmedUser()) {
+            $this->sendConfirmedUserError();
+            $this->sendStartTokenError();
             return;
         }
-        if ($this->is_group()) {
+        if ($this->isGroup()) {
             $this->sendGroupSetting();
             return;
         }
-        $this->send_group_error();
+        $this->sendGroupError();
 
     }
 
     private function handleHomework(): void
     {
-        if (!$this->is_confirmed_user()) {
-            $this->send_confirmed_user_error();
-            $this->send_start_token_error();
+        if (!$this->isConfirmedUser()) {
+            $this->sendConfirmedUserError();
+            $this->sendStartTokenError();
             return;
         }
-        if (!$this->is_group()) {
-            $this->send_group_error();
+        if (!$this->isGroup()) {
+            $this->sendGroupError();
             return;
         }
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
 
@@ -115,16 +114,16 @@ class MessageHandler extends BaseHandler
 
     private function createHomework(): void
     {
-        if (!$this->is_confirmed_user()) {
-            $this->send_confirmed_user_error();
+        if (!$this->isConfirmedUser()) {
+            $this->sendConfirmedUserError();
             return;
         }
-        if (!$this->is_group()) {
-            $this->send_group_error();
+        if (!$this->isGroup()) {
+            $this->sendGroupError();
             return;
         }
         if (strlen($this->text) > 250) {
-            $this->send_message('Описание не должно превышать 250 символов');
+            $this->sendTextMessage('Описание не должно превышать 250 символов');
             $response = $this->telegram->sendMessage([
                 'chat_id' => $this->chat->id,
                 'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
@@ -140,7 +139,7 @@ class MessageHandler extends BaseHandler
             'student_id' => $student->id,
             'description' => $this->text,
         ]);
-        $this->send_message("Домашнее задание \"{$this->text}\" успешно добавлено!");
+        $this->sendTextMessage("Домашнее задание \"{$this->text}\" успешно добавлено!");
         $this->sendHomeworkMenu();
     }
 

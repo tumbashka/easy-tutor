@@ -25,7 +25,6 @@ class ClearUserAllLessonsCache
      */
     public function handle(LessonTimeDeleted|LessonTimeUpdated|LessonTimeAdded|StudentDeleted|StudentUpdated $event): void
     {
-        Log::debug('Слушатель очистка кэша занятий учеников');
         $user = $event->user;
         Cache::tags(["lessons_{$user->id}"])->flush();
     }

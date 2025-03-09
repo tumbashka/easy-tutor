@@ -35,7 +35,7 @@
                     </p>
                 @else
                     @foreach($lesson_times as $lesson_time)
-                        <x-student.lesson :$lesson_time />
+                        <x-student.lesson :$lesson_time/>
                     @endforeach
                 @endif
             </x-card.body>
@@ -47,28 +47,7 @@
             </x-card.footer>
         </x-card.card>
         <x-slot:second_col>
-            <livewire:homework-list :studentId="$student->id" />
-{{--            <x-card.card>--}}
-{{--                <x-card.header :title="'Домашнее задание'"/>--}}
-{{--                <x-card.body>--}}
-{{--                    @if(!$homeworks->count())--}}
-{{--                        <p class="text-center h5">--}}
-{{--                            Список пуст--}}
-{{--                        </p>--}}
-{{--                    @else--}}
-{{--                        @foreach($homeworks as $homework)--}}
-{{--                            <x-student.homework :$homework />--}}
-{{--                        @endforeach--}}
-{{--                    @endif--}}
-{{--                </x-card.body>--}}
-{{--                <x-card.footer>--}}
-{{--                    {{ $homeworks->links() }}--}}
-
-{{--                    <x-link-button class="mt-2" :href="route('students.homeworks.create', $student)">--}}
-{{--                        Добавить--}}
-{{--                    </x-link-button>--}}
-{{--                </x-card.footer>--}}
-{{--            </x-card.card>--}}
+            <livewire:homework-list :studentId="$student->id"/>
             <x-card.card>
                 <x-card.header :title="'Настройки напоминаний'"/>
                 @if($reminder)
@@ -78,7 +57,8 @@
                     <x-card.body>
                         <p>Для установки telegram уведомлений, добавьте бота <a
                                 class="link-underline link-underline-opacity-0"
-                                href="https://t.me/easy_tutor_helper_bot"><b>@easy_tutor_helper_bot</b></a> в группу с учеником и отправьте
+                                href="https://t.me/easy_tutor_helper_bot"><b>@easy_tutor_helper_bot</b></a> в группу с
+                            учеником и отправьте
                             команду <b>/set_student</b></p>
                     </x-card.body>
                     <x-card.footer/>

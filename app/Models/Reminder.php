@@ -9,6 +9,7 @@ class Reminder extends Model
     protected $fillable = [
         'chat_id',
         'text',
+        'key',
         'is_notified',
     ];
 
@@ -18,6 +19,7 @@ class Reminder extends Model
             'is_notified' => 'boolean',
             'chat_id' => 'integer',
             'text' => 'string',
+            'key' => 'string',
         ];
     }
 }

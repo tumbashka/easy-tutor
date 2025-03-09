@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         Student::factory(15)
             ->create(['user_id' => $user->id])
             ->each(function ($student) {
-                LessonTime::factory(fake()->numberBetween(1, 4))
+                LessonTime::factory(fake()->numberBetween(1, 3))
                     ->create(['student_id' => $student->id]);
             });
         $user = User::create([

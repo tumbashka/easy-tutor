@@ -6,6 +6,7 @@ use App\Models\Homework;
 use App\Models\Student;
 use App\Models\TelegramReminder;
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Api;
@@ -19,7 +20,7 @@ class CallbackQueryHandler extends BaseHandler
 
     public function __construct(Api $telegram, CallbackQuery $callbackQuery)
     {
-        parent::__construct($telegram, $callbackQuery->message->chat, $callbackQuery->from);
+        parent::__construct($telegram, $callbackQuery->message->chat, $callbackQuery->from, $callbackQuery->message);
 
         $this->callbackQuery = $callbackQuery;
 
@@ -40,14 +41,16 @@ class CallbackQueryHandler extends BaseHandler
         'change_homework_reminder_time' => 'handleHomeworkReminderTimeKeyboard',
         'set_homework_reminder_time' => 'handleSetHomeworkReminderTime',
         'add_homework' => 'handleAddHomework',
-        'get_homework' => 'handleGetHomework',
-        'complete_homework' => 'handleCompleteHomework',
+        'get_list_homework' => 'handleGetListHomework',
+        'get_complete_homework_menu' => 'handleCompleteHomeworkMenu',
+        'change_homework_status' => 'handleChangeHomeworkStatus',
+        'complete_all_homework' => 'handleAllCompleteHomework',
     ];
 
     public function process(): void
     {
-        if (!$this->is_confirmed_user()) {
-            $this->send_confirmed_user_error();
+        if (!$this->isConfirmedUser()) {
+            $this->sendConfirmedUserError();
             return;
         }
 
@@ -62,7 +65,7 @@ class CallbackQueryHandler extends BaseHandler
     private function handleUnknownCommand(): void
     {
         \Log::warning('Unknown command received', ['command' => $this->command]);
-        $this->send_message('Unknown command. Please try again.');
+        $this->sendTextMessage('Unknown command. Please try again.');
     }
 
     private function handleSetStudent(): void
@@ -77,7 +80,7 @@ class CallbackQueryHandler extends BaseHandler
             ->firstWhere('id', $this->param);
 
         if (!$student) {
-            $this->send_message('Ошибка, ученик не найден');
+            $this->sendTextMessage('Ошибка, ученик не найден');
             return;
         }
 
@@ -123,7 +126,7 @@ class CallbackQueryHandler extends BaseHandler
     {
         $telegram_reminder = $this->getTelegramReminder();
         if (!$telegram_reminder) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         $telegram_reminder->is_enabled = false;
@@ -160,7 +163,7 @@ class CallbackQueryHandler extends BaseHandler
     private function handleBeforeLessonMinutesKeyboard(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         $this->telegram->deleteMessage([
@@ -184,14 +187,14 @@ class CallbackQueryHandler extends BaseHandler
     private function handleSetBeforeLessonMinutes(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         if (!$this->param) {
             return;
         }
         if ($this->param <= 0 || $this->param > 1440) {
-            $this->send_message('Переданное значение выходит за границы');
+            $this->sendTextMessage('Переданное значение выходит за границы');
             return;
         }
 
@@ -209,7 +212,7 @@ class CallbackQueryHandler extends BaseHandler
     private function handleHomeworkReminderTimeKeyboard(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         $this->telegram->deleteMessage([
@@ -239,7 +242,7 @@ class CallbackQueryHandler extends BaseHandler
     private function handleSetHomeworkReminderTime(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         if (!$this->param) {
@@ -247,7 +250,7 @@ class CallbackQueryHandler extends BaseHandler
         }
         $time = Carbon::createFromTimeString($this->param);
         if ($time->lt('8:00') || $time->gt('22:00')) {
-            $this->send_message('Переданное значение выходит за границы');
+            $this->sendTextMessage('Переданное значение выходит за границы');
             return;
         }
 
@@ -264,7 +267,7 @@ class CallbackQueryHandler extends BaseHandler
     private function handleAddHomework(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         $chatId = $this->chat->id;
@@ -282,10 +285,10 @@ class CallbackQueryHandler extends BaseHandler
         ]);
     }
 
-    private function handleGetHomework()
+    private function handleGetListHomework(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         $page = (int)$this->param;
@@ -295,7 +298,7 @@ class CallbackQueryHandler extends BaseHandler
             ->paginate($perPage, ['*'], 'page', $page);
 
         $text = $this->getHomeworkText($homeworks);
-        $keyboard = $this->getPaginationKeyboard($homeworks);
+        $keyboard = $this->getPaginationKeyboard($homeworks, 'get_list_homework');
 
         $params = [
             'chat_id' => $this->chat->id,
@@ -326,16 +329,16 @@ class CallbackQueryHandler extends BaseHandler
         return $text;
     }
 
-    protected function getPaginationKeyboard($homeworks)
+    protected function getPaginationKeyboard(LengthAwarePaginator $paginator, $data_method): array
     {
         $keyboard = [];
-        if ($homeworks->hasPages()) {
+        if ($paginator->hasPages()) {
             $row = [];
-            if ($homeworks->currentPage() > 1) {
-                $row[] = ['text' => '◀ Назад', 'callback_data' => "get_homework " . ($homeworks->currentPage() - 1),];
+            if ($paginator->currentPage() > 1) {
+                $row[] = ['text' => '◀ Назад', 'callback_data' => "{$data_method} " . ($paginator->currentPage() - 1),];
             }
-            if ($homeworks->hasMorePages()) {
-                $row[] = ['text' => 'Вперёд ▶', 'callback_data' => "get_homework " . ($homeworks->currentPage() + 1),];
+            if ($paginator->hasMorePages()) {
+                $row[] = ['text' => 'Вперёд ▶', 'callback_data' => "{$data_method} " . ($paginator->currentPage() + 1),];
             }
             $keyboard[] = $row;
         }
@@ -343,20 +346,85 @@ class CallbackQueryHandler extends BaseHandler
         return $keyboard;
     }
 
-    protected function handleCompleteHomework()
+    protected function handleAllCompleteHomework(): void
     {
         if (!$this->getTelegramReminder()) {
-            $this->send_student_dont_connect_error();
+            $this->sendStudentDontConnectError();
             return;
         }
         $student = $this->getStudent();
         $homeworks = $student->homework()->where('completed_at', null)->update([
             'completed_at' => now(),
         ]);
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
-        $this->send_message('Все задания отмечены как выполненные');
+//        $this->telegram->deleteMessage([
+//            'chat_id' => $this->chat->id,
+//            'message_id' => $this->callbackQuery->message->messageId,
+//        ]);
+        $this->sendTextMessage('Все задания отмечены как выполненные');
+        $this->handleCompleteHomeworkMenu((int)$this->param);
     }
+
+    protected function handleCompleteHomeworkMenu(): void
+    {
+        if (!$this->getTelegramReminder()) {
+            $this->sendStudentDontConnectError();
+            return;
+        }
+        if($this->command === 'get_complete_homework_menu'){
+            $page = (int)$this->param;
+        }else{
+            $page = $this->pullCachedData('complete_homework_page');
+        }
+
+        $perPage = 4;
+        $homeworks = Homework::where('student_id', $this->getStudent()->id)
+            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1 ELSE 0 END ASC, created_at DESC')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $this->putToCacheData('complete_homework_page', $homeworks->currentPage());
+
+        if ($homeworks) {
+            $messageText = 'Нажмите на домашнее задание для смены его готовности.';
+        } else {
+            $messageText = 'Список домашних заданий пуст.';
+        }
+
+        $homeworkKeyboard = [];
+        foreach ($homeworks as $index => $homework) {
+            $status = $homework->completed_at ? '✅' : '❌';
+            $text = ($index + 1 + ($homeworks->firstItem() - 1)) . ". {$status} {$homework->description}";
+            $homeworkKeyboard[] = [['text' => $text, 'callback_data' => "change_homework_status {$homework->id}"]];
+        }
+
+        if ($homeworks) {
+            $homeworkKeyboard[] = [['text' => '✅Отметить все задания выполненными✅', 'callback_data' => "complete_all_homework {$page}"]];
+        }
+        $paginationKeyboard = $this->getPaginationKeyboard($homeworks, 'get_complete_homework_menu');
+
+        $keyboard = array_merge($homeworkKeyboard, $paginationKeyboard);
+
+        $params = [
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
+            'text' => $messageText,
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+        ];
+        $this->telegram->editMessageText($params);
+    }
+
+    protected function handleChangeHomeworkStatus(): void
+    {
+        $param = (int)$this->param;
+        $homework = Homework::firstWhere('id', $param);
+        if ($homework->completed_at) {
+            $homework->completed_at = null;
+        } else {
+            $homework->completed_at = now();
+        }
+        $homework->update();
+
+        $this->handleCompleteHomeworkMenu();
+    }
+
+
 }

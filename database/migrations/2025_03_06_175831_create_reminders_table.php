@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->bigInteger('chat_id');
             $table->text('text');
+            $table->string('key');
             $table->boolean('is_notified')->nullable();
         });
     }

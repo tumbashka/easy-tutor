@@ -9,6 +9,7 @@ class Handler
 {
     public function __invoke(Schedule $schedule): void
     {
-        $schedule->command('telegram:check-reminders')->everyMinute();
+        $schedule->command('reminders:create')->everyFiveMinutes();
+        $schedule->command('reminders:send')->everyMinute();
     }
 }
