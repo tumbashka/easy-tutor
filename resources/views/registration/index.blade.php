@@ -9,7 +9,8 @@
             <x-card.card>
                 <x-card.header :title="'Регистрация'"/>
                 <x-card.body>
-                    <div class="row justify-content-center p-sm-4">
+                    {{--                    justify-content-center--}}
+                    <div class="row  p-sm-4">
                         <x-form.input-float
                             :icon="'fas fa-user fa-lg me-3 fa-fw'"
                             :text="'Имя'"
@@ -29,6 +30,10 @@
                             :type="'password'"
                             :text="'Подтвердите пароль'"
                             :name="'password_confirmation'"/>
+                        <div class="d-flex justify-content-end">
+                            <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end"
+                               href="{{ route('login') }}">Уже зарегистрированы?</a>
+                        </div>
                     </div>
                 </x-card.body>
                 <x-card.footer>

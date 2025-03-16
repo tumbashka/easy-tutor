@@ -26,7 +26,12 @@
                             :text="'Запомнить меня'"
                             :name="'remember'"
                         />
-                        <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end" href="{{ route('password.request') }}">Забыли пароль?</a>
+                        <div class="d-flex justify-content-end">
+                            <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end" href="{{ route('password.request') }}">Забыли пароль?</a>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end" href="{{ route('register') }}">Ещё не зарегистрированы?</a>
+                        </div>
                     </div>
                 </x-card.body>
                 <x-card.footer>

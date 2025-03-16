@@ -2,6 +2,7 @@
     'user' => null,
 ])
 <div class="row g-0">
+    @dump($user)
     <div class="col-md-4 text-center align-content-center">
         @if($user)
             <x-user.avatar :avatar_url="$user->avatar_url"/>
@@ -76,7 +77,7 @@
                     <label class="form-label">Номер телефона</label>
                 </div>
             </div>
-            <x-form.input-error-alert :name="'telegram'"/>
+            <x-form.input-error-alert :name="'telegram_username'"/>
             <div class="d-flex flex-row align-items-center">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">@</span>
@@ -84,10 +85,15 @@
                            placeholder="Ник в Telegram"
                            aria-label="Username"
                            aria-describedby="basic-addon1"
-                           name="telegram"
-                           value="{{ old('telegram') ?? $user->telegram ?? '' }}">
+                           name="telegram_username"
+                           value="{{ old('telegram_username') ?? $user->telegram_username ?? '' }}">
                 </div>
             </div>
+            <x-form.input-float
+                :text="'Telegram id'"
+                :type="'number'"
+                :value="$user->telegram_id"
+                :name="'telegram_id'"/>
         </div>
     </div>
 </div>

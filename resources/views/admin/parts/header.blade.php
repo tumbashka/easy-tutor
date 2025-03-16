@@ -34,7 +34,12 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('user.index') }}">Профиль</a></li>
-                        <li><a class="dropdown-item" href="{{ route('logout') }}">Выйти</a></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Выйти</button>
+                            </form>
+                        </li>
                     </ul>
                 </li>
             </ul>

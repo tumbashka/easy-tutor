@@ -33,7 +33,7 @@
             <div class="row pt-1">
                 @if($user->telegram_username)
                     <div class="col-sm mb-3 mb-sm-0">
-                        <a style="color: #27a7e7" href="https://t.me/{{$user->telegram_username}}"
+                        <a style="color: #27a7e7" target="_blank" href="https://t.me/{{$user->telegram_username}}"
                            class="link-underline link-underline-opacity-0">
                             <i class="fa-brands fa-telegram fa-xl"></i>
                             {{ $user->telegram_username }}

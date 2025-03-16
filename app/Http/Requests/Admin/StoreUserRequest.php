@@ -34,7 +34,8 @@ class StoreUserRequest extends FormRequest
             'is_verify_email' => ['nullable', 'boolean'],
             'about' => ['nullable', 'string', 'max:16700000'],
             'phone' => ['nullable', 'string', 'max:20', (new Phone)->country('RU')->mobile()],
-            'telegram' => ['nullable', 'string', 'max:50'],
+            'telegram_username' => ['nullable', 'string', 'max:50'],
+            'telegram_id' => ['nullable', 'string', 'max:64'],
         ];
     }
 }

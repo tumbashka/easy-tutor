@@ -46,7 +46,8 @@ class UserController extends Controller
             'password' => bcrypt($request->input('password')),
             'about' => $request->input('about'),
             'phone' => $request->input('phone'),
-            'telegram' => $request->input('telegram'),
+            'telegram_username' => $request->input('telegram'),
+            'telegram_id' => $request->input('telegram_id'),
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -79,14 +80,14 @@ class UserController extends Controller
         if (auth()->user()->cant('update', $user)) {
             abort(403);
         }
-
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->is_admin = (bool)$request->input('is_admin');
         $user->is_active = (bool)$request->input('is_active');
         $user->about = $request->input('about');
         $user->phone = $request->input('phone');
-        $user->telegram = $request->input('telegram');
+        $user->telegram_username = $request->input('telegram_username');
+        $user->telegram_id = $request->input('telegram_id');
         $user->update();
 
         if ($request->hasFile('avatar')) {
