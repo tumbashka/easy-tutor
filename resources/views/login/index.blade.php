@@ -4,7 +4,7 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('login.auth') }}" method="post">
+        <form action="{{ route('login.store') }}" method="post">
             @csrf
             <x-card.card>
                 <x-card.header :title="'Вход'"/>
@@ -26,7 +26,7 @@
                             :text="'Запомнить меня'"
                             :name="'remember'"
                         />
-                        <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end" href="{{ route('password.forgot.show') }}">Забыли пароль?</a>
+                        <a class="link-underline link-underline-opacity-75-hover link-underline-opacity-0 text-end" href="{{ route('password.request') }}">Забыли пароль?</a>
                     </div>
                 </x-card.body>
                 <x-card.footer>

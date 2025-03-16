@@ -4,9 +4,9 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('password.store') }}" method="post">
+        <form action="{{ route('password.update') }}" method="post">
             @csrf
-            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+            <input type="hidden" name="token" value="{{ request()->route('token') }}">
             <x-card.card>
                 <x-card.header :title="'Сброс пароля'"/>
                 <x-card.body>

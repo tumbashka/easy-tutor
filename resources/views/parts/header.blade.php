@@ -14,7 +14,7 @@
                 @if (auth()->user()->hasVerifiedEmail())
                     <ul class="nav nav-underline me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-white {{ activeLink('schedule.*') }}"
+                            <a class="nav-link text-white {{ activeLink('schedule*') }}"
                                href="{{ route('home') }}">Главная</a>
                         </li>
                         <li class="nav-item">
@@ -35,13 +35,13 @@
             @guest
                 <ul class="nav nav-underline me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-white {{ activeLink('login.*') }}" href="{{ route('login') }}">
+                        <a class="nav-link text-white {{ activeLink('login*') }}" href="{{ route('login') }}">
                             Вход
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white {{ activeLink('registration*') }}"
-                           href="{{ route('registration') }}">
+                        <a class="nav-link text-white {{ activeLink('register*') }}"
+                           href="{{ route('register') }}">
                             Регистрация
                         </a>
                     </li>
@@ -99,7 +99,14 @@
                             @can('active-account')
                             <li><a class="dropdown-item" href="{{ route('user.index') }}">Профиль</a></li>
                             @endcan
-                            <li><a class="dropdown-item" href="{{ route('logout') }}">Выйти</a></li>
+
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Выйти</button>
+                                </form>
+{{--                                <a class="dropdown-item" href="{{ route('logout') }}">Выйти</a>--}}
+                            </li>
                         </ul>
                     </li>
                 </ul>

@@ -4,7 +4,7 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('registration.store') }}" method="post">
+        <form action="{{ route('register.store') }}" method="post">
             @csrf
             <x-card.card>
                 <x-card.header :title="'Регистрация'"/>

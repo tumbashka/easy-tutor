@@ -4,7 +4,7 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('password.send-email') }}" method="post">
+        <form action="{{ route('password.request') }}" method="post">
             @csrf
             <x-card.card>
                 <x-card.header :title="'Восстановление пароля'"/>
