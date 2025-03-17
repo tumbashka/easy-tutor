@@ -8,18 +8,22 @@
             {{ $lesson->start->format('H:i') }}-{{ $lesson->end->format('H:i') }}
         </a>
     </td>
-    <td class="text-start">{{ $lesson->student_name }}</td>
+    <td class="text-start">
+        {{ $lesson->student_name }}
+    </td>
     <td style="width: 35px;">
-        <a href="{{ route('schedule.lesson.edit', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}">
+        <a href="{{ route('schedule.lesson.edit', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}"
+           title="Редактировать">
             <i class="fa-solid link-info fa-pen-to-square fa-xl"></i>
         </a>
     </td>
     <td style="width: 35px;">
-        <a href="{{ route('schedule.lesson.change_status', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}">
+        <a href="{{ route('schedule.lesson.change_status', ['day' => $lesson->date, 'lesson' => $lesson->id]) }}"
+           title="Отмена">
             @if($lesson->is_canceled)
-                <i class="fa-solid fa-trash-arrow-up link-info fa-xl"></i>
+                <i class="fa-solid fa-up-from-bracket link-info fa-xl"></i>
             @else
-                <i class="fa-solid fa-ban link-info fa-xl"></i>
+                <i class="fa-solid fa-down-to-bracket link-info fa-xl"></i>
             @endif
         </a>
     </td>
@@ -32,6 +36,6 @@
     </td>
     <td style="width: 74px;" class="text-end align-self-center">
         {{ $lesson->price }}
-        <livewire:payment-switcher :lesson_id="$lesson->id" :is-paid="$lesson->is_paid"  />
+        <livewire:payment-switcher :lesson_id="$lesson->id" :is-paid="$lesson->is_paid"/>
     </td>
 </tr>

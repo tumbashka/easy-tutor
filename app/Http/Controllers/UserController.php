@@ -4,10 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Encoders\WebpEncoder;
-use Intervention\Image\ImageManager;
 
 class UserController extends Controller
 {

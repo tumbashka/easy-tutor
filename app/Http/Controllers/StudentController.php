@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\Student\StudentDeleted;
-use App\Events\Student\StudentUpdated;
+
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Homework;
-use App\Models\LessonTime;
 use App\Models\Student;
 use Illuminate\Http\Request;
 

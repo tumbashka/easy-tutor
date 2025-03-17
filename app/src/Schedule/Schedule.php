@@ -5,7 +5,6 @@ namespace App\src\Schedule;
 use App\Models\LessonTime;
 use App\Models\User;
 use App\Repositories\LessonRepository;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 

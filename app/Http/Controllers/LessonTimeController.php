@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\LessonTime\LessonTimeAdded;
-use App\Events\LessonTime\LessonTimeDeleted;
-use App\Events\LessonTime\LessonTimeUpdated;
 use App\Http\Requests\StoreLessonTimeRequest;
 use App\Models\FreeTime;
 use App\Models\Lesson;
@@ -68,7 +65,7 @@ class LessonTimeController extends Controller
     public function destroy(Student $student, LessonTime $lesson_time, Request $request)
     {
         $user = auth()->user();
-        if (! ($user->can('update', $student) && $lesson_time->student_id == $student->id)) {
+        if (!($user->can('update', $student) && $lesson_time->student_id == $student->id)) {
             abort(403);
         }
 

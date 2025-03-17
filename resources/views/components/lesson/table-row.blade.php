@@ -22,7 +22,7 @@
             </a>
         @endif
     </td>
-    <td style="width: 65px;" class="text-end">
+    <td style="min-width: 70px;" class="text-end">
         {{ $lesson->price }}
         <livewire:payment-switcher :lesson_id="$lesson->id" :is-paid="$lesson->is_paid"  />
     </td>

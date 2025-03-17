@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\Lesson\LessonAdded;
-use App\Events\Lesson\LessonUpdated;
+
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\Student;
-use App\Repositories\LessonRepository;
 use App\src\Schedule\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -112,7 +110,6 @@ class LessonController extends Controller
 
         return redirect()->route('schedule.index', compact('week'));
     }
-
     public function change_status($day, $lesson)
     {
         $lesson = Lesson::find($lesson);

@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\FreeTime\FreeTimeAdded;
-use App\Events\FreeTime\FreeTimeDeleted;
-use App\Events\FreeTime\FreeTimeUpdated;
-use App\Events\LessonTime\LessonTimeAdded;
+
 use App\Http\Requests\StoreFreeTimeRequest;
 use App\Http\Requests\UpdateFreeTimeRequest;
 use App\Models\FreeTime;
