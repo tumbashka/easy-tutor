@@ -3,13 +3,12 @@
 namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Log;
 
 class Handler
 {
     public function __invoke(Schedule $schedule): void
     {
         $schedule->command('reminders:create')->everyFiveMinutes();
-        $schedule->command('reminders:send')->everyMinute();
+        $schedule->command('reminders:send')->everyFiveMinutes();
     }
 }

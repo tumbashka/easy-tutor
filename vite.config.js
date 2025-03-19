@@ -15,9 +15,13 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '127.0.0.1', // Локальный хост для разработки
+    },
     build: {
 
     },
+    base: process.env.APP_URL || 'https://tumbashka-easy-tutor.loophole.site',
     resolve: {
         alias: {
             '$': 'jQuery'

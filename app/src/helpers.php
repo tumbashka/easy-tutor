@@ -3,14 +3,25 @@
 use Illuminate\Support\Carbon;
 use \Illuminate\Support\Facades\Route;
 
-if (!function_exists('activeLink')) { // выделение активной ссылки в навбаре
+if (!function_exists('activeLink')) {
+    /**
+     * Выделение активной ссылки в навбаре
+     *
+     * @param string $route
+     * @return string
+     */
     function activeLink(string $route): string
     {
         return Route::is($route) ? 'active' : '';
     }
 }
 
-if (!function_exists('isAdminLink')) { // выделение активной ссылки в навбаре
+if (!function_exists('isAdminLink')) {
+    /**
+     * Проверка, что мы в админке
+     *
+     * @return bool
+     */
     function isAdminLink(): bool
     {
         return Route::is('admin*');
@@ -18,7 +29,13 @@ if (!function_exists('isAdminLink')) { // выделение активной с
 }
 
 if (!function_exists('getShortDayName')) {
-    function getShortDayName(Carbon|int $dayOfWeek): string // получение сокращённого название дня недели с большой буквы
+    /**
+     * Получение сокращённого названия дня недели с большой буквы
+     *
+     * @param Carbon|int $dayOfWeek
+     * @return string
+     */
+    function getShortDayName(Carbon|int $dayOfWeek): string
     {
         if (is_integer($dayOfWeek)) {
             $string = Carbon::now()->startOfWeek()->addDays($dayOfWeek)->isoFormat('dd');
@@ -33,7 +50,13 @@ if (!function_exists('getShortDayName')) {
 }
 
 if (!function_exists('getDayName')) {
-    function getDayName($dayOfWeek): string // получение название дня недели с большой буквы
+    /**
+     * Получение названия дня недели с большой буквы
+     *
+     * @param $dayOfWeek
+     * @return string
+     */
+    function getDayName($dayOfWeek): string
     {
         $string = Carbon::now()->startOfWeek()->addDays($dayOfWeek)->isoFormat('dddd');
         $first = mb_substr($string, 0, 1, "UTF-8");
@@ -44,7 +67,13 @@ if (!function_exists('getDayName')) {
 }
 
 if (!function_exists('getWeekDays')) {
-    function getWeekDays($weekOffset = 0): array // получение массива дней недели
+    /**
+     * Получение массива дней недели
+     *
+     * @param int $weekOffset
+     * @return array
+     */
+    function getWeekDays(int $weekOffset = 0): array
     {
         $startDate = now();
         $currentWeekDay = $startDate->addWeeks($weekOffset)->startOfWeek()->endOfDay();
@@ -57,7 +86,13 @@ if (!function_exists('getWeekDays')) {
 }
 
 if (!function_exists('getWeekDayIndex')) {
-    function getWeekDayIndex(Carbon $date): int // получение индекса дня недели 0-ПН ... 6-ВСК
+    /**
+     * Получение индекса дня недели `0-ПН ... 6-ВСК`
+     *
+     * @param Carbon $date
+     * @return int
+     */
+    function getWeekDayIndex(Carbon $date): int
     {
         $index = $date->weekday();
         $index -= 1;
@@ -69,8 +104,15 @@ if (!function_exists('getWeekDayIndex')) {
     }
 }
 
-if (!function_exists('getWeekBorders')) { // получение строки вида: "{дата понедельника} - {дата воскресенья}"
-    function getWeekBorders($weekOffset = 0): string
+if (!function_exists('getWeekBorders')) {
+    /**
+     * Получение строки, вида:
+     * `{дата начала недели} - {дата конца недели}`
+     *
+     * @param int $weekOffset
+     * @return string
+     */
+    function getWeekBorders(int $weekOffset = 0): string
     {
         $startDate = now();
         $startDate->addWeeks($weekOffset);
@@ -81,8 +123,15 @@ if (!function_exists('getWeekBorders')) { // получение строки в�
     }
 }
 
-if (!function_exists('getPreviousWeeks')) { // получение массива строк с границами предыдущих недель
-    function getPreviousWeeks($weekOffset = 0, $count = 5): array
+if (!function_exists('getPreviousWeeks')) {
+    /**
+     * Получение массива строк с границами предыдущих недель
+     *
+     * @param int $weekOffset
+     * @param int $count
+     * @return array
+     */
+    function getPreviousWeeks(int $weekOffset = 0, int $count = 5): array
     {
         $res = [];
         for ($i = -1; -$i <= $count; $i--) {
@@ -92,8 +141,15 @@ if (!function_exists('getPreviousWeeks')) { // получение массива
     }
 }
 
-if (!function_exists('getNextWeeks')) { // получение массива строк с границами будущих недель
-    function getNextWeeks($weekOffset = 0, $count = 5): array
+if (!function_exists('getNextWeeks')) {
+    /**
+     * Получение массива строк с границами будущих недель
+     *
+     * @param int $weekOffset
+     * @param int $count
+     * @return array
+     */
+    function getNextWeeks(int $weekOffset = 0, int $count = 5): array
     {
         $res = [];
         for ($i = 1; $i <= $count; $i++) {
@@ -103,7 +159,13 @@ if (!function_exists('getNextWeeks')) { // получение массива с�
     }
 }
 
-if (!function_exists('getWeekOffset')) { // вычисление разницы в неделях по сравнению с текущим временем
+if (!function_exists('getWeekOffset')) {
+    /**
+     * Вычисление разницы в неделях по сравнению с текущим временем
+     *
+     * @param Carbon $day
+     * @return int
+     */
     function getWeekOffset(Carbon $day): int
     {
         $now = Carbon::now();
@@ -115,7 +177,15 @@ if (!function_exists('getWeekOffset')) { // вычисление разницы 
     }
 }
 
-if (!function_exists('getLessonPrice')) { // Вычисление стоимости занятия
+if (!function_exists('getLessonPrice')) {
+    /**
+     * Вычисление стоимости занятия
+     *
+     * @param $start `Начало занятия`
+     * @param $end `Конец занятия`
+     * @param int $price_on_hour `Стоимость за час`
+     * @return int
+     */
     function getLessonPrice($start, $end, int $price_on_hour): int
     {
         $start = new Carbon($start);
@@ -128,16 +198,18 @@ if (!function_exists('getLessonPrice')) { // Вычисление стоимос
     }
 }
 
-if (!function_exists('getRandomRGB')) { // Получение случайного RBG цвета
-    function getRandomRGB($count = 1, $minColor = 70, $maxColor = 255): array|string
+if (!function_exists('getRandomRGB')) {
+    /**
+     * Получение случайного RBG цвета
+     *
+     * @param int $count
+     * @param int $minColor
+     * @param int $maxColor
+     * @return array|string
+     * @throws \Random\RandomException
+     */
+    function getRandomRGB(int $count = 1, int $minColor = 70, int $maxColor = 255): array|string
     {
-        if ($count === 1) {
-            $red = random_int($minColor, $maxColor);
-            $green = random_int($minColor, $maxColor);
-            $blue = random_int($minColor, $maxColor);
-            $str = "rgb({$red}, {$green}, {$blue})";
-            return $str;
-        }
         $arr = [];
         if ($count > 1) {
             for ($i = 0; $i < $count; $i++) {
@@ -148,12 +220,22 @@ if (!function_exists('getRandomRGB')) { // Получение случайног
                 $arr[] = $str;
             }
         }
-        return $arr;
+        if ($count === 1) {
+            return $arr[0];
+        } else {
+            return $arr;
+        }
     }
 }
 
 
-if (!function_exists('getHiFormatTime')) { // Получение строки времени в формате H:i
+if (!function_exists('getHiFormatTime')) {
+    /**
+     * Получение строки времени в формате H:i
+     *
+     * @param $time
+     * @return string
+     */
     function getHiFormatTime($time): string
     {
         $carbon = new Carbon($time);
@@ -161,7 +243,13 @@ if (!function_exists('getHiFormatTime')) { // Получение строки в
     }
 }
 
-if (!function_exists('getLessonType')) { // Получение названия для типа занятия
+if (!function_exists('getLessonType')) {
+    /**
+     * Получение названия для типа занятия
+     *
+     * @param $type
+     * @return string
+     */
     function getLessonType($type): string
     {
         return match ($type) {
@@ -173,7 +261,13 @@ if (!function_exists('getLessonType')) { // Получение названия 
     }
 }
 
-if (!function_exists('getLessonStatus')) { // Получение строки статуса занятия
+if (!function_exists('getLessonStatus')) {
+    /**
+     * Получение строки статуса занятия
+     *
+     * @param $status
+     * @return string
+     */
     function getLessonStatus($status): string
     {
         return match ($status) {
@@ -184,7 +278,13 @@ if (!function_exists('getLessonStatus')) { // Получение строки с
     }
 }
 
-if (!function_exists('getRGBFromHex')) { // получение массива цветов по каналам(R,G,B) из HEX цвета
+if (!function_exists('getRGBFromHex')) {
+    /**
+     * Получение массива цветов по каналам(R,G,B) из HEX цвета
+     *
+     * @param $hex_color
+     * @return array
+     */
     function getRGBFromHex($hex_color): array
     {
         return sscanf($hex_color, "#%02x%02x%02x");
@@ -192,7 +292,13 @@ if (!function_exists('getRGBFromHex')) { // получение массива ц
 }
 
 
-if (!function_exists('getTextContrastColor')) { // Вычисление строки стиля для текста, контрастного на фоне
+if (!function_exists('getTextContrastColor')) {
+    /**
+     * Вычисление строки стиля для текста, контрастного на фоне
+     *
+     * @param $hex_color
+     * @return string
+     */
     function getTextContrastColor($hex_color): string
     {
         $rgb = getRGBFromHex($hex_color);

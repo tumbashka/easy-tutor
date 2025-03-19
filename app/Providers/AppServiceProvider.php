@@ -22,9 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        URL::forceScheme('https');
+        $this->app['url']->useOrigin(config('app.url'));
         Paginator::useBootstrapFive();
-//        DB::listen(function ($query){
-//            dump($query->sql, $query->bindings);
-//        });
     }
 }

@@ -20,3 +20,5 @@ yarn-error.log
 /public/fontawesome/
 /.osp/
 /.env.testing
+/app/Console/bats/loophole_stderr.log
+/app/Console/bats/loophole_stdout.log
