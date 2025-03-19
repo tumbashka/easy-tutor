@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FreeTimeController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\LessonController;
@@ -10,7 +11,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-
+//Route::post('/login', [LoginController::class, 'store'])->name('login');
 Route::permanentRedirect('/home', '/schedule')->name('home');
 Route::permanentRedirect('/', '/schedule');
 
