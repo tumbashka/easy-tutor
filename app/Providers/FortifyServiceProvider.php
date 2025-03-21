@@ -5,16 +5,17 @@ namespace App\Providers;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
-use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Notifications\MyVerifyMail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
-use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Requests\LoginRequest;
 use Illuminate\Contracts\Auth\StatefulGuard;
 
@@ -74,6 +75,8 @@ class FortifyServiceProvider extends ServiceProvider
                 app(StatefulGuard::class)
             )
         );
+
+        Event::forget(\Illuminate\Auth\Events\Registered::class);
 
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);

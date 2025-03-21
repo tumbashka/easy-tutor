@@ -2,7 +2,6 @@
     'user' => null,
 ])
 <div class="row g-0">
-    @dump($user)
     <div class="col-md-4 text-center align-content-center">
         @if($user)
             <x-user.avatar :avatar_url="$user->avatar_url"/>

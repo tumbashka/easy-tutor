@@ -3590,16 +3590,16 @@
         },
         {
             "name": "propaganistas/laravel-phone",
-            "version": "5.3.4",
+            "version": "5.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Propaganistas/Laravel-Phone.git",
-                "reference": "a76eae715b927f8f30add4bb2228926091d3e152"
+                "reference": "a846794983740a220355b6d56ff20185938218b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Propaganistas/Laravel-Phone/zipball/a76eae715b927f8f30add4bb2228926091d3e152",
-                "reference": "a76eae715b927f8f30add4bb2228926091d3e152",
+                "url": "https://api.github.com/repos/Propaganistas/Laravel-Phone/zipball/a846794983740a220355b6d56ff20185938218b9",
+                "reference": "a846794983740a220355b6d56ff20185938218b9",
                 "shasum": ""
             },
             "require": {
@@ -3649,7 +3649,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Propaganistas/Laravel-Phone/issues",
-                "source": "https://github.com/Propaganistas/Laravel-Phone/tree/5.3.4"
+                "source": "https://github.com/Propaganistas/Laravel-Phone/tree/5.3.5"
             },
             "funding": [
                 {
@@ -3657,7 +3657,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-24T15:09:06+00:00"
+            "time": "2025-03-20T08:02:29+00:00"
         },
         {
             "name": "psr/clock",
