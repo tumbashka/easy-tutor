@@ -1,5 +1,5 @@
 <!-- Footer -->
-<footer class="mt-1 text-center text-lg-start bg-body-tertiary text-muted">
+<footer class="mt-1 text-center border-top text-lg-start bg-body-tertiary text-muted">
     <div class="pt-1 bg-gray005 shadow">
         <div class="container text-center text-md-start mt-3">
             <!-- Grid row -->
