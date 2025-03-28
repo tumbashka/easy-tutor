@@ -51,8 +51,9 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::authenticateUsing(function (LoginRequest $request) {
             $credentials = $request->only('email', 'password');
+            $remember = $request->only('remember');
 
-            if (auth()->attempt($credentials)) {
+            if (auth()->attempt($credentials, $remember)) {
                 $request->session()->regenerate();
                 return auth()->user();
             }
