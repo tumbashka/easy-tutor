@@ -85,7 +85,7 @@
                                     <hr class="dropdown-divider m-0">
                                 </li>
                                 <li><h6 class="dropdown-header">Рабочие часы</h6></li>
-                                <li><a class="dropdown-item" href="{{ route('statistic.time.period') }}">По периодам</a>
+                                <li><a class="dropdown-item" href="{{ route('statistic.time.period') }}">По ученикам</a>
                                 </li>
                             </ul>
                         </li>

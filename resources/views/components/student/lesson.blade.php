@@ -23,20 +23,11 @@
                 </div>
                 <i class="fa-solid fa-pen-to-square fa-xl"></i></a>
         </div>
-        <div>
-            <button type="button" class="btn text-info" data-bs-toggle="modal"
-                    data-bs-target="#deleteModal{{ $lesson_time->id }}">
-                <div class="d-sm-none d-inline text-info">
-                    Удалить
-                </div>
-                <i class="fa-solid fa-trash-can fa-xl"></i>
-            </button>
-
-            <x-modal-dialog
-                :text_body="'Удалить занятие?'"
-                :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
-                :id="$lesson_time->id"/>
-        </div>
+        <x-icon-modal-delete
+        :id="$lesson_time->id"
+        :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
+        :text_body="'Удалить занятие?'"
+        />
     </div>
 
 </div>

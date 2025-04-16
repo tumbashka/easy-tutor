@@ -7,7 +7,7 @@ import monthSelectPlugin from "flatpickr/dist/plugins/monthSelect";
 
 flatpickr(".datepicker", {
     dateFormat: "Y-m-d",
-    disableMobile: "true",
+    disableMobile: true,
     locale: Russian,
 });
 
@@ -16,11 +16,20 @@ flatpickr(".datetime-picker", {
     disableMobile: "true",
     locale: Russian,
     enableTime: true,
+    onChange: function(selectedDates, dateStr, instance) {
+        syncWithLivewire(instance.element, dateStr);
+    },
+    onClose: function(selectedDates, dateStr, instance) {
+        syncWithLivewire(instance.element, dateStr);
+    },
+    onValueUpdate: function(selectedDates, dateStr, instance) {
+        syncWithLivewire(instance.element, dateStr);
+    }
 });
 
 flatpickr(".month-picker", {
     locale: Russian,
-    disableMobile: "true",
+    disableMobile: true,
     plugins: [
         new monthSelectPlugin({
             shorthand: true,
@@ -31,14 +40,14 @@ flatpickr(".month-picker", {
 });
 
 flatpickr(".range-picker", {
-    disableMobile: "true",
+    disableMobile: true,
     locale: Russian,
     mode: "range",
     dateFormat: "Y-m-d",
 });
 
 flatpickr(".month-range-picker", {
-    disableMobile: "true",
+    disableMobile: true,
     locale: Russian,
     mode: "range",
     dateFormat: "Y-m",
@@ -46,3 +55,15 @@ flatpickr(".month-range-picker", {
         dateFormat: "Y-m",
     })]
 });
+
+function syncWithLivewire(element, value) {
+    element.value = value;
+    const wireModel = element.getAttribute('wire:model') || element.getAttribute('wire:model.live');
+    if (wireModel) {
+        window.Livewire.find(element.closest('[wire\\:id]').getAttribute('wire:id'))
+            .set(wireModel, value);
+    } else {
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+}
