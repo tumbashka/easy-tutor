@@ -87,8 +87,7 @@ class MessageHandler extends BaseHandler
             $this->sendGroupSetting();
             return;
         }
-        $this->sendPrivateSetting();
-
+        $this->sendGroupError();
     }
 
     private function handleHomework(): void

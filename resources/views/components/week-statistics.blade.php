@@ -5,7 +5,7 @@
                     aria-expanded="false" aria-controls="statisticsCollapse">
                 Показать статистику за неделю
             </button>
-            <div class="collapse mt-2" id="statisticsCollapse">
+            <div class="collapse mt-1" id="statisticsCollapse">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0 text-center">Статистика за неделю</h5>

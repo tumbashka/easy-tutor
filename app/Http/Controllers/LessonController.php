@@ -42,25 +42,18 @@ class LessonController extends Controller
         ];
 
         foreach ($allLessons as $lesson) {
-            // Ensure date is in YYYY-MM-DD format and combine with start/end times
             $lessonDate = \Carbon\Carbon::parse($lesson->date)->format('Y-m-d');
-            // Since start/end are cast as datetime:H:i, they are Carbon instances with time only
             $startTime = $lesson->start->format('H:i:s');
             $endTime = $lesson->end->format('H:i:s');
 
             $lessonStart = \Carbon\Carbon::parse("{$lessonDate} {$startTime}");
             $lessonEnd = \Carbon\Carbon::parse("{$lessonDate} {$endTime}");
 
-            // If end time is before start time, assume it crosses midnight
             if ($lessonEnd < $lessonStart) {
                 $lessonEnd->addDay();
             }
 
-            // Calculate duration in hours, ensuring positive value
             $duration = abs($lessonEnd->diffInMinutes($lessonStart)) / 60;
-
-            // Debugging: Log the parsed times and duration
-            \Log::debug("Lesson ID: {$lesson->id}, Start: {$lessonStart}, End: {$lessonEnd}, Duration: {$duration} hours");
 
             if ($lesson->is_canceled) {
                 $statistics['canceledLessons']++;
