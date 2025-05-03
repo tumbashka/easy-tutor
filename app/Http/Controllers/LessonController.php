@@ -27,7 +27,62 @@ class LessonController extends Controller
         $schedule = new Schedule($user);
         $lessonsOnDays = $schedule->getWeekLessonsOnDays($weekDays);
 
-        return view('schedule.index', compact('weekOffset', 'weekDays', 'previous', 'next', 'lessonsOnDays'));
+        $allLessons = $lessonsOnDays->flatten(1);
+        $now = now();
+        $statistics = [
+            'conductedLessons' => 0,
+            'toConductLessons' => 0,
+            'ongoingLessons' => 0,
+            'canceledLessons' => 0,
+            'earned' => 0,
+            'canceledMoneys' => 0,
+            'totalPossibleEarnings' => 0,
+            'hoursConducted' => 0,
+            'hoursToConduct' => 0,
+        ];
+
+        foreach ($allLessons as $lesson) {
+            // Ensure date is in YYYY-MM-DD format and combine with start/end times
+            $lessonDate = \Carbon\Carbon::parse($lesson->date)->format('Y-m-d');
+            // Since start/end are cast as datetime:H:i, they are Carbon instances with time only
+            $startTime = $lesson->start->format('H:i:s');
+            $endTime = $lesson->end->format('H:i:s');
+
+            $lessonStart = \Carbon\Carbon::parse("{$lessonDate} {$startTime}");
+            $lessonEnd = \Carbon\Carbon::parse("{$lessonDate} {$endTime}");
+
+            // If end time is before start time, assume it crosses midnight
+            if ($lessonEnd < $lessonStart) {
+                $lessonEnd->addDay();
+            }
+
+            // Calculate duration in hours, ensuring positive value
+            $duration = abs($lessonEnd->diffInMinutes($lessonStart)) / 60;
+
+            // Debugging: Log the parsed times and duration
+            \Log::debug("Lesson ID: {$lesson->id}, Start: {$lessonStart}, End: {$lessonEnd}, Duration: {$duration} hours");
+
+            if ($lesson->is_canceled) {
+                $statistics['canceledLessons']++;
+                $statistics['canceledMoneys'] += $lesson->price;
+            } else {
+                $statistics['totalPossibleEarnings'] += $lesson->price;
+                if ($lesson->is_paid) {
+                    $statistics['earned'] += $lesson->price;
+                }
+                if ($now > $lessonEnd) {
+                    $statistics['conductedLessons']++;
+                    $statistics['hoursConducted'] += $duration;
+                } elseif ($now >= $lessonStart && $now < $lessonEnd) {
+                    $statistics['ongoingLessons']++;
+                } else {
+                    $statistics['toConductLessons']++;
+                    $statistics['hoursToConduct'] += $duration;
+                }
+            }
+        }
+
+        return view('schedule.index', compact('weekOffset', 'weekDays', 'previous', 'next', 'lessonsOnDays', 'statistics'));
     }
 
     public function show(Request $request, $day)
@@ -51,7 +106,7 @@ class LessonController extends Controller
     public function create($day)
     {
         $day = new Carbon($day);
-        $students = Student::where('user_id', auth()->id())->get();
+        $students = Student::where('user_id', auth()->id())->orderBy('name')->get();
 
         return view('lesson.create', compact('day', 'students'));
     }
@@ -85,7 +140,7 @@ class LessonController extends Controller
     {
         $day = new Carbon($day);
         $lesson = Lesson::with('student')->find($lesson);
-        $students = Student::where('user_id', auth()->id())->get();
+        $students = Student::where('user_id', auth()->id())->orderBy('name')->get();
 
         return view('lesson.edit', compact('day', 'students', 'lesson'));
     }
@@ -110,6 +165,7 @@ class LessonController extends Controller
 
         return redirect()->route('schedule.index', compact('week'));
     }
+
     public function change_status($day, $lesson)
     {
         $lesson = Lesson::find($lesson);

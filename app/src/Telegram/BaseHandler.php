@@ -149,6 +149,10 @@ abstract class BaseHandler
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
     }
+    protected function sendPrivateSetting(): void
+    {
+
+    }
 
     protected function sendKeyboardSetStudent(): void
     {

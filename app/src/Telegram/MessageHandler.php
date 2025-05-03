@@ -87,7 +87,7 @@ class MessageHandler extends BaseHandler
             $this->sendGroupSetting();
             return;
         }
-        $this->sendGroupError();
+        $this->sendPrivateSetting();
 
     }
 

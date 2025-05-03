@@ -22,3 +22,4 @@ yarn-error.log
 /.env.testing
 /app/Console/bats/loophole_stderr.log
 /app/Console/bats/loophole_stdout.log
+/app/Console/bats/start_loophole_forwarding — копия.bat

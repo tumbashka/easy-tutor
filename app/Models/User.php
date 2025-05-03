@@ -39,6 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'remember_token',
+        'is_enabled_task_reminders'
     ];
 
     /**
@@ -63,8 +64,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_admin' => 'bool',
             'is_active' => 'bool',
+            'is_enabled_task_reminders' => 'bool',
         ];
     }
+
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
@@ -161,38 +164,22 @@ class User extends Authenticatable implements MustVerifyEmail
             ->get();
     }
 
-    public function getAllLessonSlotsOnWeekDays(): array
+    public function getAllLessonSlotsOnWeekDays(bool $allow_lessons = true): \Illuminate\Support\Collection
     {
-        if ($all_lesson_slots_on_days = Cache::get("all_lesson_slots_{$this->id}")) {
-            return $all_lesson_slots_on_days;
-        }
         $lesson_times_on_days = $this->lessonTimes()
             ->with('student')
-            ->get()
-            ->sortBy('week_day')
-            ->groupBy('week_day')
-            ->toArray();
+            ->get();
 
         $free_times_on_days = $this->freeTimes()
-            ->get()
-            ->sortBy('week_day')
-            ->groupBy('week_day')
-            ->toArray();
+            ->get();
 
-        $all_lesson_slots_on_days = [];
-        foreach ($lesson_times_on_days as $week_day => $lesson_times_on_day) {
-            $additional = $free_times_on_days[$week_day] ?? [];
-            $all_lesson_slots_on_days[$week_day] = array_merge($lesson_times_on_day, $additional);
+        if ($allow_lessons) {
+            $all_lesson_slots_on_days = $lesson_times_on_days->merge($free_times_on_days);
+        } else {
+            $all_lesson_slots_on_days = $free_times_on_days;
         }
 
-        $all_lesson_slots_on_days = array_map(function ($all_lesson_slots_on_day) {
-            usort($all_lesson_slots_on_day, function ($a, $b) {
-                return $a['start'] <=> $b['start'];
-            });
-            return $all_lesson_slots_on_day;
-        }, $all_lesson_slots_on_days);
-        Cache::put("all_lesson_slots_{$this->id}", $all_lesson_slots_on_days, 300);
-        return $all_lesson_slots_on_days;
+        return $all_lesson_slots_on_days->sortBy(['week_day', 'start'])->groupBy('week_day');
     }
 
     public function setAvatar($file): bool

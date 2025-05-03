@@ -4,3 +4,7 @@
     border-radius: 3px;
     margin: 2px;
 }
+
+.ts-dropdown-content {
+    max-height: 400px;
+}

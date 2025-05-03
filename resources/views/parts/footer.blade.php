@@ -8,7 +8,7 @@
                 <div class="col-md-6 mx-auto mb-4">
                     <!-- Content -->
                     <h6 class="text-uppercase fw-bold mb-4 text-center">
-                        <i class="fa-solid fa-book-open-cover me-3"></i>Easy Tutor
+                        <i class="fa-solid fa-tractor me-3"></i>{{ config('app.name') }}
                     </h6>
                     <p>
                         Сервис для репетиторов, облегчающий работу с расписанием занятий и ведением учета занятий и

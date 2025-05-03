@@ -2,7 +2,7 @@
     <div class="container ">
         <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
-            <img src="/images/icons/book_white.svg" height="28px">
+            <i class="fa-solid fa-tractor fa-xl"></i>
         </a>
         <button class="navbar-toggler  " type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent"

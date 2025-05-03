@@ -19,7 +19,7 @@ class ReminderSettings extends Component
             $this->reminderBeforeDeadline = (bool) ($task->reminder_before_deadline ?? false);
             $this->reminderBeforeHours = $task->reminder_before_hours ?? 2;
             $this->reminderDaily = (bool) ($task->reminder_daily ?? false);
-            $this->reminderDailyTime = $task->reminder_daily_time ?? '09:00';
+            $this->reminderDailyTime = $task->reminder_daily_time->format('H:i') ?? '09:00';
         }
     }
 

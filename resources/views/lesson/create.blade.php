@@ -1,5 +1,5 @@
 @extends('layouts.main')
-
+@vite('resources/js/tom-select.js')
 @section('title', 'Добавление занятия')
 
 @section('main.content')

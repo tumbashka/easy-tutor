@@ -51,14 +51,27 @@
         <x-card.card>
             <x-card.header>
                 <x-slot:title>
-                    @if(isset($category_name))
-                        {{ $category_name }}
-                        <a href="{{ route('tasks.index') }}" class="link-light">
-                            <i class="fa-regular fa-rectangle-xmark fa-lg"></i>
-                        </a>
-                    @else
-                        Задачи
-                    @endif
+                    <div class="row">
+                        <div class="col">
+                            @if(isset($category_name))
+                                {{ $category_name }}
+                                <a href="{{ route('tasks.index') }}" class="link-light">
+                                    <i class="fa-regular fa-rectangle-xmark fa-lg"></i>
+                                </a>
+                            @else
+                                Задачи
+                            @endif
+                        </div>
+                        <div class="col-auto ms-auto">
+                            <x-icon-modal-delete
+                                :id="'delete_completed'"
+                                :action="route('tasks.delete-completed')"
+                                :color="'text-white'"
+                                :text_body="'Удалить выполненные задачи?'"
+                                :icon="'fa-solid  fa-trash-can fa-xl'"
+                            />
+                        </div>
+                    </div>
                 </x-slot:title>
             </x-card.header>
             <x-card.body>

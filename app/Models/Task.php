@@ -43,6 +43,7 @@ class Task extends Model
         'completed_at' => 'datetime',
         'reminder_before_deadline' => 'boolean',
         'reminder_daily' => 'boolean',
+        'reminder_daily_time' => 'datetime:H:i',
     ];
 
 }
