@@ -201,9 +201,10 @@ class CreateReminders extends Command
             $diffInDays = $deadline->diffInDays($now);
             $diffInHours = $deadline->diffInHours($now) % 24; // Остаток часов после дней
 
+            $diffInDaysFloored = floor($diffInDays);
             $delayText = $diffInDays > 0
-                ? "$diffInDays дн. и $diffInHours ч."
-                : "$diffInHours ч.";
+                ? "{$diffInDaysFloored} дн. и {$diffInHours} ч."
+                : "{$diffInHours} ч.";
 
             $text = "Напоминание: Задача \"{$task->title}\" просрочена! \n"
                 . "Дедлайн был {$deadlineFormatted}. \n"

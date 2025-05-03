@@ -43,10 +43,17 @@
 <hr class="mt-0 mb-1">
 <div class="row pt-1">
     <div class="col-md-6 text-center">
-        <h6>
-            <i class="text-info fa-solid fa-calendar-clock fa-lg"></i>
-            {{ \Illuminate\Support\Carbon::create($task->deadline)->translatedFormat('d F Yг. в H:i') }}
-        </h6>
+        @if($task->deadline)
+            <h6>
+                <i class="text-info fa-solid fa-calendar-clock fa-lg"></i>
+                {{ \Illuminate\Support\Carbon::create($task->deadline)->translatedFormat('d F Yг. в H:i') }}
+            </h6>
+        @else
+            <h6>
+                <i class="text-info fa-solid fa-calendar-clock fa-lg"></i>
+                Дедлайн не установлен
+            </h6>
+        @endif
     </div>
     <div class="col-md-6 text-center">
         @if($task->completed_at)
