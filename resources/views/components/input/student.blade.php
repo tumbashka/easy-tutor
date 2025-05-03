@@ -2,13 +2,13 @@
     'students' => null,
     'old_student_id' => null,
 ])
-<select name="student" required class="form-select {{ $errors->has('student') ? 'is-invalid' : '' }}">
-    <option>Ученик не выбран</option>
+<select name="student" data-tom-select-single placeholder="Выберите ученика" class="w-full form-select">
+    <option value="">Выберите ученика</option>
     @foreach($students as $student)
-        <option
-            {{ (old('student') == $student->id) ? 'selected' : ($old_student_id == $student->id ? 'selected' : '') }}
-            value="{{ $student->id }}">
-            {{ $student->name }}
+        <option value="{{ $student->id }}" data-color="{{ $student->color }}"
+            @selected(old('student') === $student->id || $old_student_id === $student->id)
+        >
+        {{ $student->name }}
         </option>
     @endforeach
 </select>

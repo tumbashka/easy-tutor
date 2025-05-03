@@ -130,11 +130,13 @@ class FreeTimeController extends Controller
     {
         $validated = $request->validate([
             'expire_time' => ['required', 'integer', 'min:1', 'max:62'],
+            'allow_lessons' => ['nullable', 'boolean'],
         ]);
 
         $encrypted_url = Crypt::encrypt([
             'user_id' => auth()->user()->id,
             'expires' => now()->addDays((int)$validated['expire_time'])->timestamp,
+            'allow_lessons' => $validated['allow_lessons'] ?? false,
         ]);
         $encrypted_url = url()->route('free-time.show_shared_page', ['token' => $encrypted_url]);
 
@@ -155,8 +157,8 @@ class FreeTimeController extends Controller
             if (!$user->is_active){
                 abort(404);
             }
-
-            $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
+            $allow_lessons = $data['allow_lessons'] ?? false;
+            $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays($allow_lessons);
 
             $expires = (new Carbon($data['expires']))->longAbsoluteDiffForHumans(now());
 

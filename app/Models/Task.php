@@ -32,6 +32,18 @@ class Task extends Model
         'description',
         'deadline',
         'completed_at',
+        'reminder_before_deadline',
+        'reminder_before_hours',
+        'reminder_daily',
+        'reminder_daily_time',
+    ];
+
+    protected $casts = [
+        'deadline' => 'datetime',
+        'completed_at' => 'datetime',
+        'reminder_before_deadline' => 'boolean',
+        'reminder_daily' => 'boolean',
+        'reminder_daily_time' => 'datetime:H:i',
     ];
 
 }

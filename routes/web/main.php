@@ -9,9 +9,9 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TaskCategoryController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Livewire\TaskForm;
 use Illuminate\Support\Facades\Route;
 
-//Route::post('/login', [LoginController::class, 'store'])->name('login');
 Route::permanentRedirect('/home', '/schedule')->name('home');
 Route::permanentRedirect('/', '/schedule');
 
@@ -23,9 +23,9 @@ Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
 
 Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 
-Route::fallback(function () {
-    abort(404);
-});
+//Route::fallback(function () {
+//    abort(404);
+//});
 
 Route::get('/free-time/share/{token}', [FreeTimeController::class, 'show_shared_page'])->name('free-time.show_shared_page');
 
@@ -59,5 +59,6 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::resource('tasks', TaskController::class);
     Route::resource('task_categories', TaskCategoryController::class)->except('show');
 
+    Route::delete('delete_completed_tasks', [TaskController::class, 'delete_completed'])->name('tasks.delete-completed');
     Route::get('tasks/{task}/change_completed', [TaskController::class, 'change_completed'])->name('tasks.change-completed');
 });

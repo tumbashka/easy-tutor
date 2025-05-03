@@ -51,9 +51,12 @@
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'students'"/>
         @if(isset($students_on_classes) && $students_on_classes->count())
-            <select name="students[]" data-tom-select-group multiple placeholder="Прикрепите учеников к задаче" class="w-full">
+            <select name="students[]" data-tom-select-group multiple placeholder="Прикрепите учеников к задаче"
+                    class="w-full">
                 @foreach ($students_on_classes as $class => $students)
-                    <option class="class-option" data-group="{{ $class }}" value="group-{{ $class }}">{{ $class }} класс</option>
+                    <option class="class-option" data-group="{{ $class }}" value="group-{{ $class }}">{{ $class }}
+                        класс
+                    </option>
                     @foreach ($students as $student)
                         <option value="{{ $student->id }}" data-group="{{ $class }}"
                             {{ old('students') ? (in_array($student->id, old('students')) ? 'selected' : '') : (isset($task->students) && $task->students->contains($student->id) ? 'selected' : '') }}>
@@ -68,14 +71,6 @@
     </div>
 </div>
 <hr>
-<div class="row align-items-center">
-    <div class="col-sm-3">
-        <p class="mb-0">Дедлайн</p>
-    </div>
-    <div class="col-sm-9">
-        <x-form.input-error-alert :name="'deadline'"/>
-        <input name="deadline" value="{{ $task->deadline ?? '' }}" type="text" class="form-control datetime-picker" placeholder="Бессрочно">
-    </div>
-</div>
 
 
+<livewire:reminder-settings :task="$task" />

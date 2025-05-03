@@ -22,20 +22,21 @@
                         {{ $category_name ?? 'Выберите категорию' }}
                     </x-button>
                     <ul class="dropdown-menu">
-                        @if($task_categories->count())
-                            @foreach($task_categories as $task_category)
-                                <li>
-                                    <a class="dropdown-item {{ getTextContrastColor($task_category->color) }}"
-                                       href="{{ route('tasks.index', compact('task_category')) }}"
-                                       style="background-color: {{$task_category->color}}">
-                                        {{ $task_category->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        @else
-                            <li><a class="dropdown-item" href="{{ route('task_categories.create') }}">Создайте первую
-                                    категорию</a></li>
-                        @endif
+                        @foreach($task_categories as $task_category)
+                            <li>
+                                <a class="dropdown-item {{ getTextContrastColor($task_category->color) }}"
+                                   href="{{ route('tasks.index', compact('task_category')) }}"
+                                   style="background-color: {{$task_category->color}}">
+                                    {{ $task_category->name }}
+                                </a>
+                            </li>
+                        @endforeach
+                        <li>
+                            <a class="dropdown-item" href="{{ route('task_categories.create') }}">
+                                Создать категорию
+                                <i class="fa-light fa-circle-plus"></i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -50,14 +51,27 @@
         <x-card.card>
             <x-card.header>
                 <x-slot:title>
-                    @if(isset($category_name))
-                    {{ $category_name }}
-                        <a href="{{ route('tasks.index') }}" class="link-light">
-                            <i class="fa-regular fa-rectangle-xmark fa-lg"></i>
-                        </a>
-                    @else
-                        Задачи
-                    @endif
+                    <div class="row">
+                        <div class="col">
+                            @if(isset($category_name))
+                                {{ $category_name }}
+                                <a href="{{ route('tasks.index') }}" class="link-light">
+                                    <i class="fa-regular fa-rectangle-xmark fa-lg"></i>
+                                </a>
+                            @else
+                                Задачи
+                            @endif
+                        </div>
+                        <div class="col-auto ms-auto">
+                            <x-icon-modal-delete
+                                :id="'delete_completed'"
+                                :action="route('tasks.delete-completed')"
+                                :color="'text-white'"
+                                :text_body="'Удалить выполненные задачи?'"
+                                :icon="'fa-solid  fa-trash-can fa-xl'"
+                            />
+                        </div>
+                    </div>
                 </x-slot:title>
             </x-card.header>
             <x-card.body>
@@ -65,25 +79,38 @@
                     @foreach($tasks as $task)
                         <div class="row align-items-center">
                             <div class="col-4 ps-2 ps-sm-4">
-                                <a class="link-underline link-underline-opacity-25 link-underline-opacity-75-hover" href="{{ route('tasks.show', $task) }}">{{ $task->title }}</a>
+                                <a class="link-underline link-underline-opacity-25 link-underline-opacity-75-hover"
+                                   href="{{ route('tasks.show', $task) }}">{{ $task->title }}</a>
                             </div>
-                            <div class="col-4 p-0 px-2">
+                            <div class="col-3 p-0 px-2 text-center">
                                 @foreach($task->task_categories as $category)
-                                    <a class="link-underline link-underline-opacity-0" href="{{ route('tasks.index', ['task_category' => $category])}}">
-                                        <span class="badge {{ getTextContrastColor($category->color) }}" style="background-color: {{ $category->color }}">{{ $category->name }}</span>
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ route('tasks.index', ['task_category' => $category])}}">
+                                        <span class="badge {{ getTextContrastColor($category->color) }}"
+                                              style="background-color: {{ $category->color }}">{{ $category->name }}</span>
                                     </a>
                                 @endforeach
                             </div>
                             <div class="col-3 pe-1">
                                 @if($task->deadline)
-                                    <div class="border border-info border-2 rounded-2 text-center">
-                                        <i class="fa-regular fa-hourglass-clock"></i>
-                                        {{ \Illuminate\Support\Carbon::create($task->deadline)->longAbsoluteDiffForHumans(now()) }}
+                                    <div class="border border-info border-2 rounded-2 text-center ">
+                                        <i class="fa-regular fa-hourglass-clock "></i>
+                                        {{ \Illuminate\Support\Carbon::create($task->deadline)->diffForHumans(['parts' => 2, 'short' => true]) }}
                                     </div>
                                 @endif
                             </div>
-                            <div class="col-1  p-0">
-                                <livewire:task-complete-switcher :task_id="$task->id" :is_completed="(bool)$task->completed_at"  />
+                            <div class="col-1 p-0 pe-1 text-center">
+                                <livewire:task-complete-switcher :task_id="$task->id"
+                                                                 :is_completed="(bool)$task->completed_at"/>
+
+                            </div>
+                            <div class="col-1 p-0">
+                                <x-icon-modal-delete
+                                    :id="$task->id"
+                                    :action="route('tasks.destroy', $task)"
+                                    :text_body="'Удалить задачу?'"
+                                    :icon="'fa-solid fa-trash-can fa-xl'"
+                                />
                             </div>
                         </div>
                         @if(!$loop->last)

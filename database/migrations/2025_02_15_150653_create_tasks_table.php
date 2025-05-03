@@ -19,6 +19,10 @@ return new class extends Migration
             $table->mediumText('description')->nullable();
             $table->dateTime('deadline')->nullable();
             $table->timestamp('completed_at')->nullable();
+            $table->boolean('reminder_before_deadline')->default(false);
+            $table->integer('reminder_before_hours')->nullable();
+            $table->boolean('reminder_daily')->default(false);
+            $table->time('reminder_daily_time')->nullable();
         });
     }
 

@@ -314,5 +314,39 @@ if (!function_exists('getTextContrastColor')) {
 
 
 
+if (!function_exists('pluralRu')) {
+    /**
+     * Постановка правильного окончания существительного в зависимости от количества.
+     *
+     * @param int $number
+     * @param array $words
+     * @return string
+     */
+    function pluralRu(int $number, array $words): string
+    {
+        $number = $number % 100;
+        if ($number > 19) {
+            $number = $number % 10;
+        }
+        switch ($number) {
+            case 1:
+            {
+                return ($words[0]);
+            }
+            case 2:
+            case 3:
+            case 4:
+            {
+                return ($words[1]);
+            }
+            default:
+            {
+                return ($words[2]);
+            }
+        }
+    }
+}
+
+
 
 

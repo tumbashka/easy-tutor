@@ -2,7 +2,7 @@
     <div class="container ">
         <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
-            <img src="/images/icons/book_white.svg" height="28px">
+            <i class="fa-solid fa-tractor fa-xl"></i>
         </a>
         <button class="navbar-toggler  " type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent"
@@ -85,7 +85,7 @@
                                     <hr class="dropdown-divider m-0">
                                 </li>
                                 <li><h6 class="dropdown-header">Рабочие часы</h6></li>
-                                <li><a class="dropdown-item" href="{{ route('statistic.time.period') }}">По периодам</a>
+                                <li><a class="dropdown-item" href="{{ route('statistic.time.period') }}">По ученикам</a>
                                 </li>
                             </ul>
                         </li>

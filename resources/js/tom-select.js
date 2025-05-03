@@ -42,6 +42,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    new TomSelect('[data-tom-select-single]', {
+        create: false,
+        maxOptions: null,
+        maxItems: 1,
+        searchField: 'text',
+        render: {
+            no_results: function (data, escape) {
+                return '<div class="no-results">Для "' + escape(data.input) + '" ничего не найдено</div>';
+            }
+        },
+    });
+});
+
 function isDarkColor(color) {
     // Преобразуем цвет в RGB
     var r = parseInt(color.substr(1, 2), 16);

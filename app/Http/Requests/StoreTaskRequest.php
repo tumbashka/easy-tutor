@@ -36,6 +36,10 @@ class StoreTaskRequest extends FormRequest
             'categories.*' => ['exists:App\Models\TaskCategory,id'],
             'students' => ['nullable', 'array'],
             'students.*' => ['exists:App\Models\Student,id'],
+            'reminderBeforeDeadline' => ['nullable', 'boolean'],
+            'reminderDaily' => ['nullable', 'boolean'],
+            'reminderBeforeHours' => ['nullable', 'integer', 'min:1', 'max:24'],
+            'reminderDailyTime' => ['nullable', 'date_format:H:i'],
         ];
     }
 

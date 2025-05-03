@@ -69,9 +69,13 @@ class TaskController extends Controller
     {
         $task = Task::create([
             'user_id' => auth()->user()->id,
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'deadline' => $request->input('deadline'),
+            'title' => $request->validated('title'),
+            'description' => $request->validated('description'),
+            'deadline' => $request->validated('deadline'),
+            'reminder_before_deadline' => $request->validated('reminderBeforeDeadline', false),
+            'reminder_before_hours' => $request->validated('reminderBeforeHours'),
+            'reminder_daily' => $request->validated('reminderDaily', false),
+            'reminder_daily_time' => $request->validated('reminderDailyTime'),
         ]);
         if ($task) {
             session(['success' => 'Задача успешно создана!']);
@@ -110,6 +114,11 @@ class TaskController extends Controller
         $task->title = $request->input('title');
         $task->description = $request->input('description');
         $task->deadline = $request->input('deadline');
+        $task->reminder_before_deadline = $request->input('reminderBeforeDeadline', false);
+        $task->reminder_daily = $request->input('reminderDaily', false);
+        $task->reminder_before_hours = $request->input('reminderBeforeHours');
+        $task->reminder_daily_time = $request->input('reminderDailyTime');
+
 
         if ($task->save()) {
             $task->task_categories()->detach();
@@ -153,6 +162,17 @@ class TaskController extends Controller
         }
         $task->save();
 
-        return redirect()->back();
+        return back();
+    }
+
+    public function delete_completed(Request $request)
+    {
+        $user = auth()->user();
+
+        $user->tasks()
+            ->whereNotNull('completed_at')
+            ->delete();
+
+        return back();
     }
 }

@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="/images/icons/book-192x192.png">
-    <link rel="icon" href="/images/icons/book-192x192.png" type="image/png">
+    <link rel="icon" href="/images/icons/favicon.ico">
     <link href="/fontawesome/css/all.css" rel="stylesheet">
     @vite(['resources/sass/app.scss' , 'resources/js/app.js'])
     @stack('css')

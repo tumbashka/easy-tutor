@@ -8,7 +8,7 @@
         <div class="m-0 rounded-3 text-center">
             <div class="row">
                 <div class="col">
-                    <h5 class="{{ $text_color }} m-0">
+                    <h5 class="{{ $text_color }} m-0 d-inline">
                         {{ $title }}
                     </h5>
                 </div>

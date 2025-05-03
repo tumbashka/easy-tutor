@@ -3,7 +3,7 @@
     'previous' => '',
     'next' => '',
 ])
-<div class="row justify-content-center mb-3">
+<div class="row justify-content-center mb-1">
     <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4 px-3 py-1 bg-info bg-gradient shadow rounded">
         <div class="row">
             <div class="col-4 p-1 d-inline-grid" >

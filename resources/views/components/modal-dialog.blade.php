@@ -6,7 +6,7 @@
 ])
 <div class="modal fade" id="deleteModal{{ $id }}" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content text-dark">
             <div class="modal-header">
                 <h1 class="modal-title fs-5">{{ $text_head }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
