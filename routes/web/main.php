@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FreeTimeController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\LessonController;
@@ -9,7 +8,6 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TaskCategoryController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
-use App\Livewire\TaskForm;
 use Illuminate\Support\Facades\Route;
 
 Route::permanentRedirect('/home', '/schedule')->name('home');
@@ -23,9 +21,9 @@ Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
 
 Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 
-//Route::fallback(function () {
+// Route::fallback(function () {
 //    abort(404);
-//});
+// });
 
 Route::get('/free-time/share/{token}', [FreeTimeController::class, 'show_shared_page'])->name('free-time.show_shared_page');
 

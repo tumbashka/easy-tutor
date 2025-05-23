@@ -58,14 +58,15 @@ class UserController extends Controller
             $user->email_verified_at = now();
         }
 
-        $user->is_admin = (bool)$request->input('is_admin');
-        $user->is_active = (bool)$request->input('is_active');
+        $user->is_admin = (bool) $request->input('is_admin');
+        $user->is_active = (bool) $request->input('is_active');
 
         if ($user->update()) {
             session(['success' => 'Пользователь успешно добавлен!']);
         } else {
             session(['error' => 'Ошибка добавления пользователя!']);
         }
+
         return redirect()->route('admin.users.index');
     }
 
@@ -82,8 +83,8 @@ class UserController extends Controller
         }
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        $user->is_admin = (bool)$request->input('is_admin');
-        $user->is_active = (bool)$request->input('is_active');
+        $user->is_admin = (bool) $request->input('is_admin');
+        $user->is_active = (bool) $request->input('is_active');
         $user->about = $request->input('about');
         $user->phone = $request->input('phone');
         $user->telegram_username = $request->input('telegram_username');
@@ -104,13 +105,11 @@ class UserController extends Controller
             $user->email_verified_at = null;
         }
 
-
         if ($user->update()) {
             session(['success' => 'Пользователь успешно отредактирован!']);
         } else {
             session(['error' => 'Ошибка редактирования пользователя!']);
         }
-
 
         return redirect()->route('admin.users.index');
     }
@@ -126,6 +125,7 @@ class UserController extends Controller
         } else {
             session(['error' => 'Ошибка удаления пользователя!']);
         }
+
         return redirect()->route('admin.users.index');
     }
 }

@@ -30,7 +30,7 @@ class ClearUserAllLessonsCache
             return;
         }
 
-        Log::info("очистка кэша занятий у " . $user->email);
+        Log::info('очистка кэша занятий у '.$user->email);
         Cache::tags(["lessons_{$user->id}"])->flush();
     }
 }

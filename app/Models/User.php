@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Notifications\MyVerifyMail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,14 +13,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
 use Laravel\Sanctum\HasApiTokens;
-use LaravelIdea\Helper\App\Models\_IH_Lesson_C;
-use LaravelIdea\Helper\App\Models\_IH_LessonTime_C;
 use Symfony\Component\Mailer\Exception\UnexpectedResponseException;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -39,7 +37,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'password',
         'remember_token',
-        'is_enabled_task_reminders'
+        'is_enabled_task_reminders',
     ];
 
     /**
@@ -123,8 +121,8 @@ class User extends Authenticatable implements MustVerifyEmail
             ->firstWhere('telegram_id', $telegram_id);
     }
 
-
-    #[\Override] public function sendEmailVerificationNotification(): void
+    #[\Override]
+    public function sendEmailVerificationNotification(): void
     {
         try {
             $this->notify(new MyVerifyMail);
@@ -137,9 +135,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Получить время занятия всех учеников за конкретный день недели.
-     *
-     * @param int $week_day_id
-     * @return Collection
      */
     public function getWeekDayLessonTimes(int $week_day_id): Collection
     {
@@ -149,12 +144,8 @@ class User extends Authenticatable implements MustVerifyEmail
             ->get();
     }
 
-
     /**
      * Получить занятия за конкретную дату.
-     *
-     * @param Carbon $date
-     * @return Collection
      */
     public function getLessonsOnDate(Carbon $date): Collection
     {
@@ -205,6 +196,7 @@ class User extends Authenticatable implements MustVerifyEmail
             $this->generate_telegram_token();
         }
         $bot_username = config('telegram.bots.mybot.username');
+
         return "https://t.me/{$bot_username}?start={$this->telegram_token}";
     }
 
@@ -223,6 +215,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function remember_user_telegram()
     {
+    }
 
+    public function studentsOnClasses(): Collection
+    {
+        return $this->students()
+            ->with('lesson_times')
+            ->get()
+            ->groupBy('class')
+            ->sortKeys();
     }
 }

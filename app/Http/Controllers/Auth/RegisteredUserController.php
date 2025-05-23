@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Auth\Events\Registered;
-use Laravel\Fortify\Http\Controllers\RegisteredUserController as FortifyRegisteredUserController;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Http\Request;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Fortify\Contracts\RegisterResponse;
+use Laravel\Fortify\Http\Controllers\RegisteredUserController as FortifyRegisteredUserController;
 
 class RegisteredUserController extends FortifyRegisteredUserController
 {
@@ -21,7 +21,8 @@ class RegisteredUserController extends FortifyRegisteredUserController
         event(new Registered($user = $creator->create($request->all())));
         $this->guard->login($user, $request->boolean('remember'));
 
-        return new class implements RegisterResponse {
+        return new class implements RegisterResponse
+        {
             public function toResponse($request)
             {
                 return redirect()->route('home');

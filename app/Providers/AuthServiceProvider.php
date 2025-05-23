@@ -22,10 +22,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('admin-access', function (User $user){
+        Gate::define('admin-access', function (User $user) {
             return $user->is_admin;
         });
-        Gate::define('active-account', function (User $user){
+        Gate::define('active-account', function (User $user) {
             return $user->is_active && $user->email_verified_at;
         });
     }

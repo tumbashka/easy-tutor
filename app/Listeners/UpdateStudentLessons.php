@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\Student\StudentUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 

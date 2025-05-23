@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Http\Requests\StoreFreeTimeRequest;
-use App\Http\Requests\UpdateFreeTimeRequest;
+use App\Http\Requests\FreeTime\StoreFreeTimeRequest;
+use App\Http\Requests\FreeTime\UpdateFreeTimeRequest;
 use App\Models\FreeTime;
 use App\Models\LessonTime;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\ScheduleService;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Crypt;
 
 class FreeTimeController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, ScheduleService $lessonService)
     {
         $encrypted_url = $request->encrypted_url;
 
-        $week_days = getWeekDays();
+        $week_days = $lessonService->getWeekDays();
 
         $user = auth()->user();
         $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
@@ -135,7 +135,7 @@ class FreeTimeController extends Controller
 
         $encrypted_url = Crypt::encrypt([
             'user_id' => auth()->user()->id,
-            'expires' => now()->addDays((int)$validated['expire_time'])->timestamp,
+            'expires' => now()->addDays((int) $validated['expire_time'])->timestamp,
             'allow_lessons' => $validated['allow_lessons'] ?? false,
         ]);
         $encrypted_url = url()->route('free-time.show_shared_page', ['token' => $encrypted_url]);
@@ -151,10 +151,10 @@ class FreeTimeController extends Controller
                 abort(410, 'Ссылка устарела');
             }
 
-            if (null === $user = User::find($data['user_id'])){
+            if (null === $user = User::find($data['user_id'])) {
                 abort(404);
             }
-            if (!$user->is_active){
+            if (! $user->is_active) {
                 abort(404);
             }
             $allow_lessons = $data['allow_lessons'] ?? false;

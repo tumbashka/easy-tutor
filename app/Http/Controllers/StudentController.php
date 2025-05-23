@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Http\Requests\StoreStudentRequest;
-use App\Http\Requests\UpdateStudentRequest;
+use App\Http\Requests\Student\StoreStudentRequest;
+use App\Http\Requests\Student\UpdateStudentRequest;
 use App\Models\Homework;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -13,25 +12,11 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
-        $classesUnique = $user->students()
-            ->distinct('class')
-            ->pluck('class')
-            ->toArray();
+        $students = $user->studentsOnClasses();
 
-        sort($classesUnique);
-
-        $studentsOnClasses = [];
-
-        foreach ($classesUnique as $class) {
-            $students = $user->students()
-                ->where('class', $class)
-                ->with('lesson_times')->get()->toArray();
-            $studentsOnClasses[$class] = $students;
-        }
-
-        return view('student.index', compact('studentsOnClasses'));
+        return view('student.index', compact('students'));
     }
 
     public function create(Request $request)
@@ -68,30 +53,16 @@ class StudentController extends Controller
         });
 
         $reminder = $student->telegram_reminder;
-        $homeworks = $student->homework;
+
         $homeworks = Homework::query()
             ->where('student_id', $student->id)
-            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1
+            ->orderByRaw(
+                'CASE WHEN completed_at IS NOT NULL THEN 1
                                         ELSE 0
-                                        END ASC, created_at DESC')
+                                        END ASC, created_at DESC'
+            )
             ->paginate(4);
 
-
-//        $tasks = Task::query()
-//            ->with('task_categories')
-//            ->where('user_id', $user->id)
-//            ->whereHas('task_categories', function ($query) use ($category_name) {
-//                $query->where('name', $category_name);
-//            })
-//            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1
-//                                        ELSE 0
-//                                        END ASC,
-//                                    CASE
-//                                        WHEN deadline IS NULL THEN 1
-//                                        ELSE 0
-//                                    END ASC,
-//                                    deadline ASC, created_at DESC')
-//            ->paginate()->appends(compact('task_category'));
         return view('student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));
     }
 
@@ -107,7 +78,7 @@ class StudentController extends Controller
         $student->price = $request->price;
         $student->note = $request->note;
 
-        if ($student->save()) {
+        if ($student->update()) {
             session(['success' => 'Ученик успешно обновлён!']);
         } else {
             session(['error' => 'Ошибка обновления ученика!']);
@@ -118,12 +89,12 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
-        $lessons = $student->lessons()
+        $student->lessons()
             ->where('date', '>', now())
             ->where('user_id', auth()->user()->id)
             ->delete();
 
-        $todayLessons = $student->lessons()
+        $student->lessons()
             ->where('date', now()->format('Y-m-d'))
             ->where('start', '>', now()->format('H:i:s'))
             ->where('user_id', auth()->user()->id)

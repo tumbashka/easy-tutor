@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Homework\StoreHomeworkRequest;
+use App\Http\Requests\Homework\UpdateHomeworkRequest;
 use App\Models\Homework;
 use App\Models\Student;
-use Illuminate\Http\Request;
 
 class HomeworkController extends Controller
 {
@@ -13,15 +14,8 @@ class HomeworkController extends Controller
         return view('homework.create', compact('student'));
     }
 
-    public function store(Request $request, Student $student)
+    public function store(StoreHomeworkRequest $request, Student $student)
     {
-        \Validator::validate($request->all(),[
-                'description' => ['required', 'string', 'max:250'],
-            ],[
-                'description.required' => 'Краткое описание обязательно для заполнения',
-                'description.max' => 'Краткое описание не должно быть длиннее 250 символов',
-            ]
-        );
         $homework = Homework::create([
             'student_id' => $student->id,
             'description' => $request->input('description'),
@@ -41,28 +35,21 @@ class HomeworkController extends Controller
         return view('homework.edit', compact('student', 'homework'));
     }
 
-    public function update(Request $request, Student $student, Homework $homework)
+    public function update(UpdateHomeworkRequest $request, Student $student, Homework $homework)
     {
-        \Validator::validate($request->all(),[
-            'description' => ['required', 'string', 'max:250'],
-        ],[
-                'description.required' => 'Краткое описание обязательно для заполнения',
-                'description.max' => 'Краткое описание не должно быть длиннее 250 символов',
-            ]
-        );
-
-        $homework->description = $request->get('description');
-        if ($homework->save()) {
+        $homework->description = $request->input('description');
+        if ($homework->update()) {
             session(['success' => 'ДЗ успешно сохранено!']);
         } else {
             session(['error' => 'Ошибка сохранения ДЗ!']);
         }
+
         return redirect()->route('students.show', $student);
     }
 
     public function destroy(Student $student, Homework $homework)
     {
-        if (auth()->user()->cant('delete', $homework)){
+        if (auth()->user()->cant('delete', $homework)) {
             abort(403);
         }
         if ($homework->delete()) {

@@ -2,104 +2,46 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Http\Requests\StoreLessonRequest;
-use App\Http\Requests\UpdateLessonRequest;
+use App\Http\Requests\Lesson\IndexFilterRequest;
+use App\Http\Requests\Lesson\StoreLessonRequest;
+use App\Http\Requests\Lesson\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\Student;
-use App\src\Schedule\Schedule;
-use Illuminate\Http\Request;
+use App\Services\ScheduleService;
+use App\Services\StatisticService;
 use Illuminate\Support\Carbon;
 
 class LessonController extends Controller
 {
-    public function index(Request $request)
-    {
-        $request->validate([
-            'week' => ['nullable', 'integer'],
-        ]);
-        $weekOffset = (int)$request->week;
-        $weekDays = getWeekDays($weekOffset); // ['0-6' => Carbon obj]
-        $previous = getPreviousWeeks($weekOffset, 10);
-        $next = getNextWeeks($weekOffset, 10);
+    public function index(
+        IndexFilterRequest $request,
+        ScheduleService $scheduleService,
+        StatisticService $statisticService
+    ) {
+        $weekOffset = $request->input('week', 0);
+        $weekDTO = $scheduleService->getWeekData($weekOffset);
 
-        $user = auth()->user();
-        $schedule = new Schedule($user);
-        $lessonsOnDays = $schedule->getWeekLessonsOnDays($weekDays);
+        $weekLessons = $weekDTO->lessonsOnDays->flatten(1);
+        $statistics = $statisticService->getLessonsShortStatistic($weekLessons);
 
-        $allLessons = $lessonsOnDays->flatten(1);
-        $now = now();
-        $statistics = [
-            'conductedLessons' => 0,
-            'toConductLessons' => 0,
-            'ongoingLessons' => 0,
-            'canceledLessons' => 0,
-            'earned' => 0,
-            'canceledMoneys' => 0,
-            'totalPossibleEarnings' => 0,
-            'hoursConducted' => 0,
-            'hoursToConduct' => 0,
-        ];
-
-        foreach ($allLessons as $lesson) {
-            $lessonDate = \Carbon\Carbon::parse($lesson->date)->format('Y-m-d');
-            $startTime = $lesson->start->format('H:i:s');
-            $endTime = $lesson->end->format('H:i:s');
-
-            $lessonStart = \Carbon\Carbon::parse("{$lessonDate} {$startTime}");
-            $lessonEnd = \Carbon\Carbon::parse("{$lessonDate} {$endTime}");
-
-            if ($lessonEnd < $lessonStart) {
-                $lessonEnd->addDay();
-            }
-
-            $duration = abs($lessonEnd->diffInMinutes($lessonStart)) / 60;
-
-            if ($lesson->is_canceled) {
-                $statistics['canceledLessons']++;
-                $statistics['canceledMoneys'] += $lesson->price;
-            } else {
-                $statistics['totalPossibleEarnings'] += $lesson->price;
-                if ($lesson->is_paid) {
-                    $statistics['earned'] += $lesson->price;
-                }
-                if ($now > $lessonEnd) {
-                    $statistics['conductedLessons']++;
-                    $statistics['hoursConducted'] += $duration;
-                } elseif ($now >= $lessonStart && $now < $lessonEnd) {
-                    $statistics['ongoingLessons']++;
-                } else {
-                    $statistics['toConductLessons']++;
-                    $statistics['hoursToConduct'] += $duration;
-                }
-            }
-        }
-
-        return view('schedule.index', compact('weekOffset', 'weekDays', 'previous', 'next', 'lessonsOnDays', 'statistics'));
+        return view('schedule.index', array_merge($weekDTO->toArray(), compact('statistics')));
     }
 
-    public function show(Request $request, $day)
+    public function show(string $day, ScheduleService $scheduleService)
     {
-        $day = new Carbon($day);
-        $lessons = Lesson::where('date', $day->format('Y-m-d'))
-            ->where('user_id', auth()->user()->id)
-            ->get();
-        $arr = [];
-        foreach ($lessons as $lesson) {
-            $arr[] = $lesson;
-        }
-        $lessons = $arr;
-        usort($lessons, function ($a, $b) {
-            return $a['start'] <=> $b['start']; // Сортировка по времени
-        });
+        $day = Carbon::parse($day);
+        $lessons = $scheduleService->getActualLessonsOnDate($day);
 
         return view('schedule.show', compact('day', 'lessons'));
     }
 
     public function create($day)
     {
-        $day = new Carbon($day);
-        $students = Student::where('user_id', auth()->id())->orderBy('name')->get();
+        $day = Carbon::parse($day);
+        $user = auth()->user();
+        $students = $user->students()
+            ->orderBy('name')
+            ->get();
 
         return view('lesson.create', compact('day', 'students'));
     }
@@ -129,21 +71,24 @@ class LessonController extends Controller
         return redirect()->route('schedule.show', ['day' => $day->format('Y-m-d')]);
     }
 
-    public function edit($day, $lesson)
+    public function edit($day, Lesson $lesson)
     {
         $day = new Carbon($day);
-        $lesson = Lesson::with('student')->find($lesson);
-        $students = Student::where('user_id', auth()->id())->orderBy('name')->get();
+        $students = auth()
+            ->user()
+            ->students()
+            ->orderBy('name')
+            ->get();
 
         return view('lesson.edit', compact('day', 'students', 'lesson'));
     }
 
     public function update(UpdateLessonRequest $request, $day, Lesson $lesson)
     {
-        $student_name = Student::find($request->student)->name;
+        $student = Student::find($request->student);
 
         $lesson->student_id = $request->student;
-        $lesson->student_name = $student_name;
+        $lesson->student_name = $student->name;
         $lesson->start = $request->start;
         $lesson->end = $request->end;
         $lesson->price = $request->price;
@@ -159,11 +104,12 @@ class LessonController extends Controller
         return redirect()->route('schedule.index', compact('week'));
     }
 
-    public function change_status($day, $lesson)
+    public function change_status($day, Lesson $lesson)
     {
-        $lesson = Lesson::find($lesson);
-        $lesson->is_canceled = !$lesson->is_canceled;
+        $day = Carbon::parse($day);
+        $lesson->is_canceled = ! $lesson->is_canceled;
         $lesson->save();
-        return redirect()->back();
+
+        return redirect()->route('schedule.show', ['day' => $day->format('Y-m-d')]);
     }
 }

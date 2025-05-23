@@ -2,8 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\Lesson\LessonAdded;
-use App\Events\Lesson\LessonUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

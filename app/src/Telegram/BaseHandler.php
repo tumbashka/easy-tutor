@@ -2,28 +2,24 @@
 
 namespace App\src\Telegram;
 
-
 use App\Models\TelegramReminder;
 use Illuminate\Support\Facades\Cache;
+use Telegram\Bot\Api;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\User;
-use Telegram\Bot\Api;
-use Telegram\Bot\Objects\Chat;
 
 abstract class BaseHandler
 {
     public function __construct(
-        protected Api     $telegram,
-        protected Chat    $chat,
-        protected User    $from,
+        protected Api $telegram,
+        protected Chat $chat,
+        protected User $from,
         protected Message $message,
-    )
-    {
+    ) {}
 
-    }
-
-    abstract function process();
+    abstract public function process();
 
     protected function isConfirmedUser(): bool
     {
@@ -31,6 +27,7 @@ abstract class BaseHandler
         if ($user) {
             return true;
         }
+
         return false;
     }
 
@@ -39,6 +36,7 @@ abstract class BaseHandler
         if ($this->chat->type == 'private') {
             return true;
         }
+
         return false;
     }
 
@@ -47,6 +45,7 @@ abstract class BaseHandler
         if ($this->chat->type == 'group') {
             return true;
         }
+
         return false;
     }
 
@@ -102,10 +101,10 @@ abstract class BaseHandler
             $enable = [[['text' => '✅ Включить напоминания 🔔', 'callback_data' => 'enable_remind']]];
 
             $keyboard = [
-                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu'],],
-                [['text' => '✏️ Изменить интервал напоминания о занятии 🔔', 'callback_data' => 'change_before_lesson_minutes'],],
-                [['text' => '✏️ Изменить время ежедневного напоминания о ДЗ 📝', 'callback_data' => 'change_homework_reminder_time'],],
-                [['text' => '❌ Закрыть ❌', 'callback_data' => 'close'],],
+                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu']],
+                [['text' => '✏️ Изменить интервал напоминания о занятии 🔔', 'callback_data' => 'change_before_lesson_minutes']],
+                [['text' => '✏️ Изменить время ежедневного напоминания о ДЗ 📝', 'callback_data' => 'change_homework_reminder_time']],
+                [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']],
             ];
             if ($telegram_reminder->is_enabled) {
                 $keyboard = array_merge($disable, $keyboard);
@@ -114,8 +113,8 @@ abstract class BaseHandler
             }
         } else {
             $keyboard = [
-                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu'],],
-                [['text' => '❌ Закрыть ❌', 'callback_data' => 'close'],],
+                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu']],
+                [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']],
             ];
 
             Telegram::sendMessage([
@@ -124,6 +123,7 @@ abstract class BaseHandler
                 'parse_mode' => 'Markdown',
                 'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
             ]);
+
             return;
         }
 
@@ -134,7 +134,7 @@ abstract class BaseHandler
             Ежедневное напоминание о ДЗ в ***{$telegram_reminder->homework_reminder_time}***
             EOD;
         } else {
-            $text_body = "Напоминания: ***выключены***";
+            $text_body = 'Напоминания: ***выключены***';
         }
         $text = <<<EOD
             Настройки группы:
@@ -149,20 +149,20 @@ abstract class BaseHandler
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
     }
-    protected function sendPrivateSetting(): void
-    {
 
-    }
+    protected function sendPrivateSetting(): void {}
 
     protected function sendKeyboardSetStudent(): void
     {
-        if (!$this->isConfirmedUser()) {
+        if (! $this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
             $this->sendStartTokenError();
+
             return;
         }
-        if (!$this->isGroup()) {
+        if (! $this->isGroup()) {
             $this->sendGroupError();
+
             return;
         }
 
@@ -171,25 +171,27 @@ abstract class BaseHandler
 
         $keyboard = [];
         foreach ($students as $student) {
-            $keyboard[] = [['text' => $student->name, 'callback_data' => 'set_student ' . $student->id]];
+            $keyboard[] = [['text' => $student->name, 'callback_data' => 'set_student '.$student->id]];
         }
         $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
         Telegram::sendMessage([
             'chat_id' => $this->chat->id,
             'text' => 'Выберите ученика для группы:',
-            'reply_markup' => json_encode(['inline_keyboard' => $keyboard])
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
     }
 
     protected function sendHomeworkMenu(): void
     {
-        if (!$this->isConfirmedUser()) {
+        if (! $this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
             $this->sendStartTokenError();
+
             return;
         }
-        if (!$this->isGroup()) {
+        if (! $this->isGroup()) {
             $this->sendGroupError();
+
             return;
         }
 
@@ -200,7 +202,7 @@ abstract class BaseHandler
         Telegram::sendMessage([
             'chat_id' => $this->chat->id,
             'text' => 'Домашнее задание:',
-            'reply_markup' => json_encode(['inline_keyboard' => $keyboard])
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
 
     }
@@ -216,6 +218,7 @@ abstract class BaseHandler
         if ($reminder) {
             return $reminder->student;
         }
+
         return null;
     }
 

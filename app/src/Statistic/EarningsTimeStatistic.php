@@ -6,7 +6,6 @@ use Illuminate\Support\Carbon;
 
 class EarningsTimeStatistic extends Statistic
 {
-
     public function calculate(): void
     {
         switch ($this->type) {

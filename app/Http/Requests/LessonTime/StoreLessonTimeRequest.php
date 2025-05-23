@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\LessonTime;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStudentRequest extends FormRequest
+class StoreLessonTimeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,9 @@ class UpdateStudentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100', 'min:2'],
-            'class' => ['required', 'integer', 'max:11', 'min:1'],
-            'price' => ['required', 'integer', 'max:65000', 'min:0'],
-            'note' => ['nullable', 'string', 'max:65000'],
+            'week_day' => ['required', 'integer', 'max:6', 'min:0'],
+            'start' => ['required', 'date_format:H:i'],
+            'end' => ['required', 'date_format:H:i', 'after:start'],
         ];
     }
 }

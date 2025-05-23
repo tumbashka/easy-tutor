@@ -13,7 +13,7 @@
             </div>
             <div class="col-4 p-0 align-content-center">
                 <p class="text-light text-center m-0">
-                    <ins>{{ getWeekBorders($weekOffset) }}</ins>
+                    <ins>{{ $weekBorders }}</ins>
                 </p>
             </div>
             <div class="col-4 p-1 d-inline-grid">

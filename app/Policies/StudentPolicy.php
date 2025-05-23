@@ -4,15 +4,15 @@ namespace App\Policies;
 
 use App\Models\Student;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class StudentPolicy
 {
-    public function before(User $user, string $ability): bool|null
+    public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdmin()) {
             return true;
         }
+
         return null;
     }
 
@@ -47,5 +47,4 @@ class StudentPolicy
     {
         return $user->id == $student->user_id;
     }
-
 }

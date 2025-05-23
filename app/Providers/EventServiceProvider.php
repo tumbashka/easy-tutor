@@ -18,7 +18,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
 
-//      LessonTime
+        //      LessonTime
         'eloquent.created: App\Models\LessonTime' => [
             ClearUserAllLessonSlotsCache::class,
             ClearUserAllLessonsCache::class,
@@ -33,7 +33,7 @@ class EventServiceProvider extends ServiceProvider
             UpdateLessonTimeLessons::class,
         ],
 
-//      Student
+        //      Student
         'eloquent.deleted: App\Models\Student' => [
             ClearUserAllLessonsCache::class,
         ],
@@ -42,7 +42,7 @@ class EventServiceProvider extends ServiceProvider
             UpdateStudentLessons::class,
         ],
 
-//      FreeTime
+        //      FreeTime
         'eloquent.created: App\Models\FreeTime' => [
             ClearUserAllLessonSlotsCache::class,
         ],
@@ -53,7 +53,7 @@ class EventServiceProvider extends ServiceProvider
             ClearUserAllLessonSlotsCache::class,
         ],
 
-//      Lesson
+        //      Lesson
         'eloquent.created: App\Models\Lesson' => [
             ClearUserDateLessonsCache::class,
         ],

@@ -4,13 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class UserAuthRoutesTest extends TestCase
 {
     use RefreshDatabase;
-
 
     /**
      * A basic test example.
@@ -53,6 +51,7 @@ class UserAuthRoutesTest extends TestCase
         $finalResponse->assertStatus(301);
         $finalResponse->assertRedirect('/schedule');
     }
+
     public function test_redirect_to_email_verify_page_if_user_email_is_not_verified(): void
     {
         $user = User::factory()->create([

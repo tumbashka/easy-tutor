@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateLessonRequest extends FormRequest
+class StoreStudentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->lesson);
+        return auth()->user()->hasVerifiedEmail();
     }
 
     /**
@@ -22,10 +22,9 @@ class UpdateLessonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student' => ['required', 'exists:students,id'],
-            'start' => ['required', 'date_format:H:i'],
-            'end' => ['required', 'date_format:H:i', 'after:start'],
-            'price' => ['required', 'integer', 'max:200000', 'min:0'],
+            'name' => ['required', 'string', 'max:100', 'min:2'],
+            'class' => ['required', 'integer', 'max:11', 'min:1'],
+            'price' => ['required', 'integer', 'max:65000', 'min:0'],
             'note' => ['nullable', 'string', 'max:65000'],
         ];
     }

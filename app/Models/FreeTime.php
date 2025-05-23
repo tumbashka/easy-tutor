@@ -14,6 +14,7 @@ class FreeTime extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     protected $fillable = [
         'user_id',
         'week_day',
@@ -31,5 +32,4 @@ class FreeTime extends Model
             'end' => 'datetime:H:i',
         ];
     }
-
 }

@@ -19,7 +19,7 @@
             <div class="col-10 pe-1">
                 <div class="dropdown-center d-grid">
                     <x-button :size="'sm'" class="dropdown-toggle" data-bs-toggle="dropdown">
-                        {{ $category_name ?? 'Выберите категорию' }}
+                        {{ $category->name ?? 'Выберите категорию' }}
                     </x-button>
                     <ul class="dropdown-menu">
                         @foreach($task_categories as $task_category)
@@ -53,8 +53,8 @@
                 <x-slot:title>
                     <div class="row">
                         <div class="col">
-                            @if(isset($category_name))
-                                {{ $category_name }}
+                            @if($category)
+                                {{ $category->name }}
                                 <a href="{{ route('tasks.index') }}" class="link-light">
                                     <i class="fa-regular fa-rectangle-xmark fa-lg"></i>
                                 </a>

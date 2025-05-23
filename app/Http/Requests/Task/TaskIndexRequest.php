@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreLessonTimeRequest extends FormRequest
+class TaskIndexRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->student && $this->user()->can('update', $this->student);
+        return true;
     }
 
     /**
@@ -23,9 +22,7 @@ class StoreLessonTimeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'week_day' => ['required', 'integer', 'max:6', 'min:0'],
-            'start' => ['required', 'date_format:H:i'],
-            'end' => ['required', 'date_format:H:i', 'after:start'],
+            'task_category' => ['nullable', 'exists:task_categories,id'],
         ];
     }
 }

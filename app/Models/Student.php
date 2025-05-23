@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Cache;
 
 class Student extends Model
 {
@@ -28,7 +27,7 @@ class Student extends Model
         return $this->hasMany(Lesson::class);
     }
 
-    public function homework(): HasMany
+    public function homeworks(): HasMany
     {
         return $this->HasMany(Homework::class);
     }
@@ -79,5 +78,4 @@ class Student extends Model
 
         return $fromTomorrowFutureLessons->concat($todayFutureLessons);
     }
-
 }

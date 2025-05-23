@@ -2,12 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\FreeTime\FreeTimeAdded;
-use App\Events\FreeTime\FreeTimeDeleted;
-use App\Events\FreeTime\FreeTimeUpdated;
-use App\Events\LessonTime\LessonTimeAdded;
-use App\Events\LessonTime\LessonTimeDeleted;
-use App\Events\LessonTime\LessonTimeUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +30,7 @@ class ClearUserAllLessonSlotsCache
             return;
         }
 
-        Log::info("очистка кэша таблицы занятий и окон у " . $user->email);
+        Log::info('очистка кэша таблицы занятий и окон у '.$user->email);
         Cache::forget("all_lesson_slots_{$user->id}");
     }
 }

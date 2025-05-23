@@ -2,22 +2,17 @@
 
 namespace App\Policies;
 
-use App\Models\FreeTime;
 use App\Models\Homework;
-use App\Models\Lesson;
-use App\Models\Student;
-use App\Models\Task;
-use App\Models\TaskCategory;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class HomeworkPolicy
 {
-    public function before(User $user, string $ability): bool|null
+    public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdmin()) {
             return true;
         }
+
         return null;
     }
 
@@ -27,6 +22,7 @@ class HomeworkPolicy
     public function update(User $user, Homework $homework): bool
     {
         $user_id = $homework->student->user->id;
+
         return $user->id == $user_id;
     }
 
@@ -36,7 +32,7 @@ class HomeworkPolicy
     public function delete(User $user, Homework $homework): bool
     {
         $user_id = $homework->student->user->id;
+
         return $user->id == $user_id;
     }
-
 }

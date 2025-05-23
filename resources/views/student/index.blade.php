@@ -17,10 +17,10 @@
         </x-slot:right_text>
     </x-header-two-nav>
     <div class="row justify-content-center">
-        @if(empty($studentsOnClasses))
+        @if($students->isEmpty())
             <h3 class="text-center mt-5">Список учеников пуст.</h3>
         @else
-            @foreach($studentsOnClasses as $class => $students)
+            @foreach($students as $class => $students)
                 <x-student.class-table :class="$class" :students="$students"/>
             @endforeach
         @endif

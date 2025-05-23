@@ -5,8 +5,11 @@ namespace App\src\Statistic;
 abstract class Statistic
 {
     protected array $input_data;
+
     protected string $type;
+
     protected array $labels;
+
     protected array $numbers;
 
     public function __construct(array $input_data, string $type)
@@ -25,6 +28,5 @@ abstract class Statistic
         return $this->numbers;
     }
 
-    public abstract function calculate(): void;
-
+    abstract public function calculate(): void;
 }

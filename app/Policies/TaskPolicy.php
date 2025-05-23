@@ -2,21 +2,17 @@
 
 namespace App\Policies;
 
-use App\Models\FreeTime;
-use App\Models\Lesson;
-use App\Models\Student;
 use App\Models\Task;
-use App\Models\TaskCategory;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class TaskPolicy
 {
-    public function before(User $user, string $ability): bool|null
+    public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdmin()) {
             return true;
         }
+
         return null;
     }
 
@@ -35,5 +31,4 @@ class TaskPolicy
     {
         return $user->id == $task->user_id;
     }
-
 }

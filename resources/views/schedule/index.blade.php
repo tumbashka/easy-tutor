@@ -7,6 +7,7 @@
         :week-offset="$weekOffset"
         :next="$next"
         :previous="$previous"
+        :week-borders="$weekBorders"
     />
     <x-week-statistics :statistics="$statistics"/>
     <x-week

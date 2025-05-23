@@ -7,9 +7,8 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Notifications\MyVerifyMail;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,7 +16,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Http\Requests\LoginRequest;
-use Illuminate\Contracts\Auth\StatefulGuard;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -48,13 +46,13 @@ class FortifyServiceProvider extends ServiceProvider
             return view('login.forgot');
         });
 
-
         Fortify::authenticateUsing(function (LoginRequest $request) {
             $credentials = $request->only('email', 'password');
             $remember = $request->only('remember');
 
             if (auth()->attempt($credentials, $remember)) {
                 $request->session()->regenerate();
+
                 return auth()->user();
             }
 
@@ -84,7 +82,8 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+
             return Limit::perMinute(5)->by($throttleKey);
         });
 

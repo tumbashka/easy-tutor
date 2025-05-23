@@ -3,17 +3,16 @@
 namespace App\Policies;
 
 use App\Models\Lesson;
-use App\Models\Student;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class LessonPolicy
 {
-    public function before(User $user, string $ability): bool|null
+    public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdmin()) {
             return true;
         }
+
         return null;
     }
 
@@ -32,5 +31,4 @@ class LessonPolicy
     {
         return $user->id == $lesson->user_id;
     }
-
 }

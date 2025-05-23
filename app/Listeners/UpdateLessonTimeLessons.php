@@ -2,9 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Events\LessonTime\LessonTimeUpdated;
+use App\Services\LessonTimeService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class UpdateLessonTimeLessons
@@ -30,6 +29,7 @@ class UpdateLessonTimeLessons
         }
 
         Log::info("обновление времени занятия {$lessonTime->id} у {$lessonTime->student->user->email}");
-        $lessonTime->updateLessons();
+        $service = app(LessonTimeService::class);
+        $service->updateFutureLessons($lessonTime);
     }
 }

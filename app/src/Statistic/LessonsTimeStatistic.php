@@ -2,12 +2,12 @@
 
 namespace App\src\Statistic;
 
-use App\src\Statistic\Statistic;
 use Illuminate\Support\Carbon;
 
 class LessonsTimeStatistic extends Statistic
 {
     private array $all_lessons;
+
     private array $canceled_lessons;
 
     public function __construct(array $all_lessons, array $canceled_lessons, string $type)
@@ -50,7 +50,7 @@ class LessonsTimeStatistic extends Statistic
         $current_month = new Carbon('01-01-2000');
         $accepted = [];
         $canceled = [];
-//        dd($this->all_lessons, $this->canceled_lessons);
+        //        dd($this->all_lessons, $this->canceled_lessons);
 
         for ($i = 0; $i < count($days); $i++) {
             $start_of_month = (new Carbon($days[$i]))->startOfMonth();

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 
 class UserController extends Controller
@@ -52,12 +52,10 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             abort(404);
         }
 
         return view('user.profile', compact('user'));
     }
-
-
 }

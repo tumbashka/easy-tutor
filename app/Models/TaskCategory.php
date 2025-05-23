@@ -26,5 +26,4 @@ class TaskCategory extends Model
         'name',
         'color',
     ];
-
 }

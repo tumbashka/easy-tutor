@@ -7,9 +7,13 @@ use Livewire\Component;
 class ReminderSettings extends Component
 {
     public $deadline = '';
+
     public $reminderBeforeDeadline = false;
+
     public $reminderBeforeHours = 2;
+
     public $reminderDaily = false;
+
     public $reminderDailyTime = '09:00';
 
     public function mount($task = null)

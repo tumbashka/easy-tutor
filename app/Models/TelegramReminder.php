@@ -21,7 +21,8 @@ class TelegramReminder extends Model
         'is_enabled' => true,
         'before_lesson_minutes' => 60,
         'homework_reminder_time' => '09:00',
-        ];
+    ];
+
     protected $fillable = [
         'student_id',
         'chat_id',

@@ -8,7 +8,7 @@ use App\Models\Reminder;
 use App\Models\Task;
 use App\Models\TelegramReminder;
 use App\Models\User;
-use App\src\Schedule\Schedule;
+use App\Services\ScheduleService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 class CreateReminders extends Command
 {
     protected $signature = 'reminders:create';
+
     protected $description = 'Create reminders for upcoming lessons and tasks';
 
     public function handle(): void
@@ -27,10 +28,10 @@ class CreateReminders extends Command
             ->where('email_verified_at', '!=', null)
             ->get();
 
-        $todayLessons = new Collection();
+        $todayLessons = new Collection;
         foreach ($actualUsers as $user) {
-            $schedule = new Schedule($user);
-            $todayLessons->put($user->email, $schedule->getDateLessons($now));
+            $scheduleService = app(ScheduleService::class, compact($user));
+            $todayLessons->put($user->email, $scheduleService->getActualLessonsOnDate($now));
         }
 
         foreach ($todayLessons as $userEmail => $lessons) {
@@ -49,12 +50,11 @@ class CreateReminders extends Command
 
     }
 
-
     private function createTasksReminders(\Illuminate\Database\Eloquent\Collection $users, Carbon $now): void
     {
         /** @var $user User */
         foreach ($users as $user) {
-            if (!$user->is_enabled_task_reminders) {
+            if (! $user->is_enabled_task_reminders) {
                 continue;
             }
 
@@ -67,7 +67,7 @@ class CreateReminders extends Command
             /** @var $task Task */
             foreach ($tasks as $task) {
                 $chatId = $user->telegram_id;
-                if (!$chatId) {
+                if (! $chatId) {
                     continue;
                 }
 
@@ -102,7 +102,7 @@ class CreateReminders extends Command
                 ->where('completed_at', null)
                 ->get();
 
-            if (!$homeworks) {
+            if (! $homeworks) {
                 return;
             }
 
@@ -120,7 +120,7 @@ class CreateReminders extends Command
             $time = $lesson->start->format('H:i');
             $text = "Напоминание: Не забудьте сделать домашнее задание на {$date} в {$time}:\n";
             foreach ($homeworks as $key => $homework) {
-                $text .= $key + 1 . ". {$homework->description}\n";
+                $text .= $key + 1 .". {$homework->description}\n";
             }
 
             Reminder::create([
@@ -207,11 +207,11 @@ class CreateReminders extends Command
                 : "{$diffInHours} ч.";
 
             $text = "Напоминание: Задача \"{$task->title}\" просрочена! \n"
-                . "Дедлайн был {$deadlineFormatted}. \n"
-                . "Просрочено на: {$delayText}.";
+                ."Дедлайн был {$deadlineFormatted}. \n"
+                ."Просрочено на: {$delayText}.";
         } else {
             $text = "Ежедневное напоминание: Не забудьте про задачу \"{$task->title}\"! \n"
-                . "Дедлайн {$deadlineFormatted}.";
+                ."Дедлайн {$deadlineFormatted}.";
         }
 
         Reminder::create([

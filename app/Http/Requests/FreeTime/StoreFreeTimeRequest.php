@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\FreeTime;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,6 +30,7 @@ class StoreFreeTimeRequest extends FormRequest
             'note' => ['nullable', 'string', 'max:65000'],
         ];
     }
+
     public function messages(): array
     {
         return [

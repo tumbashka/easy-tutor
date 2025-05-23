@@ -10,9 +10,11 @@ use Telegram\Bot\Objects\Message;
 
 class MessageHandler extends BaseHandler
 {
-    private string|null $text;
-    private string|null $command;
-    private string|null $param;
+    private ?string $text;
+
+    private ?string $command;
+
+    private ?string $param;
 
     public function __construct(Api $telegram, Message $message)
     {
@@ -56,12 +58,14 @@ class MessageHandler extends BaseHandler
 
     private function handleStart(): void
     {
-        if (!$this->isPrivate()) {
+        if (! $this->isPrivate()) {
             $this->sendPrivateError();
+
             return;
         }
-        if (!$this->param) {
+        if (! $this->param) {
             $this->sendStartTokenError();
+
             return;
         }
 
@@ -71,20 +75,21 @@ class MessageHandler extends BaseHandler
             $user->update();
             $this->sendTextMessage("Телеграмм аккаунт: ***{$user->telegram_username}*** успешно привязан к аккаунту: ***{$user->name}***");
         } else {
-            $this->sendTextMessage("Токен не действителен");
+            $this->sendTextMessage('Токен не действителен');
         }
     }
 
-
     private function handleSettings(): void
     {
-        if (!$this->isConfirmedUser()) {
+        if (! $this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
             $this->sendStartTokenError();
+
             return;
         }
         if ($this->isGroup()) {
             $this->sendGroupSetting();
+
             return;
         }
         $this->sendGroupError();
@@ -92,20 +97,22 @@ class MessageHandler extends BaseHandler
 
     private function handleHomework(): void
     {
-        if (!$this->isConfirmedUser()) {
+        if (! $this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
             $this->sendStartTokenError();
-            return;
-        }
-        if (!$this->isGroup()) {
-            $this->sendGroupError();
-            return;
-        }
-        if (!$this->getTelegramReminder()) {
-            $this->sendStudentDontConnectError();
-            return;
-        }
 
+            return;
+        }
+        if (! $this->isGroup()) {
+            $this->sendGroupError();
+
+            return;
+        }
+        if (! $this->getTelegramReminder()) {
+            $this->sendStudentDontConnectError();
+
+            return;
+        }
 
         $this->sendHomeworkMenu();
 
@@ -113,12 +120,14 @@ class MessageHandler extends BaseHandler
 
     private function createHomework(): void
     {
-        if (!$this->isConfirmedUser()) {
+        if (! $this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
+
             return;
         }
-        if (!$this->isGroup()) {
+        if (! $this->isGroup()) {
             $this->sendGroupError();
+
             return;
         }
         if (strlen($this->text) > 250) {
@@ -128,6 +137,7 @@ class MessageHandler extends BaseHandler
                 'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
                 'reply_markup' => json_encode(['force_reply' => true]),
             ]);
+
             return;
         }
 
@@ -141,6 +151,4 @@ class MessageHandler extends BaseHandler
         $this->sendTextMessage("Домашнее задание \"{$this->text}\" успешно добавлено!");
         $this->sendHomeworkMenu();
     }
-
-
 }

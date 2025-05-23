@@ -21,6 +21,7 @@ class LessonTimeFactory extends Factory
 
         $startTime = $start->format('H:i');
         $endTime = $end->format('H:i');
+
         return [
             'student_id' => Student::factory(),
             'week_day' => fake()->numberBetween(0, 6),

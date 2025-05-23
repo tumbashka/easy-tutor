@@ -2,65 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Student;
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Requests\Task\TaskIndexRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function index(Request $request)
+    public function index(TaskIndexRequest $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
         $task_categories = $user->taskCategories;
         $task_category = $request->input('task_category');
-        if ($category = $task_categories->firstWhere('id', $task_category)) {
-            $category_name = $category->name;
 
-            $tasks = Task::query()
-                ->with('task_categories')
-                ->where('user_id', $user->id)
-                ->whereHas('task_categories', function ($query) use ($category_name) {
-                    $query->where('name', $category_name);
-                })
-                ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1
-                                        ELSE 0
-                                        END ASC,
-                                    CASE
-                                        WHEN deadline IS NULL THEN 1
-                                        ELSE 0
-                                    END ASC,
-                                    deadline ASC, created_at DESC')
-                ->paginate()->appends(compact('task_category'));
-        } else {
-            $tasks = Task::query()
-                ->with('task_categories')
-                ->where('user_id', $user->id)
-                ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1
-                                        ELSE 0
-                                        END ASC,
-                                    CASE
-                                        WHEN deadline IS NULL THEN 1
-                                        ELSE 0
-                                    END ASC,
-                                    deadline ASC, created_at DESC')
-                ->paginate();
-            $category_name = null;
-        }
+        $category = $task_categories
+            ->firstWhere('id', $task_category);
 
-        return view('tasks.index', compact('task_categories', 'tasks', 'category_name'));
+        $tasks = $user->tasks()
+            ->whereCategory($category)
+            ->sortByActuality()
+            ->paginate()
+            ->appends(compact('task_category'));
+
+        return view('tasks.index', compact('task_categories', 'category', 'tasks'));
     }
 
     public function create(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
         $task_categories = $user->taskCategories;
 
-        $students_on_classes = Student::query()
-            ->select()
-            ->where('user_id', $user->id)
-            ->get()->groupBy('class')->sortKeys();
+        $students_on_classes = $user->studentsOnClasses();
 
         return view('tasks.create', compact('task_categories', 'students_on_classes'));
     }
@@ -99,10 +72,7 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $task_categories = $user->taskCategories;
-        $students_on_classes = Student::query()
-            ->select()
-            ->where('user_id', $user->id)
-            ->get()->groupBy('class')->sortKeys();
+        $students_on_classes = $user->studentsOnClasses();
 
         $task->load(['task_categories', 'students']);
 
@@ -118,7 +88,6 @@ class TaskController extends Controller
         $task->reminder_daily = $request->input('reminderDaily', false);
         $task->reminder_before_hours = $request->input('reminderBeforeHours');
         $task->reminder_daily_time = $request->input('reminderDailyTime');
-
 
         if ($task->save()) {
             $task->task_categories()->detach();
@@ -146,7 +115,6 @@ class TaskController extends Controller
         }
 
         return redirect()->route('tasks.index');
-
     }
 
     public function change_completed(Task $task)
@@ -167,9 +135,8 @@ class TaskController extends Controller
 
     public function delete_completed(Request $request)
     {
-        $user = auth()->user();
-
-        $user->tasks()
+        $request->user()
+            ->tasks()
             ->whereNotNull('completed_at')
             ->delete();
 

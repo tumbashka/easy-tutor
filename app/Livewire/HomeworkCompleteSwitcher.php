@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\Homework;
-use App\Models\Task;
 use Livewire\Component;
 
 class HomeworkCompleteSwitcher extends Component

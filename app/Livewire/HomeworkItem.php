@@ -8,6 +8,7 @@ use Livewire\Component;
 class HomeworkItem extends Component
 {
     public $homework;
+
     public $is_completed;
 
     public function mount(Homework $homework)
@@ -25,7 +26,7 @@ class HomeworkItem extends Component
         $this->homework->completed_at = $this->is_completed ? null : now();
         $this->homework->save();
 
-        $this->is_completed = !$this->is_completed;
+        $this->is_completed = ! $this->is_completed;
 
         // Отправляем событие для обновления списка
         $this->dispatch('homeworkUpdated');

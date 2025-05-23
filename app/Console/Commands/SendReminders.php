@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class SendReminders extends Command
 {
     protected $signature = 'reminders:send';
+
     protected $description = 'Dispatch send reminders';
 
     public function handle()

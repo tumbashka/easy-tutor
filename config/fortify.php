@@ -131,10 +131,10 @@ return [
     */
 
     'views' => [
-        true
-//        'login' => 'login.index',
-//        'register' => 'registration.index',
-//        'password-reset' => 'login.reset-password',
+        true,
+        //        'login' => 'login.index',
+        //        'register' => 'registration.index',
+        //        'password-reset' => 'login.reset-password',
     ],
 
     /*
@@ -152,13 +152,13 @@ return [
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
-//        Features::updateProfileInformation(),
-//        Features::updatePasswords(),
-//        Features::twoFactorAuthentication([
-//            'confirm' => true,
-//            'confirmPassword' => true,
-//            // 'window' => 0,
-//        ]),
+        //        Features::updateProfileInformation(),
+        //        Features::updatePasswords(),
+        //        Features::twoFactorAuthentication([
+        //            'confirm' => true,
+        //            'confirmPassword' => true,
+        //            // 'window' => 0,
+        //        ]),
     ],
 
 ];
