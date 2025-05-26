@@ -29,10 +29,10 @@ class LessonController extends Controller
 
     public function show(string $day, ScheduleService $scheduleService)
     {
-        $day = Carbon::parse($day);
-        $lessons = $scheduleService->getActualLessonsOnDate($day);
+        $dayCarbon = Carbon::parse($day);
+        $lessons = $scheduleService->getActualLessonsOnDate($dayCarbon);
 
-        return view('schedule.show', compact('day', 'lessons'));
+        return view('schedule.show', compact('dayCarbon', 'lessons'));
     }
 
     public function create($day)

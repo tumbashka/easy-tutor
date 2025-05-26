@@ -220,6 +220,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function studentsOnClasses(): Collection
     {
         return $this->students()
+            ->orderBy('name')
             ->with('lesson_times')
             ->get()
             ->groupBy('class')
