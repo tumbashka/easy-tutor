@@ -4,7 +4,7 @@ namespace App\src\Statistic;
 
 abstract class Statistic
 {
-    protected array $input_data;
+    protected array $inputData;
 
     protected string $type;
 
@@ -12,18 +12,18 @@ abstract class Statistic
 
     protected array $numbers;
 
-    public function __construct(array $input_data, string $type)
+    public function __construct(array $inputData, string $type)
     {
-        $this->input_data = $input_data;
+        $this->inputData = $inputData;
         $this->type = $type;
     }
 
-    public function get_labels(): array
+    public function getLabels(): array
     {
         return $this->labels;
     }
 
-    public function get_numbers(): array
+    public function getNumbers(): array
     {
         return $this->numbers;
     }

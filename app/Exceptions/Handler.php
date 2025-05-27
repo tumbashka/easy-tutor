@@ -11,12 +11,9 @@ class Handler
     {
         $exceptions->render(function (HttpException $e) {
             if ($e->getStatusCode() === 419) {
-                \Log::info('CSRF token mismatch intercepted'); // Для отладки
-
                 return redirect()->back()->with('error', 'Сессия истекла. Пожалуйста, попробуйте снова.');
             }
 
-            // Для других HTTP-исключений передаем дальше
             return null;
         });
 

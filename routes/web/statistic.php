@@ -9,9 +9,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::prefix('/statistic')->name('statistic.')->group(function () {
         Route::prefix('/earnings')->name('earnings.')->group(function () {
             Route::get('/period', [EarningsController::class, 'period'])->name('period');
-            Route::post('/period', [EarningsController::class, 'period_calculate'])->name('period_calculate');
+            Route::post('/period', [EarningsController::class, 'periodCalculate'])->name('period_calculate');
             Route::get('/students', [EarningsController::class, 'students'])->name('students');
-            Route::post('/students', [EarningsController::class, 'students_calculate'])->name('students_calculate');
+            Route::post('/students', [EarningsController::class, 'studentsCalculate'])->name('students_calculate');
         });
 
         Route::prefix('/lessons')->name('lessons.')->group(function () {

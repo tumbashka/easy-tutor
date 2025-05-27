@@ -49,9 +49,9 @@ class LessonsController extends StatisticController
 
         $statistic = new LessonsTimeStatistic($all, $canceled, $data['type']);
         $statistic->calculate();
-        $first_data = $statistic->get_numbers()[0];
-        $second_data = $statistic->get_numbers()[1];
-        $labels = $statistic->get_labels();
+        $first_data = $statistic->getNumbers()[0];
+        $second_data = $statistic->getNumbers()[1];
+        $labels = $statistic->getLabels();
 
         $total['accepted'] = array_sum($first_data);
         $total['canceled'] = array_sum($second_data);

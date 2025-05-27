@@ -111,13 +111,11 @@ if (! function_exists('getLessonPrice')) {
 if (! function_exists('getRandomRGB')) {
     /**
      * Получение случайного RBG цвета
-     *
-     * @throws \Random\RandomException
      */
     function getRandomRGB(int $count = 1, int $minColor = 70, int $maxColor = 255): array|string
     {
         $arr = [];
-        if ($count > 1) {
+        if ($count > 0) {
             for ($i = 0; $i < $count; $i++) {
                 $red = random_int($minColor, $maxColor);
                 $green = random_int($minColor, $maxColor);

@@ -6,14 +6,14 @@ use Illuminate\Support\Carbon;
 
 class LessonsTimeStatistic extends Statistic
 {
-    private array $all_lessons;
+    private array $allLessons;
 
-    private array $canceled_lessons;
+    private array $canceledLessons;
 
-    public function __construct(array $all_lessons, array $canceled_lessons, string $type)
+    public function __construct(array $allLessons, array $canceledLessons, string $type)
     {
-        $this->all_lessons = $all_lessons;
-        $this->canceled_lessons = $canceled_lessons;
+        $this->allLessons = $allLessons;
+        $this->canceledLessons = $canceledLessons;
         $this->type = $type;
     }
 
@@ -21,48 +21,47 @@ class LessonsTimeStatistic extends Statistic
     {
         switch ($this->type) {
             case 'day':
-                $this->day_calculate();
+                $this->dayCalculate();
                 break;
             case 'month':
-                $this->month_calculate();
+                $this->monthCalculate();
                 break;
         }
     }
 
-    private function day_calculate(): void
+    private function dayCalculate(): void
     {
-        $this->labels = array_keys($this->all_lessons);
-        foreach ($this->all_lessons as $date => $lessons) {
-            if (array_key_exists($date, $this->canceled_lessons)) {
-                $this->all_lessons[$date] -= $this->canceled_lessons[$date];
+        $this->labels = array_keys($this->allLessons);
+        foreach ($this->allLessons as $date => $lessons) {
+            if (array_key_exists($date, $this->canceledLessons)) {
+                $this->allLessons[$date] -= $this->canceledLessons[$date];
             } else {
-                $this->canceled_lessons[$date] = 0;
+                $this->canceledLessons[$date] = 0;
             }
         }
-        ksort($this->canceled_lessons);
-        $this->numbers[] = array_values($this->all_lessons);
-        $this->numbers[] = array_values($this->canceled_lessons);
+        ksort($this->canceledLessons);
+        $this->numbers[] = array_values($this->allLessons);
+        $this->numbers[] = array_values($this->canceledLessons);
     }
 
-    private function month_calculate(): void
+    private function monthCalculate(): void
     {
-        $days = array_keys($this->all_lessons);
-        $current_month = new Carbon('01-01-2000');
+        $days = array_keys($this->allLessons);
+        $currentMonth = new Carbon('01-01-2000');
         $accepted = [];
         $canceled = [];
-        //        dd($this->all_lessons, $this->canceled_lessons);
 
         for ($i = 0; $i < count($days); $i++) {
-            $start_of_month = (new Carbon($days[$i]))->startOfMonth();
-            if ($current_month != $start_of_month) {
-                $current_month = $start_of_month;
-                $accepted[$current_month->translatedFormat('F Yг.')] = 0;
-                $canceled[$current_month->translatedFormat('F Yг.')] = 0;
+            $startOfMonth = (new Carbon($days[$i]))->startOfMonth();
+            if ($currentMonth != $startOfMonth) {
+                $currentMonth = $startOfMonth;
+                $accepted[$currentMonth->translatedFormat('F Yг.')] = 0;
+                $canceled[$currentMonth->translatedFormat('F Yг.')] = 0;
             }
-            if (array_key_exists($days[$i], $this->canceled_lessons)) {
-                $canceled[$current_month->translatedFormat('F Yг.')] += $this->canceled_lessons[$days[$i]];
+            if (array_key_exists($days[$i], $this->canceledLessons)) {
+                $canceled[$currentMonth->translatedFormat('F Yг.')] += $this->canceledLessons[$days[$i]];
             }
-            $accepted[$current_month->translatedFormat('F Yг.')] += $this->all_lessons[$days[$i]];
+            $accepted[$currentMonth->translatedFormat('F Yг.')] += $this->allLessons[$days[$i]];
         }
         foreach ($canceled as $key => $value) {
             $accepted[$key] -= $value;

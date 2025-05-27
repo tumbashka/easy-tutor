@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Statistic;
 
+use App\Http\Requests\EarningsStudentsRequest;
 use App\Models\Lesson;
 use App\src\Statistic\EarningsTimeStatistic;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class EarningsController extends StatisticController
         return view('statistic.earnings.period', compact('labels', 'numbers', 'label', 'total'));
     }
 
-    public function period_calculate(Request $request)
+    public function periodCalculate(Request $request)
     {
         $data = $this->getValidatedData($request);
         if (! is_array($data)) {
@@ -39,8 +40,8 @@ class EarningsController extends StatisticController
 
         $statistic = new EarningsTimeStatistic($res, $data['type']);
         $statistic->calculate();
-        $labels = $statistic->get_labels();
-        $numbers = $statistic->get_numbers();
+        $labels = $statistic->getLabels();
+        $numbers = $statistic->getNumbers();
 
         $total = array_sum($numbers);
         $total = Number::format($total, 2, locale: 'ru');
@@ -61,16 +62,14 @@ class EarningsController extends StatisticController
         return view('statistic.earnings.students', compact('labels', 'numbers', 'colors'));
     }
 
-    public function students_calculate(Request $request)
+    public function studentsCalculate(EarningsStudentsRequest $request)
     {
-        Validator::make($request->all(), [
-            'type' => ['required', 'string'],
-        ])->validate();
-        if ($request->type != 'all' && $request->type != 'month') {
-            return redirect()->back()->withErrors(['type_not_found' => 'Ошибка расчета статистики'])->withInput();
+      $type = $request->input('type');
+        if ($type != 'all' && $type != 'month') {
+            return redirect()->back()->withErrors(['type_not_found' => 'Указан неправильный тип расчета'])->withInput();
         }
         $res = [];
-        if ($request->type === 'all') {
+        if ($type === 'all') {
             $res = Lesson::query()
                 ->selectRaw('student_name, SUM(price) as student_price')
                 ->where('user_id', auth()->user()->id)
@@ -80,7 +79,7 @@ class EarningsController extends StatisticController
                 ->pluck('student_price', 'student_name')
                 ->toArray();
         }
-        if ($request->type === 'month') {
+        if ($type === 'month') {
             $dates = explode(' — ', $request->range);
             if (count($dates) < 1) {
                 return redirect()->back()->withErrors(['required' => 'Заполните диапазон для расчета статистики'])->withInput();

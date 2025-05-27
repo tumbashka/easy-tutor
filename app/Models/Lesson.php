@@ -10,16 +10,6 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(Student::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
     protected $fillable = [
         'student_id',
         'lesson_time_id',
@@ -42,5 +32,15 @@ class Lesson extends Model
             'is_paid' => 'boolean',
             'is_canceled' => 'boolean',
         ];
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

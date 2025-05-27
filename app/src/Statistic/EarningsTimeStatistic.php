@@ -10,34 +10,34 @@ class EarningsTimeStatistic extends Statistic
     {
         switch ($this->type) {
             case 'day':
-                $this->day_calculate();
+                $this->dayCalculate();
                 break;
             case 'month':
-                $this->month_calculate();
+                $this->monthCalculate();
                 break;
         }
     }
 
-    private function month_calculate(): void
+    private function monthCalculate(): void
     {
-        $days = array_keys($this->input_data);
-        $current_month = new Carbon('01-01-2000');
+        $days = array_keys($this->inputData);
+        $currentMonth = new Carbon('01-01-2000');
         $numbers = [];
         for ($i = 0; $i < count($days); $i++) {
-            $start_of_month = (new Carbon($days[$i]))->startOfMonth();
-            if ($current_month != $start_of_month) {
-                $current_month = $start_of_month;
-                $numbers[$current_month->translatedFormat('F Yг.')] = 0;
+            $startOfMonth = (new Carbon($days[$i]))->startOfMonth();
+            if ($currentMonth != $startOfMonth) {
+                $currentMonth = $startOfMonth;
+                $numbers[$currentMonth->translatedFormat('F Yг.')] = 0;
             }
-            $numbers[$current_month->translatedFormat('F Yг.')] += $this->input_data[$days[$i]];
+            $numbers[$currentMonth->translatedFormat('F Yг.')] += $this->inputData[$days[$i]];
         }
         $this->labels = array_keys($numbers);
         $this->numbers = array_values($numbers);
     }
 
-    private function day_calculate(): void
+    private function dayCalculate(): void
     {
-        $this->labels = array_keys($this->input_data);
-        $this->numbers = array_values($this->input_data);
+        $this->labels = array_keys($this->inputData);
+        $this->numbers = array_values($this->inputData);
     }
 }
