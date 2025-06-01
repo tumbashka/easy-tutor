@@ -32,18 +32,45 @@ class LessonController extends Controller
         $dayCarbon = Carbon::parse($day);
         $lessons = $scheduleService->getActualLessonsOnDate($dayCarbon);
 
-        return view('schedule.show', compact('dayCarbon', 'lessons'));
+        $occupiedSlots = auth()->user()->lessons()
+            ->whereDate('date', $dayCarbon)
+            ->where('is_canceled', false)
+            ->with('student')
+            ->get(['start', 'end', 'student_id'])
+            ->map(function ($lesson) {
+                return [
+                    'start' => $lesson->start->format('H:i'),
+                    'end' => $lesson->end->format('H:i'),
+                    'student_name' => $lesson->student ? $lesson->student->name : 'Без имени',
+                ];
+            });
+
+        return view('schedule.show', compact('dayCarbon', 'lessons', 'occupiedSlots'));
     }
 
     public function create($day)
     {
         $day = Carbon::parse($day);
         $user = auth()->user();
+
         $students = $user->students()
             ->orderBy('name')
             ->get();
 
-        return view('lesson.create', compact('day', 'students'));
+        $occupiedSlots = $user->lessons()
+            ->whereDate('date', $day)
+            ->where('is_canceled', false)
+            ->with('student')
+            ->get(['start', 'end', 'student_id'])
+            ->map(function ($lesson) {
+                return [
+                    'start' => $lesson->start->format('H:i'),
+                    'end' => $lesson->end->format('H:i'),
+                    'student_name' => $lesson->student ? $lesson->student->name : 'Без имени',
+                ];
+            });
+
+        return view('lesson.create', compact('day', 'students', 'occupiedSlots'));
     }
 
     public function store(StoreLessonRequest $request, $day)
@@ -80,7 +107,21 @@ class LessonController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('lesson.edit', compact('day', 'students', 'lesson'));
+        $occupiedSlots = auth()->user()->lessons()
+            ->whereDate('date', $day)
+            ->where('is_canceled', false)
+            ->whereNot('id', $lesson->id)
+            ->with('student') // Предполагается, что у модели Lesson есть связь с Student
+            ->get(['start', 'end', 'student_id'])
+            ->map(function ($lesson) {
+                return [
+                    'start' => $lesson->start->format('H:i'),
+                    'end' => $lesson->end->format('H:i'),
+                    'student_name' => $lesson->student ? $lesson->student->name : 'Без имени',
+                ];
+            });
+
+        return view('lesson.edit', compact('day', 'students', 'lesson', 'occupiedSlots'));
     }
 
     public function update(UpdateLessonRequest $request, $day, Lesson $lesson)

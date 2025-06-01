@@ -4,7 +4,7 @@
 
 @section('main.content')
     <x-form-container>
-        <form action="{{ route('schedule.lesson.store',['day' => $day->format('Y-m-d')]) }}" method="post">
+    <form action="{{ route('schedule.lesson.store',['day' => $day->format('Y-m-d')]) }}" method="post">
             @csrf
             <x-card.card>
                 <x-card.header-nav
@@ -15,7 +15,7 @@
                     </x-slot:title>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson.form :students="$students"/>
+                    <x-lesson.form :students="$students" :occupied-slots="$occupiedSlots"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">

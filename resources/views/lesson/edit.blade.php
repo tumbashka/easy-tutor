@@ -3,7 +3,6 @@
 @section('title', 'Изменение занятия ')
 
 @section('main.content')
-{{--    @dump()--}}
     <x-form-container>
         <form action="{{ route('schedule.lesson.update',['day' => $day->format('Y-m-d'), 'lesson' => $lesson->id]) }}" method="post">
             @csrf
@@ -17,7 +16,7 @@
                     </x-slot:title>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson.form :lesson="$lesson" :students="$students"/>
+                    <x-lesson.form :lesson="$lesson" :students="$students" :occupied-slots="$occupiedSlots"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">
