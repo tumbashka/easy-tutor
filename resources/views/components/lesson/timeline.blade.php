@@ -16,35 +16,47 @@
                 'end' => $lesson->end->format('H:i'),
                 'student_name' => $lesson->student ? $lesson->student->name : 'Без имени'
             ] : null);
-            const defaultStartHour = 8;
-            const endHour = 24;
             const svg = document.querySelector('.timeline-svg');
-            let newLesson = lesson; // Инициализируем с данными редактируемого занятия
-            let conflictingSlots = new Set(); // Храним конфликтующие слоты
+            let newLesson = lesson;
+            let conflictingSlots = new Set();
 
-            function getStartHour() {
-                let earliestHour = defaultStartHour;
+            function getTimeBounds() {
+                let earliestHour = Infinity;
+                let latestHour = -Infinity;
 
                 // Проверяем занятые слоты
                 occupiedSlots.forEach(slot => {
-                    const [hours] = slot.start.split(':').map(Number);
-                    earliestHour = Math.min(earliestHour, hours);
+                    const [startHours, startMinutes] = slot.start.split(':').map(Number);
+                    const [endHours, endMinutes] = slot.end.split(':').map(Number);
+                    const startTime = startHours + startMinutes / 60;
+                    const endTime = endHours + endMinutes / 60;
+                    earliestHour = Math.min(earliestHour, startTime);
+                    latestHour = Math.max(latestHour, endTime);
                 });
 
                 // Проверяем новое занятие
-                if (newLesson && newLesson.start) {
-                    const [hours] = newLesson.start.split(':').map(Number);
-                    earliestHour = Math.min(earliestHour, hours);
+                if (newLesson && newLesson.start && newLesson.end) {
+                    const [startHours, startMinutes] = newLesson.start.split(':').map(Number);
+                    const [endHours, endMinutes] = newLesson.end.split(':').map(Number);
+                    const startTime = startHours + startMinutes / 60;
+                    const endTime = endHours + endMinutes / 60;
+                    earliestHour = Math.min(earliestHour, startTime);
+                    latestHour = Math.max(latestHour, endTime);
                 }
 
-                // Округляем вниз до целого часа
-                return Math.floor(earliestHour);
+                // Если нет занятий, используем дефолтный диапазон
+                if (earliestHour === Infinity || latestHour === -Infinity) {
+                    earliestHour = 8;
+                    latestHour = 24;
+                }
+
+                return { startHour: earliestHour, endHour: latestHour };
             }
 
             function renderTimeline() {
                 const height = svg.getBoundingClientRect().height;
-                const startHour = getStartHour();
-                const totalHours = endHour - startHour;
+                const { startHour, endHour } = getTimeBounds();
+                const totalHours = endHour - startHour || 1; // Избегаем деления на 0
                 const hourHeight = height / totalHours;
                 svg.innerHTML = '';
 
@@ -54,36 +66,24 @@
                 // Сортировка слотов по времени начала
                 occupiedSlots.sort((a, b) => a.start.localeCompare(b.start));
 
-                // Объединение слотов
-                const mergedSlots = [];
-                occupiedSlots.forEach(slot => {
-                    if (mergedSlots.length === 0) {
-                        mergedSlots.push({ start: slot.start, end: slot.end, students: [slot.student_name] });
-                    } else {
-                        const lastSlot = mergedSlots[mergedSlots.length - 1];
-                        const lastEnd = new Date(`2025-05-26 ${lastSlot.end}`).getTime();
-                        const currentStart = new Date(`2025-05-26 ${slot.start}`).getTime();
-                        const currentEnd = new Date(`2025-05-26 ${slot.end}`).getTime();
-
-                        if (currentStart < lastEnd + 30 * 60000) {
-                            const maxEnd = Math.max(lastEnd, currentEnd);
-                            lastSlot.end = new Date(maxEnd).toTimeString().slice(0, 5);
-                            lastSlot.students.push(slot.student_name);
-                        } else {
-                            mergedSlots.push({ start: slot.start, end: slot.end, students: [slot.student_name] });
-                        }
-                    }
-                });
+                // Копируем слоты без объединения
+                const mergedSlots = occupiedSlots.map(slot => ({
+                    start: slot.start,
+                    end: slot.end,
+                    students: [slot.student_name]
+                }));
 
                 // Подготовка меток времени
                 let labelTimes = [];
 
-                // Добавляем целые часы
-                for (let hour = startHour; hour <= endHour; hour++) {
-                    let timeStr = `${hour.toString().padStart(2, '0')}:00`;
-                    let time = new Date(`2025-05-26 ${timeStr}`);
-                    let y = (hour - startHour) * hourHeight;
-                    labelTimes.push({ time: time, timeStr: timeStr, y: y, isHour: true });
+                // Добавляем целые часы в пределах startHour и endHour
+                for (let hour = Math.floor(startHour); hour <= Math.ceil(endHour); hour++) {
+                    if (hour >= startHour && hour <= endHour) {
+                        let timeStr = `${hour.toString().padStart(2, '0')}:00`;
+                        let time = new Date(`2025-05-26 ${timeStr}`);
+                        let y = (hour - startHour) * hourHeight;
+                        labelTimes.push({ time: time, timeStr: timeStr, y: y, isHour: true });
+                    }
                 }
 
                 // Добавляем времена начала и конца слотов
@@ -156,32 +156,30 @@
                     svg.innerHTML += `<text x="5" y="${label.y + 5}" class="time-label" style="fill: ${textColor};">${label.timeStr}</text>`;
                 });
 
-                // Отображение объединённых слотов
+                // Отображение слотов
                 mergedSlots.forEach((slot, index) => {
                     try {
                         let startTime = new Date(`2025-05-26 ${slot.start}`);
                         let endTime = new Date(`2025-05-26 ${slot.end}`);
                         let startY = (startTime.getHours() + startTime.getMinutes() / 60 - startHour) * hourHeight;
-                        let endY = (endTime.getHours() + endTime.getMinutes() / 60 - startHour) * hourHeight;
-                        let minHeight = 15 + slot.students.length * 12 + 12 + 5; // Отступ сверху + имена + время + отступ снизу
+                        let endY = (endTime.getHours() + startTime.getMinutes() / 60 - startHour) * hourHeight;
+                        let minHeight = 12 + slot.students.length * 15 + 10; // Отступ сверху + имена + время
                         let slotHeight = Math.max(endY - startY, minHeight);
 
-                        // Подсветка конфликтующего слота
-                        const isConflicting = conflictingSlots.has(`${slot.start}-${slot.end}`);
-                        const strokeColor = isConflicting ? '#ff0000' : 'rgb(141, 27, 54)';
-                        const strokeWidth = isConflicting ? 3 : 1;
+                        const strokeColor = 'rgb(141, 27, 54)';
+                        const strokeWidth = 1;
 
                         svg.innerHTML += `<rect x="80" y="${startY}" width="120" height="${slotHeight}" rx="8" class="slot" style="fill: rgb(161, 47, 74); stroke: ${strokeColor}; stroke-width: ${strokeWidth};"/>`;
 
                         // Позиция для имён учеников (вверху блока)
-                        const studentTextY = startY + 15;
+                        const studentTextY = startY + 12;
                         let studentText = slot.students.map((student, idx) =>
-                            `<tspan x="90" dy="${idx === 0 ? 0 : 12}">${student}</tspan>`
+                            `<tspan x="90" dy="${idx === 0 ? 0 : 15}">${student}</tspan>`
                         ).join('');
                         svg.innerHTML += `<text x="90" y="${studentTextY}" class="slot-text">${studentText}</text>`;
 
                         // Позиция для времени (внизу слота)
-                        const timeTextY = startY + slotHeight - 5;
+                        const timeTextY = startY + slotHeight - 3;
                         const timeText = `${slot.start} - ${slot.end}`;
                         svg.innerHTML += `<text x="90" y="${timeTextY}" font-size="12" class="slot-text">${timeText}</text>`;
                     } catch (e) {
@@ -196,7 +194,7 @@
                         let endTime = new Date(`2025-05-26 ${newLesson.end}`);
                         let startY = (startTime.getHours() + startTime.getMinutes() / 60 - startHour) * hourHeight;
                         let endY = (endTime.getHours() + endTime.getMinutes() / 60 - startHour) * hourHeight;
-                        let minHeight = 15 + 12 + 12 + 5; // Отступ сверху + имя + время + отступ снизу
+                        let minHeight = 12 + 15 + 10; // Отступ сверху + имя + время
                         let slotHeight = Math.max(endY - startY, minHeight);
 
                         // Проверка конфликта для нового слота
@@ -219,11 +217,11 @@
                         svg.innerHTML += `<rect x="80" y="${startY}" width="120" height="${slotHeight}" rx="8" class="${slotClass}" style="fill: ${slotColor}; stroke: ${strokeColor}; stroke-width: 1;"/>`;
 
                         // Имя ученика
-                        const studentTextY = startY + 15;
+                        const studentTextY = startY + 12;
                         svg.innerHTML += `<text x="90" y="${studentTextY}" class="slot-text">${newLesson.student_name}</text>`;
 
                         // Время
-                        const timeTextY = startY + slotHeight - 5;
+                        const timeTextY = startY + slotHeight - 3;
                         const timeText = `${newLesson.start} - ${newLesson.end}`;
                         svg.innerHTML += `<text x="90" y="${timeTextY}" font-size="12" class="slot-text">${timeText}</text>`;
                     } catch (e) {
@@ -298,13 +296,19 @@
         }
         .conflict-slot {
             fill: #dc3545;
-            stroke: #c82333;
-            stroke-width: 2;
             opacity: 1;
             transition: opacity 0.2s;
         }
         .conflict-slot:hover {
             opacity: 1;
+        }
+        .conflict-slot {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.9; }
         }
         .timeline-title {
             font-size: 1.5rem;
@@ -324,14 +328,6 @@
         }
         .time-label {
             font-size: 14px;
-        }
-        .conflict-slot {
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.9; }
-            50% { opacity: 0.7; }
-            100% { opacity: 0.9; }
         }
     </style>
 @endpushonce

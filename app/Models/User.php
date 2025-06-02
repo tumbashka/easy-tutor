@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\MyVerifyMail;
+use App\Services\ScheduleService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -119,6 +120,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return self::query()->where('is_active', true)
             ->firstWhere('telegram_id', $telegram_id);
+    }
+
+    public function getTodayActualLessons()
+    {
+        return app(ScheduleService::class)->getActualLessonsOnDate(now());
     }
 
     #[\Override]
