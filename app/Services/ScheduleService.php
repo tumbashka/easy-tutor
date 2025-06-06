@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\DTO\Lesson\LessonDTO;
 use App\DTO\Lesson\WeekDTO;
+use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\User;
 use App\Repositories\LessonRepository;
@@ -12,11 +14,12 @@ use Illuminate\Support\Collection;
 class ScheduleService
 {
     private LessonRepository $lessonRepository;
+    private User $user;
 
     public function __construct(?User $user = null, ?LessonRepository $lessonRepository = null)
     {
-        $user = $user ?? auth()->user();
-        $this->lessonRepository = $lessonRepository ?? new LessonRepository($user);
+        $this->user = $user ?? auth()->user();
+        $this->lessonRepository = $lessonRepository ?? new LessonRepository($this->user);
     }
 
     /**
@@ -124,7 +127,7 @@ class ScheduleService
     }
 
     /**
-     * Получить актуальные занятия в определенную дату.
+     * Динамически получить актуальные занятия в определенную дату.
      * Генерирует новые занятие, если необходимо.
      *
      * @param Carbon $date
@@ -142,9 +145,9 @@ class ScheduleService
 
             foreach ($lessonTimes as $lessonTime) {
                 if (! $existingLessonTimeIds->contains($lessonTime->id) && $this->createdBefore($lessonTime, $date)) {
-                    $lessonData = $this->lessonRepository->generateLessonData($date, $lessonTime);
+                    $lessonData = $this->generateLessonData($date, $lessonTime);
 
-                    $lesson = $this->lessonRepository->saveLesson($lessonData);
+                    $lesson = $this->saveLesson($lessonData);
 
                     $lessonsOnDate->push($lesson);
                 }
@@ -192,5 +195,26 @@ class ScheduleService
         }
 
         return false;
+    }
+
+    private function generateLessonData(Carbon $date, LessonTime $lessonTime): LessonDTO
+    {
+        return LessonDTO::create([
+            'student_id' => $lessonTime->student_id,
+            'user_id' => $this->user->id,
+            'student_name' => $lessonTime->student->name,
+            'date' => $date->copy(),
+            'start' => $lessonTime->start,
+            'end' => $lessonTime->end,
+            'is_paid' => false,
+            'is_canceled' => false,
+            'price' => getLessonPrice($lessonTime->start, $lessonTime->end, $lessonTime->student->price),
+            'lesson_time_id' => $lessonTime->id,
+        ]);
+    }
+
+    private function saveLesson(LessonDTO $data): Lesson
+    {
+        return Lesson::create($data->toArray());
     }
 }

@@ -49,24 +49,5 @@ class LessonRepository
         return $this->user->lessonTimes()->where('week_day', $weekDayId)->get();
     }
 
-    public function generateLessonData(Carbon $date, LessonTime $lessonTime): array
-    {
-        return [
-            'student_id' => $lessonTime->student_id,
-            'user_id' => $this->user->id,
-            'student_name' => $lessonTime->student->name,
-            'date' => $date->copy(),
-            'start' => $lessonTime->start,
-            'end' => $lessonTime->end,
-            'is_paid' => false,
-            'is_canceled' => false,
-            'price' => getLessonPrice($lessonTime->start, $lessonTime->end, $lessonTime->student->price),
-            'lesson_time_id' => $lessonTime->id,
-        ];
-    }
 
-    public function saveLesson(array $data): Lesson
-    {
-        return Lesson::create($data);
-    }
 }

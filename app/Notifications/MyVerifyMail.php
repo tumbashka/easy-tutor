@@ -2,14 +2,17 @@
 
 namespace App\Notifications;
 
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
-class MyVerifyMail extends Notification
+class MyVerifyMail extends VerifyEmail implements ShouldQueue
 {
+    use Queueable;
     /**
      * The callback that should be used to create the verify email URL.
      *
@@ -34,14 +37,13 @@ class MyVerifyMail extends Notification
     {
         return ['mail'];
     }
-
     /**
      * Build the mail representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail(mixed $notifiable): MailMessage
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 
@@ -61,6 +63,7 @@ class MyVerifyMail extends Notification
     protected function buildMailMessage($url)
     {
         return (new MailMessage)
+//            ->view('mail.verify-mail')
             ->greeting('Здравствуйте')
             ->subject('Подтверждение электронного адреса')
             ->line('Нажмите на кнопку ниже, чтобы подтвердить email.')
