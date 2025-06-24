@@ -20,7 +20,7 @@ class StudentFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => fake()->name(),
+            'name' => fake()->firstName(),
             'class' => fake()->numberBetween(5, 11),
             'note' => fake()->sentence,
             'price' => $this->faker->numberBetween(500, 2000),

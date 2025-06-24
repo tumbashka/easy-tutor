@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -51,7 +52,7 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            $user->setAvatar($request->file('avatar'));
+            app(ImageService::class)->setAvatar($user, $request->file('avatar'));
         }
 
         if ($request->input('is_verify_email')) {
@@ -92,7 +93,7 @@ class UserController extends Controller
         $user->update();
 
         if ($request->hasFile('avatar')) {
-            $user->setAvatar($request->file('avatar'));
+            app(ImageService::class)->setAvatar($user, $request->file('avatar'));
         }
 
         if ($request->input('password')) {

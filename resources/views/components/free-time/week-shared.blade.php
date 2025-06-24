@@ -1,11 +1,11 @@
 @props([
-    'all_lesson_slots_on_days' => [],
+    'allLessonSlotsOnWeekDays' => [],
 ])
 <div class="row justify-content-center ">
-    @foreach($all_lesson_slots_on_days as $day_index => $all_lesson_slots_on_day)
+    @foreach($allLessonSlotsOnWeekDays as $dayIndex => $allLessonSlotsOnDay)
         <x-free-time.week-day-shared
-            :$day_index
-            :$all_lesson_slots_on_day
+            :$dayIndex
+            :$allLessonSlotsOnDay
         />
     @endforeach
 </div>

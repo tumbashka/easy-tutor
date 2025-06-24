@@ -11,7 +11,7 @@
     </x-header>
 
     <x-free-time.week-shared
-        :all_lesson_slots_on_days="$all_lesson_slots_on_days"
+        :allLessonSlotsOnWeekDays="$allLessonSlotsOnWeekDays"
     />
 @endsection
 

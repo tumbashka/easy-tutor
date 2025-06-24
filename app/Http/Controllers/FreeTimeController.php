@@ -18,14 +18,14 @@ class FreeTimeController extends Controller
 {
     public function index(Request $request, ScheduleService $lessonService)
     {
-        $encrypted_url = $request->encrypted_url;
+        $url = $request->encrypted_url;
 
         $week_days = $lessonService->getWeekDays();
 
         $user = auth()->user();
-        $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays();
+        $allLessonSlotsOnWeekDays = $user->getAllLessonSlotsOnWeekDays();
 
-        return view('free-time.index', compact('week_days', 'all_lesson_slots_on_days', 'encrypted_url'));
+        return view('free-time.index', compact('week_days', 'allLessonSlotsOnWeekDays', 'url'));
     }
 
     public function create(Request $request)
@@ -95,14 +95,14 @@ class FreeTimeController extends Controller
         abort(403);
     }
 
-    public function set_student(FreeTime $freeTime)
+    public function setStudent(FreeTime $freeTime)
     {
         $students = auth()->user()->students;
 
         return view('free-time.set_student', compact('freeTime', 'students'));
     }
 
-    public function set_student_process(Request $request, FreeTime $freeTime)
+    public function setStudentProcess(Request $request, FreeTime $freeTime)
     {
         $validated = $request->validate([
             'student' => ['required', 'exists:App\Models\Student,id'],
@@ -126,7 +126,7 @@ class FreeTimeController extends Controller
         return redirect()->route('free-time.index');
     }
 
-    public function generate_encrypted_url(Request $request)
+    public function generateEncryptedUrl(Request $request)
     {
         $validated = $request->validate([
             'expire_time' => ['required', 'integer', 'min:1', 'max:62'],
@@ -143,7 +143,7 @@ class FreeTimeController extends Controller
         return redirect()->route('free-time.index', compact('encrypted_url'));
     }
 
-    public function show_shared_page(#[\SensitiveParameter] $token)
+    public function showSharedPage(#[\SensitiveParameter] $token)
     {
         try {
             $data = Crypt::decrypt($token);
@@ -157,12 +157,12 @@ class FreeTimeController extends Controller
             if (! $user->is_active) {
                 abort(404);
             }
-            $allow_lessons = $data['allow_lessons'] ?? false;
-            $all_lesson_slots_on_days = $user->getAllLessonSlotsOnWeekDays($allow_lessons);
+            $allowLessons = $data['allow_lessons'] ?? false;
+            $allLessonSlotsOnWeekDays = $user->getAllLessonSlotsOnWeekDays($allowLessons);
 
             $expires = (new Carbon($data['expires']))->longAbsoluteDiffForHumans(now());
 
-            return view('free-time.shared-page', compact('all_lesson_slots_on_days', 'user', 'expires'));
+            return view('free-time.shared-page', compact('allLessonSlotsOnWeekDays', 'user', 'expires'));
         } catch (DecryptException $exception) {
             abort(404);
         }

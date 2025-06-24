@@ -12,7 +12,7 @@
                 </x-slot:text>
             </x-card.header-nav>
             <x-card.body>
-                <x-free-time.body :encrypted_url="$encrypted_url"/>
+                <x-free-time.body :url="$url"/>
             </x-card.body>
             <x-card.footer>
                 <x-link-button :href="route('free-time.create')">
@@ -22,7 +22,7 @@
             </x-card.footer>
         </x-card.card>
     </x-form-container>
-    <x-free-time.week :all_lesson_slots_on_days="$all_lesson_slots_on_days" :week_days="$week_days"/>
+    <x-free-time.week :all_lesson_slots_on_days="$allLessonSlotsOnWeekDays" :week_days="$week_days"/>
 @endsection
 
 

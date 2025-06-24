@@ -1,6 +1,6 @@
 @props([
     'student' => null,
-    'encrypted_url' => '',
+    'url' => '',
 ])
 <form method="post" action="{{ route('free-time.encrypt-url') }}">
     @csrf
@@ -39,7 +39,7 @@
         <div class="col-sm-8">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" id="encrypted_url"
-                       value="{{ $encrypted_url }}" readonly>
+                       value="{{ $url }}" readonly>
                 <button type="button" class="btn btn-outline-info btn-copy" data-bs-toggle="tooltip"
                         data-clipboard-target="#encrypted_url">
                     <i class="far fa-copy"></i>

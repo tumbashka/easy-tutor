@@ -25,7 +25,7 @@ Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 //    abort(404);
 // });
 
-Route::get('/free-time/share/{token}', [FreeTimeController::class, 'show_shared_page'])->name('free-time.show_shared_page');
+Route::get('/free-time/share/{token}', [FreeTimeController::class, 'showSharedPage'])->name('free-time.show_shared_page');
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::prefix('/schedule')->name('schedule.')->group(function () {
@@ -49,9 +49,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::put('/{free_time}', [FreeTimeController::class, 'update'])->name('update');
         Route::delete('/{free_time}', [FreeTimeController::class, 'delete'])->name('delete');
 
-        Route::get('/{free_time}/set_student', [FreeTimeController::class, 'set_student'])->name('set-student');
-        Route::post('/{free_time}/set_student', [FreeTimeController::class, 'set_student_process'])->name('set-student-process');
-        Route::post('/share/', [FreeTimeController::class, 'generate_encrypted_url'])->name('encrypt-url');
+        Route::get('/{free_time}/set_student', [FreeTimeController::class, 'setStudent'])->name('set-student');
+        Route::post('/{free_time}/set_student', [FreeTimeController::class, 'setStudentProcess'])->name('set-student-process');
+        Route::post('/share/', [FreeTimeController::class, 'generateEncryptedUrl'])->name('encrypt-url');
     });
 
     Route::resource('tasks', TaskController::class);

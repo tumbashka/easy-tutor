@@ -21,7 +21,7 @@
                     <h6>Проведено занятий:</h6>
                 </div>
                 <div class="col-auto">
-                    <p class="text-muted">{{$user->count_payed_lessons() }}</p>
+                    <p class="text-muted">{{$user->count_payed_lessons }}</p>
                 </div>
             </div>
             <h6>О себе</h6>

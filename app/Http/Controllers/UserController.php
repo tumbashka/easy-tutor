@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use App\Services\ImageService;
 
 class UserController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
-        $user->generate_telegram_token();
-        $telegram_connect_url = $user->get_telegram_url();
+        $user->updateConnectToTelegramToken();
+        $telegram_connect_url = $user->connect_to_telegram_url;
 
         $bot_username = config('telegram.bots.mybot.username');
         $telegram_bot_url = "https://t.me/{$bot_username}";
@@ -31,7 +32,8 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         if ($request->hasFile('avatar')) {
-            $user->setAvatar($request->file('avatar'));
+            $imageService = app()->make(ImageService::class);
+            $imageService->setAvatar($user, $request->file('avatar'));
         }
 
         if ($request->password) {

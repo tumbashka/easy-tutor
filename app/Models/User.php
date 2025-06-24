@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Notifications\MyVerifyMail;
+use App\Services\ImageService;
 use App\Services\ScheduleService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,10 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Encoders\WebpEncoder;
-use Intervention\Image\ImageManager;
 use Laravel\Sanctum\HasApiTokens;
 use Symfony\Component\Mailer\Exception\UnexpectedResponseException;
 
@@ -82,7 +79,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Lesson::class);
     }
 
-    public function count_payed_lessons(): int
+    public function getCountPayedLessonsAttribute(): int
     {
         return $this->lessons()->where('is_paid', true)->count();
     }
@@ -104,11 +101,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarUrlAttribute(): string
     {
-        if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
-        } else {
-            return asset('storage/avatars/default.png');
-        }
+        return app(ImageService::class)->getImageURL($this->id);
     }
 
     public function isAdmin(): bool
@@ -152,6 +145,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Получить занятия за конкретную дату.
+     * @return Collection<Lesson>
      */
     public function getLessonsOnDate(Carbon $date): Collection
     {
@@ -161,52 +155,35 @@ class User extends Authenticatable implements MustVerifyEmail
             ->get();
     }
 
-    public function getAllLessonSlotsOnWeekDays(bool $allow_lessons = true): \Illuminate\Support\Collection
+    public function getAllLessonSlotsOnWeekDays(bool $allowLessons = true): \Illuminate\Support\Collection
     {
-        $lesson_times_on_days = $this->lessonTimes()
+        $lessonTimesOnDays = $this->lessonTimes()
             ->with('student')
             ->get();
 
-        $free_times_on_days = $this->freeTimes()
+        $freeTimesOnDays = $this->freeTimes()
             ->get();
 
-        if ($allow_lessons) {
-            $all_lesson_slots_on_days = $lesson_times_on_days->merge($free_times_on_days);
+        if ($allowLessons) {
+            $allLessonSlotsOnDays = $lessonTimesOnDays->merge($freeTimesOnDays);
         } else {
-            $all_lesson_slots_on_days = $free_times_on_days;
+            $allLessonSlotsOnDays = $freeTimesOnDays;
         }
 
-        return $all_lesson_slots_on_days->sortBy(['week_day', 'start'])->groupBy('week_day');
+        return $allLessonSlotsOnDays->sortBy(['week_day', 'start'])->groupBy('week_day');
     }
 
-    public function setAvatar($file): bool
-    {
-        $manager = ImageManager::gd(autoOrientation: true);
-        $image = $manager->read($file)
-            ->cover(300, 300) // Обрезка с сохранением пропорций
-            ->encode(new WebpEncoder(80));
-
-        if ($this->avatar) {
-            Storage::delete($this->avatar);
-        }
-
-        $path = 'avatars/' . uniqid() . '.webp';
-        Storage::put($path, $image);
-
-        return $this->update(['avatar' => $path]);
-    }
-
-    public function get_telegram_url(): string
+    public function getConnectToTelegramUrlAttribute(): string
     {
         if (!$this->telegram_token) {
-            $this->generate_telegram_token();
+            $this->updateConnectToTelegramToken();
         }
         $bot_username = config('telegram.bots.mybot.username');
 
         return "https://t.me/{$bot_username}?start={$this->telegram_token}";
     }
 
-    public function generate_telegram_token(): void
+    public function updateConnectToTelegramToken(): void
     {
         while (true) {
             $telegram_token = Str::random(64);
@@ -217,10 +194,6 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         $this->telegram_token = $telegram_token;
         $this->update();
-    }
-
-    public function remember_user_telegram()
-    {
     }
 
     public function studentsOnClasses(): Collection

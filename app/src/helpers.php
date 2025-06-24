@@ -3,7 +3,7 @@
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 
-if (! function_exists('activeLink')) {
+if (!function_exists('activeLink')) {
     /**
      * Выделение активной ссылки в навбаре
      */
@@ -13,7 +13,7 @@ if (! function_exists('activeLink')) {
     }
 }
 
-if (! function_exists('isAdminLink')) {
+if (!function_exists('isAdminLink')) {
     /**
      * Проверка, что мы в админке
      */
@@ -23,7 +23,7 @@ if (! function_exists('isAdminLink')) {
     }
 }
 
-if (! function_exists('getShortDayName')) {
+if (!function_exists('getShortDayName')) {
     /**
      * Получение сокращённого названия дня недели с большой буквы
      */
@@ -38,26 +38,30 @@ if (! function_exists('getShortDayName')) {
         $first = mb_strtoupper($first, 'UTF-8');
         $end = mb_substr($string, 1, mb_strlen($string), 'UTF-8');
 
-        return $first.$end;
+        return $first . $end;
     }
 }
 
-if (! function_exists('getDayName')) {
+if (!function_exists('getDayName')) {
     /**
      * Получение названия дня недели с большой буквы
      */
-    function getDayName($dayOfWeek): string
+    function getDayName(Carbon|int $dayOfWeek): string
     {
-        $string = Carbon::now()->startOfWeek()->addDays($dayOfWeek)->isoFormat('dddd');
+        if ($dayOfWeek instanceof Carbon) {
+            $string = $dayOfWeek->isoFormat('dddd');
+        } else {
+            $string = Carbon::now()->startOfWeek()->addDays($dayOfWeek)->isoFormat('dddd');
+        }
         $first = mb_substr($string, 0, 1, 'UTF-8');
         $first = mb_strtoupper($first, 'UTF-8');
         $end = mb_substr($string, 1, mb_strlen($string), 'UTF-8');
 
-        return $first.$end;
+        return $first . $end;
     }
 }
 
-if (! function_exists('getWeekDayIndex')) {
+if (!function_exists('getWeekDayIndex')) {
     /**
      * Получение индекса дня недели `0-ПН ... 6-ВСК`
      */
@@ -73,7 +77,7 @@ if (! function_exists('getWeekDayIndex')) {
     }
 }
 
-if (! function_exists('getWeekOffset')) {
+if (!function_exists('getWeekOffset')) {
     /**
      * Вычисление разницы в неделях по сравнению с текущим временем
      */
@@ -88,13 +92,13 @@ if (! function_exists('getWeekOffset')) {
     }
 }
 
-if (! function_exists('getLessonPrice')) {
+if (!function_exists('getLessonPrice')) {
     /**
      * Вычисление стоимости занятия
      *
-     * @param  $start  `Начало занятия`
-     * @param  $end  `Конец занятия`
-     * @param  int  $price_on_hour  `Стоимость за час`
+     * @param  $start `Начало занятия`
+     * @param  $end `Конец занятия`
+     * @param int $price_on_hour `Стоимость за час`
      */
     function getLessonPrice($start, $end, int $price_on_hour): int
     {
@@ -104,11 +108,11 @@ if (! function_exists('getLessonPrice')) {
         $hours = $lesson_length_minutes / 60;
         $lessonPrice = $hours * $price_on_hour;
 
-        return (int) $lessonPrice;
+        return (int)$lessonPrice;
     }
 }
 
-if (! function_exists('getRandomRGB')) {
+if (!function_exists('getRandomRGB')) {
     /**
      * Получение случайного RBG цвета
      */
@@ -132,7 +136,7 @@ if (! function_exists('getRandomRGB')) {
     }
 }
 
-if (! function_exists('getHiFormatTime')) {
+if (!function_exists('getHiFormatTime')) {
     /**
      * Получение строки времени в формате H:i
      */
@@ -144,7 +148,7 @@ if (! function_exists('getHiFormatTime')) {
     }
 }
 
-if (! function_exists('getLessonType')) {
+if (!function_exists('getLessonType')) {
     /**
      * Получение названия для типа занятия
      */
@@ -159,7 +163,7 @@ if (! function_exists('getLessonType')) {
     }
 }
 
-if (! function_exists('getLessonStatus')) {
+if (!function_exists('getLessonStatus')) {
     /**
      * Получение строки статуса занятия
      */
@@ -173,7 +177,7 @@ if (! function_exists('getLessonStatus')) {
     }
 }
 
-if (! function_exists('getRGBFromHex')) {
+if (!function_exists('getRGBFromHex')) {
     /**
      * Получение массива цветов по каналам(R,G,B) из HEX цвета
      */
@@ -183,7 +187,7 @@ if (! function_exists('getRGBFromHex')) {
     }
 }
 
-if (! function_exists('getTextContrastColor')) {
+if (!function_exists('getTextContrastColor')) {
     /**
      * Вычисление строки стиля для текста, контрастного на фоне
      */
@@ -200,7 +204,7 @@ if (! function_exists('getTextContrastColor')) {
     }
 }
 
-if (! function_exists('pluralRu')) {
+if (!function_exists('pluralRu')) {
     /**
      * Постановка правильного окончания существительного в зависимости от количества.
      */
@@ -224,7 +228,6 @@ if (! function_exists('pluralRu')) {
             default:
 
                 return $words[2];
-
         }
     }
 }

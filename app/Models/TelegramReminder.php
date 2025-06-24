@@ -12,10 +12,6 @@ class TelegramReminder extends Model
 {
     use HasFactory;
 
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(Student::class);
-    }
 
     protected $attributes = [
         'is_enabled' => true,
@@ -38,6 +34,11 @@ class TelegramReminder extends Model
             'chat_id' => 'integer',
             'before_lesson_minutes' => 'integer',
         ];
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
     }
 
     protected function homeworkReminderTime(): Attribute
