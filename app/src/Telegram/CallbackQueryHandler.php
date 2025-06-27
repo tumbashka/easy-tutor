@@ -58,7 +58,7 @@ class CallbackQueryHandler extends BaseHandler
         'sendHomeworkMenu' => 'sendHomeworkMenu',
     ];
 
-    #[\Override] public function process(): void
+    public function process(): void
     {
         if (!$this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
@@ -66,15 +66,11 @@ class CallbackQueryHandler extends BaseHandler
             return;
         }
 
-        if (config('app.debug')) {
-            \Log::debug('Callback Query:', ['data' => $this->callbackQuery->toArray()]);
-        }
-
         $handler = self::COMMAND_HANDLERS[$this->command] ?? 'handleUnknownCommand';
         $this->$handler($this->param);
     }
 
-    #[\Override] protected function handleUnknownCommand(): void
+    protected function handleUnknownCommand(): void
     {
         $this->sendTextMessage("Команда: {$this->command} не существует.");
     }
@@ -116,7 +112,7 @@ class CallbackQueryHandler extends BaseHandler
             Для вызова настроек, используйте ***/settings***
             EOD;
 
-        $this->telegram->editMessageText([
+        $this->editMessageText([
             'chat_id' => $this->chat->id,
             'message_id' => $this->callbackQuery->message->messageId,
             'text' => $text,
@@ -127,10 +123,7 @@ class CallbackQueryHandler extends BaseHandler
 
     private function handleClose(): void
     {
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
     }
 
     private function handleDisableRemind(): void
@@ -143,10 +136,7 @@ class CallbackQueryHandler extends BaseHandler
         }
         $telegram_reminder->is_enabled = false;
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
         $this->sendGroupSetting();
     }
 
@@ -155,10 +145,7 @@ class CallbackQueryHandler extends BaseHandler
         $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
         $telegram_reminder->is_enabled = true;
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
         $this->sendGroupSetting();
     }
 
@@ -169,10 +156,7 @@ class CallbackQueryHandler extends BaseHandler
 
             return;
         }
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
 
         $keyboard = [];
         for ($i = 5; $i <= 60; $i += 5) {
@@ -180,7 +164,7 @@ class CallbackQueryHandler extends BaseHandler
         }
 
         $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
-        $this->telegram->sendMessage([
+        $this->sendMessage([
             'chat_id' => $this->chat->id,
             'text' => 'Выберите, за сколько напоминать о занятии:',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
@@ -206,10 +190,7 @@ class CallbackQueryHandler extends BaseHandler
         $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
         $telegram_reminder->before_lesson_minutes = $this->param;
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
         $this->sendGroupSetting();
     }
 
@@ -220,10 +201,7 @@ class CallbackQueryHandler extends BaseHandler
 
             return;
         }
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
 
         $keyboard = [];
         $time = Carbon::createFromTime(8);
@@ -243,7 +221,7 @@ class CallbackQueryHandler extends BaseHandler
         }
 
         $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
-        $this->telegram->sendMessage([
+        $this->sendMessage([
             'chat_id' => $this->chat->id,
             'text' => 'Выберите, во сколько ежедневное напоминание о ДЗ:',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
@@ -270,10 +248,7 @@ class CallbackQueryHandler extends BaseHandler
         $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
         $telegram_reminder->homework_reminder_time = $time->format('H:i');
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
         $this->sendGroupSetting();
     }
 
@@ -287,16 +262,13 @@ class CallbackQueryHandler extends BaseHandler
         $chatId = $this->chat->id;
         Cache::put("awaiting_homework_description_{$chatId}", true, now()->addMinutes(5));
 
-        $response = $this->telegram->sendMessage([
+        $this->sendMessage([
             'chat_id' => $chatId,
             'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
             'reply_markup' => json_encode(['force_reply' => true]),
         ]);
 
-        $this->telegram->deleteMessage([
-            'chat_id' => $chatId,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
     }
 
     private function handleGetListHomework(): void
@@ -323,9 +295,9 @@ class CallbackQueryHandler extends BaseHandler
 
         if ($this->callbackQuery->message) {
             $params['message_id'] = $this->callbackQuery->message->messageId;
-            $this->telegram->editMessageText($params);
+            $this->editMessageText($params);
         } else {
-            $this->telegram->sendMessage($params);
+            $this->sendMessage($params);
         }
     }
 
@@ -398,7 +370,7 @@ class CallbackQueryHandler extends BaseHandler
 
         $this->putToCacheData('complete_homework_page', $homeworks->currentPage());
 
-        if ($homeworks) {
+        if ($homeworks->isNotEmpty()) {
             $messageText = 'Нажмите на домашнее задание для смены его готовности.';
         } else {
             $messageText = 'Список домашних заданий пуст.';
@@ -411,7 +383,7 @@ class CallbackQueryHandler extends BaseHandler
             $homeworkKeyboard[] = [['text' => $text, 'callback_data' => "change_homework_status {$homework->id}"]];
         }
 
-        if ($homeworks) {
+        if ($homeworks->isNotEmpty()) {
             $homeworkKeyboard[] = [
                 [
                     'text' => '✅Отметить все задания выполненными✅',
@@ -429,7 +401,7 @@ class CallbackQueryHandler extends BaseHandler
             'text' => $messageText,
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ];
-        $this->telegram->editMessageText($params);
+        $this->editMessageText($params);
     }
 
     protected function handleChangeHomeworkStatus(): void
@@ -490,7 +462,7 @@ class CallbackQueryHandler extends BaseHandler
 
         $this->deleteMessage();
 
-        $this->telegram->sendMessage([
+        $this->sendMessage([
             'chat_id' => $this->chat->id,
             'text' => $message,
             'parse_mode' => 'Markdown',
