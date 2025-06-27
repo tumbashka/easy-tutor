@@ -3,12 +3,15 @@
 namespace App\src\Telegram;
 
 use App\Models\TelegramReminder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Telegram\Bot\Api;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\Chat;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\User;
+use App\Models\User as UserModel;
 
 abstract class BaseHandler
 {
@@ -20,6 +23,8 @@ abstract class BaseHandler
     ) {}
 
     abstract public function process();
+
+    abstract protected function handleUnknownCommand();
 
     protected function isConfirmedUser(): bool
     {
@@ -60,10 +65,12 @@ abstract class BaseHandler
 
     protected function deleteMessage(): void
     {
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->message->messageId,
-        ]);
+       if ($this->message->from->isBot){
+           $this->telegram->deleteMessage([
+               'chat_id' => $this->chat->id,
+               'message_id' => $this->message->messageId,
+           ]);
+       }
     }
 
     protected function sendConfirmedUserError(): void
@@ -94,17 +101,20 @@ abstract class BaseHandler
 
     protected function sendGroupSetting(): void
     {
-        $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
+        $telegram_reminder = $this->getTelegramReminder();
 
         if ($telegram_reminder != null) {
             $disable = [[['text' => '🚫 Выключить напоминания 🔔', 'callback_data' => 'disable_remind']]];
             $enable = [[['text' => '✅ Включить напоминания 🔔', 'callback_data' => 'enable_remind']]];
 
             $keyboard = [
-                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu']],
+                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'sendKeyboardSetStudent']],
                 [['text' => '✏️ Изменить интервал напоминания о занятии 🔔', 'callback_data' => 'change_before_lesson_minutes']],
                 [['text' => '✏️ Изменить время ежедневного напоминания о ДЗ 📝', 'callback_data' => 'change_homework_reminder_time']],
-                [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']],
+                [[
+                    ['text' => '◀ Назад ◀', 'callback_data' => "handleMenu"],
+                    ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+                ]],
             ];
             if ($telegram_reminder->is_enabled) {
                 $keyboard = array_merge($disable, $keyboard);
@@ -113,9 +123,14 @@ abstract class BaseHandler
             }
         } else {
             $keyboard = [
-                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'set_student_menu']],
-                [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']],
+                [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => 'sendKeyboardSetStudent']],
+                [
+                    ['text' => '◀ Назад ◀', 'callback_data' => "handleMenu"],
+                    ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+                ],
             ];
+
+            $this->deleteMessage();
 
             Telegram::sendMessage([
                 'chat_id' => $this->chat->id,
@@ -141,6 +156,7 @@ abstract class BaseHandler
             Группе назначен ученик: ***{$telegram_reminder->student->name}***.
             {$text_body}
             EOD;
+        $this->deleteMessage();
 
         Telegram::sendMessage([
             'chat_id' => $this->chat->id,
@@ -167,15 +183,20 @@ abstract class BaseHandler
         }
 
         $user = \App\Models\User::getUserByTelegramID($this->from->id);
-        $students = $user->students;
+        $students = $user->students->sortBy('name');
 
         $keyboard = [];
         foreach ($students as $student) {
             $keyboard[] = [['text' => $student->name, 'callback_data' => 'set_student '.$student->id]];
         }
-        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
-        Telegram::sendMessage([
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "handleMenu"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
+
+        Telegram::editMessageText([
             'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
             'text' => 'Выберите ученика для группы:',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
@@ -194,11 +215,15 @@ abstract class BaseHandler
 
             return;
         }
-
         $keyboard[] = [['text' => 'Добавить задание ➕', 'callback_data' => 'add_homework']];
         $keyboard[] = [['text' => 'Просмотреть задания 👀', 'callback_data' => 'get_list_homework']];
         $keyboard[] = [['text' => 'Отметить выполнение ✅', 'callback_data' => 'get_complete_homework_menu']];
-        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "handleMenu"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
+        $this->deleteMessage();
+
         Telegram::sendMessage([
             'chat_id' => $this->chat->id,
             'text' => 'Домашнее задание:',
@@ -224,7 +249,7 @@ abstract class BaseHandler
 
     protected function putToCacheData(string $key, mixed $data): void
     {
-        Cache::put("telegram_data_{$this->chat->id}_{$key}", $data, now()->addMinutes());
+        Cache::put("telegram_data_{$this->chat->id}_{$key}", $data, now()->addMinutes(5));
     }
 
     protected function getCachedData(string $key)
@@ -240,5 +265,107 @@ abstract class BaseHandler
     protected function forgetCachedData(string $key): void
     {
         Cache::forget("telegram_data_{$this->chat->id}_{$key}");
+    }
+
+    protected function handleLessonsSchedule(Carbon|string|null $date = null): void
+    {
+        $date = $date === null ? Carbon::today() : Carbon::parse($date);
+
+        $dayOfWeek = getDayName($date);
+        $formattedDate = $date->format('d.m.Y');
+
+        $message = "📅 *Расписание на ";
+
+        $message .= $date->isToday() ?  "Сегодня": $formattedDate;
+        $message .= " {$dayOfWeek}";
+        $message .= "*\n\n";
+
+        $user = UserModel::getUserByTelegramID($this->from->id);
+        $lessons = $user->getLessonsOnDate($date);
+
+        if ($lessons->isEmpty()) {
+            $message .= "😔 Занятий нет.";
+        } else {
+            $message .= "🕒 *Занятия:*\n";
+            foreach ($lessons as $key => $lesson) {
+                $startTime = $lesson->start->format('H:i');
+                $endTime = $lesson->end->format('H:i');
+                $paymentStatus = $lesson->is_paid ? '✅ Оплачено ✅' : '❌ Не оплачено ❌';
+
+                $message .= sprintf(
+                    "%d. *%s*\n⏰ %s–%s\n%s\n\n",
+                    $key + 1,
+                    $lesson->student_name,
+                    $startTime,
+                    $endTime,
+                    $paymentStatus
+                );
+            }
+        }
+        $paginationDatesStep = 3;
+        $dateStart = $date->copy()->subDays($paginationDatesStep);
+
+        $keyboard = [];
+        $row = [];
+        for ($i = 0; $i <= $paginationDatesStep * 2; $i++) {
+            $row[] = [
+                'text' => $dateStart->format('d.m'),
+                'callback_data' => "handleLessonsSchedule {$dateStart}"
+            ];
+            $dateStart->addDay();
+        }
+        $keyboard[] = $row;
+        if ($lessons->isNotEmpty()) {
+            $keyboard[] = [['text' => 'Отметить оплату', 'callback_data' => "getPaymentMenu {$date}"]];
+        }
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "handleMenu"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
+
+
+        $this->deleteMessage();
+
+        $this->telegram->sendMessage([
+            'chat_id' => $this->chat->id,
+            'text' => $message,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+        ]);
+    }
+
+    protected function handleMenu()
+    {
+        $keyboard = [];
+
+        $student = $this->getStudent();
+
+        $keyboard[] = [['text' => '🙋🏻‍♀️ Назначить ученика 🙋🏻‍♂️', 'callback_data' => "sendKeyboardSetStudent"]];
+        if ($student) {
+            $keyboard[] = [['text' => '📝 Домашнее задание 📝', 'callback_data' => "sendHomeworkMenu"]];
+        }
+        $keyboard[] = [['text' => '🕒 Расписание 🕒', 'callback_data' => "handleLessonsSchedule"]];
+        $keyboard[] = [['text' => '🛠️ Настройки 🛠️', 'callback_data' => "sendGroupSetting"]];
+        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
+
+
+        if ($this->from->isBot) {
+            $this->telegram->editMessageText([
+                'chat_id' => $this->chat->id,
+                'message_id' => $this->message->messageId,
+                'text' => '*Меню:*',
+                'parse_mode' => 'Markdown',
+                'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+            ]);
+        }else{
+            $this->deleteMessage();
+            $this->telegram->sendMessage([
+                'chat_id' => $this->chat->id,
+                'text' => '*Меню:*',
+                'parse_mode' => 'Markdown',
+                'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+            ]);
+        }
+
     }
 }

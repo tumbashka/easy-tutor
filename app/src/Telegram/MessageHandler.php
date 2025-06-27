@@ -5,6 +5,8 @@ namespace App\src\Telegram;
 use App\Models\Homework;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Telegram\Bot\Api;
 use Telegram\Bot\Objects\Message;
 
@@ -23,12 +25,14 @@ class MessageHandler extends BaseHandler
         $this->message = $message;
         $this->text = $message->text;
 
+        $this->text = Str::remove('@'.config('telegram.bots.mybot.username'), $this->text);
         $string_arr = explode(' ', $this->text, 2);
+
         $this->command = $string_arr[0] ?? null;
         $this->param = $string_arr[1] ?? null;
     }
 
-    public function process(): void
+    #[\Override] public function process(): void
     {
         if ($this->message->getReplyToMessage() && Cache::get("awaiting_homework_description_{$this->chat->id}")) {
             $this->createHomework();
@@ -36,34 +40,30 @@ class MessageHandler extends BaseHandler
         } else {
             switch ($this->command) {
                 case '/start':
-                case '/start@easy_tutor_helper_bot':
                     $this->handleStart();
                     break;
-                case '/set_student':
-                case '/set_student@easy_tutor_helper_bot':
-                    $this->sendKeyboardSetStudent();
-                    break;
-                case '/settings':
-                case '/settings@easy_tutor_helper_bot':
-                    $this->handleSettings();
-                    break;
-                case '/homework':
-                case '/homework@easy_tutor_helper_bot':
-                    $this->handleHomework();
+                case '/menu':
+                    $this->handleMenu();
                     break;
                 default:
+                    $this->handleUnknownCommand();
             }
         }
+    }
+    #[\Override] protected function handleUnknownCommand(): void
+    {
+        Log::debug("Команда: {$this->command} не существует.");
+        $this->sendTextMessage("Команда: {$this->command} не существует.");
     }
 
     private function handleStart(): void
     {
-        if (! $this->isPrivate()) {
+        if (!$this->isPrivate()) {
             $this->sendPrivateError();
 
             return;
         }
-        if (! $this->param) {
+        if (!$this->param) {
             $this->sendStartTokenError();
 
             return;
@@ -73,59 +73,24 @@ class MessageHandler extends BaseHandler
             $user->telegram_id = $this->from->id;
             $user->telegram_username = $this->from->username;
             $user->update();
-            $this->sendTextMessage("Телеграмм аккаунт: ***{$user->telegram_username}*** успешно привязан к аккаунту: ***{$user->name}***");
+            $this->sendTextMessage(
+                "Телеграмм аккаунт: ***{$user->telegram_username}*** успешно привязан к аккаунту сервиса"
+                . config('app.name')
+                . ": ***{$user->name}***"
+            );
         } else {
             $this->sendTextMessage('Токен не действителен');
         }
     }
 
-    private function handleSettings(): void
-    {
-        if (! $this->isConfirmedUser()) {
-            $this->sendConfirmedUserError();
-            $this->sendStartTokenError();
-
-            return;
-        }
-        if ($this->isGroup()) {
-            $this->sendGroupSetting();
-
-            return;
-        }
-        $this->sendGroupError();
-    }
-
-    private function handleHomework(): void
-    {
-        if (! $this->isConfirmedUser()) {
-            $this->sendConfirmedUserError();
-            $this->sendStartTokenError();
-
-            return;
-        }
-        if (! $this->isGroup()) {
-            $this->sendGroupError();
-
-            return;
-        }
-        if (! $this->getTelegramReminder()) {
-            $this->sendStudentDontConnectError();
-
-            return;
-        }
-
-        $this->sendHomeworkMenu();
-
-    }
-
     private function createHomework(): void
     {
-        if (! $this->isConfirmedUser()) {
+        if (!$this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
 
             return;
         }
-        if (! $this->isGroup()) {
+        if (!$this->isGroup()) {
             $this->sendGroupError();
 
             return;
