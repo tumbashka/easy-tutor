@@ -36,14 +36,13 @@ class MessageHandler extends BaseHandler
     {
         if ($this->message->getReplyToMessage() && Cache::get("awaiting_homework_description_{$this->chat->id}")) {
             $this->createHomework();
-            Cache::forget("awaiting_homework_description_{$this->chat->id}");
         } else {
             switch ($this->command) {
                 case '/start':
                     $this->handleStart();
                     break;
                 case '/menu':
-                    $this->handleMenu();
+                    $this->sendMenu();
                     break;
                 default:
                     $this->handleUnknownCommand();
@@ -97,7 +96,7 @@ class MessageHandler extends BaseHandler
         }
         if (strlen($this->text) > 250) {
             $this->sendTextMessage('Описание не должно превышать 250 символов');
-            $response = $this->telegram->sendMessage([
+            $this->sendMessage([
                 'chat_id' => $this->chat->id,
                 'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
                 'reply_markup' => json_encode(['force_reply' => true]),
@@ -113,6 +112,8 @@ class MessageHandler extends BaseHandler
             'student_id' => $student->id,
             'description' => $this->text,
         ]);
+        Cache::forget("awaiting_homework_description_{$this->chat->id}");
+
         $this->sendTextMessage("Домашнее задание \"{$this->text}\" успешно добавлено!");
         $this->sendHomeworkMenu();
     }
