@@ -25,7 +25,7 @@ class MessageHandler extends BaseHandler
         $this->message = $message;
         $this->text = $message->text;
 
-        $this->text = Str::remove('@'.config('telegram.bots.mybot.username'), $this->text);
+        $this->text = Str::remove('@' . config('telegram.bots.mybot.username'), $this->text);
         $string_arr = explode(' ', $this->text, 2);
 
         $this->command = $string_arr[0] ?? null;
@@ -34,25 +34,33 @@ class MessageHandler extends BaseHandler
 
     #[\Override] public function process(): void
     {
-        if ($this->message->getReplyToMessage() && Cache::get("awaiting_homework_description_{$this->chat->id}")) {
+        if ($this->message->getReplyToMessage()
+            &&
+            Cache::get("awaiting_homework_description_{$this->chat->id}")) {
             $this->createHomework();
-        } else {
-            switch ($this->command) {
-                case '/start':
-                    $this->handleStart();
-                    break;
-                case '/menu':
-                    $this->sendMenu();
-                    break;
-                default:
-                    $this->handleUnknownCommand();
-            }
+            return;
+        }
+
+        if ($this->message->getReplyToMessage()){
+            return;
+        }
+
+        switch ($this->command) {
+            case '/start':
+                $this->handleStart();
+                break;
+            case '/menu':
+                $this->sendMenu();
+                break;
+            default:
+                $this->handleUnknownCommand();
         }
     }
+
     #[\Override] protected function handleUnknownCommand(): void
     {
         Log::debug("Команда: {$this->command} не существует.");
-        $this->sendTextMessage("Команда: {$this->command} не существует.");
+//        $this->sendTextMessage("Команда: {$this->command} не существует.");
     }
 
     private function handleStart(): void
@@ -94,13 +102,15 @@ class MessageHandler extends BaseHandler
 
             return;
         }
+
         if (strlen($this->text) > 250) {
-            $this->sendTextMessage('Описание не должно превышать 250 символов');
-            $this->sendMessage([
+            $this->editMessageText([
                 'chat_id' => $this->chat->id,
-                'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
+                'message_id' => $this->message->messageId,
+                'text' => "Описание не должно превышать 250 символов\nПожалуйста, введите краткое описание домашнего задания:",
                 'reply_markup' => json_encode(['force_reply' => true]),
             ]);
+            Cache::put("awaiting_homework_description_{$this->chat->id}", $messageId, now()->addMinutes(5));
 
             return;
         }
@@ -112,9 +122,8 @@ class MessageHandler extends BaseHandler
             'student_id' => $student->id,
             'description' => $this->text,
         ]);
-        Cache::forget("awaiting_homework_description_{$this->chat->id}");
 
-        $this->sendTextMessage("Домашнее задание \"{$this->text}\" успешно добавлено!");
-        $this->sendHomeworkMenu();
+        $this->sendHomeworkMenu("Домашнее задание \"{$this->text}\" успешно добавлено!");
+        Cache::forget("awaiting_homework_description_{$this->chat->id}");
     }
 }

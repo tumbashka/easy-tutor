@@ -51,7 +51,9 @@ class CallbackQueryHandler extends BaseHandler
         'scheduleAnotherDay',
         'lessonsSchedule',
         'paymentMenu',
+        'cancelMenu',
         'changeLessonPayment',
+        'changeLessonStatus',
         'sendGroupSetting',
         'sendKeyboardSetStudent',
         'sendMenu',
@@ -237,8 +239,9 @@ class CallbackQueryHandler extends BaseHandler
             return;
         }
 
-        Cache::put("awaiting_homework_description_{$this->chat->id}", true, now()->addMinutes(5));
+        Cache::put("awaiting_homework_description_{$this->chat->id}", $this->message->messageId, now()->addMinutes(5));
 
+        $this->deleteMessage();
         $this->sendMessage([
             'chat_id' => $this->chat->id,
             'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
@@ -286,10 +289,10 @@ class CallbackQueryHandler extends BaseHandler
         if ($paginator->hasPages()) {
             $row = [];
             if ($paginator->currentPage() > 1) {
-                $row[] = ['text' => '◀ Назад', 'callback_data' => "{$data_method} " . ($paginator->currentPage() - 1)];
+                $row[] = ['text' => '◀ Предыдущая', 'callback_data' => "{$data_method} " . ($paginator->currentPage() - 1)];
             }
             if ($paginator->hasMorePages()) {
-                $row[] = ['text' => 'Вперёд ▶', 'callback_data' => "{$data_method} " . ($paginator->currentPage() + 1)];
+                $row[] = ['text' => 'Следующая ▶', 'callback_data' => "{$data_method} " . ($paginator->currentPage() + 1)];
             }
             $keyboard[] = $row;
         }
@@ -315,8 +318,8 @@ class CallbackQueryHandler extends BaseHandler
         $student->homeworks()->where('completed_at', null)->update([
             'completed_at' => now(),
         ]);
-        $this->sendTextMessage('Все задания отмечены как выполненные');
-        $this->completeHomeworkMenu();
+
+        $this->sendHomeworkMenu('Все задания отмечены выполненными!');
     }
 
     protected function completeHomeworkMenu(): void
@@ -360,7 +363,7 @@ class CallbackQueryHandler extends BaseHandler
                 ]
             ];
         }
-        $paginationKeyboard = $this->getPaginationKeyboard($homeworks, 'completeHomeworkMenu');
+        $paginationKeyboard = $this->getPaginationKeyboard($homeworks, 'completeHomeworkMenu', 'sendHomeworkMenu');
 
         $keyboard = array_merge($homeworkKeyboard, $paginationKeyboard);
 
@@ -397,7 +400,7 @@ class CallbackQueryHandler extends BaseHandler
         $message = "📅 *Оплата занятий на {$formattedDate} {$dayOfWeek}*\n\n";
 
         $user = UserModel::getUserByTelegramID($this->from->id);
-        $lessons = $user->getLessonsOnDate($date);
+        $lessons = $user->getLessonsOnDate($date)->where('is_canceled', false);
 
         $keyboard = [];
 
@@ -438,7 +441,57 @@ class CallbackQueryHandler extends BaseHandler
         ]);
     }
 
-    protected function handlechangeLessonPayment($lessonId): void
+    protected function cancelMenu($date = null): void
+    {
+        $date = is_null($date) ? Carbon::today() : Carbon::parse($date);
+
+        $dayOfWeek = getDayName($date);
+        $formattedDate = $date->format('d.m.Y');
+
+        $message = "📅 *Отмена занятий на {$formattedDate} {$dayOfWeek}*\n\n";
+
+        $user = UserModel::getUserByTelegramID($this->from->id);
+        $lessons = $user->getLessonsOnDate($date);
+
+        $keyboard = [];
+
+        foreach ($lessons as $key => $lesson) {
+            $startTime = $lesson->start->format('H:i');
+            $endTime = $lesson->end->format('H:i');
+            $isCanceledStr = $lesson->is_canceled ? '❌ Отменён' : '✅ Будет';
+
+            $text = sprintf(
+                "%d. %s %s–%s %s",
+                $key + 1,
+                $lesson->student_name,
+                $startTime,
+                $endTime,
+                $isCanceledStr
+            );
+
+            $keyboard[] = [
+                [
+                    'text' => $text,
+                    'callback_data' => "changeLessonStatus {$lesson->id}"
+                ]
+            ];
+        }
+
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "lessonsSchedule {$date}"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
+
+        $this->editMessageText([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
+            'text' => $message,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+        ]);
+    }
+
+    protected function changeLessonPayment($lessonId): void
     {
         $lesson = Lesson::firstWhere('id', $lessonId);
         if (is_null($lesson)) {
@@ -450,5 +503,19 @@ class CallbackQueryHandler extends BaseHandler
         $lesson->update();
 
         $this->paymentMenu($lesson->date);
+    }
+
+    protected function changeLessonStatus($lessonId): void
+    {
+        $lesson = Lesson::firstWhere('id', $lessonId);
+        if (is_null($lesson)) {
+            $this->sendTextMessage('Урок не найден');
+            return;
+        }
+
+        $lesson->is_canceled = !$lesson->is_canceled;
+        $lesson->update();
+
+        $this->cancelMenu($lesson->date);
     }
 }

@@ -56,6 +56,18 @@ abstract class BaseHandler
         return false;
     }
 
+    public function escapingSymbols(string $string, array $symbols = []): string
+    {
+        if(empty($symbols)) {
+            $symbols = explode(' ', '_ [ ] ( ) ` > # + - = | { } . !');
+        }
+        dump($symbols);
+        foreach ($symbols as $symbol) {
+            $string = str_replace($symbol, "\\{$symbol}", $string);
+        }
+        return $string;
+    }
+
     protected function sendTextMessage($text): void
     {
         $this->sendMessage([
@@ -236,7 +248,7 @@ abstract class BaseHandler
         ]);
     }
 
-    protected function sendHomeworkMenu(): void
+    protected function sendHomeworkMenu($message = null): void
     {
         if (!$this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
@@ -265,7 +277,7 @@ abstract class BaseHandler
             $this->editMessageText([
                 'chat_id' => $this->chat->id,
                 'message_id' => $this->message->messageId,
-                'text' => 'Домашнее задание:',
+                'text' => $message ?? 'Домашнее задание:',
                 'parse_mode' => 'Markdown',
                 'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
             ]);
@@ -273,7 +285,7 @@ abstract class BaseHandler
             $this->deleteMessage();
             $this->sendMessage([
                 'chat_id' => $this->chat->id,
-                'text' => 'Домашнее задание:',
+                'text' => $message ?? 'Домашнее задание:',
                 'parse_mode' => 'Markdown',
                 'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
             ]);
@@ -335,12 +347,13 @@ abstract class BaseHandler
             foreach ($lessons as $key => $lesson) {
                 $startTime = $lesson->start->format('H:i');
                 $endTime = $lesson->end->format('H:i');
-                $paymentStatus = $lesson->is_paid ? '✅ Оплачено ✅' : '❌ Не оплачено ❌';
+                $paymentStatus = $lesson->is_paid ? '✅ Оплачено' : '❌ Не оплачено';
 
+                $studentName = $lesson->is_canceled ? "~~~{$lesson->student_name}~~~ (Отменён)" : $lesson->student_name;
                 $message .= sprintf(
                     "%d. *%s*\n⏰ %s–%s\n%s\n\n",
                     $key + 1,
-                    $lesson->student_name,
+                    $studentName,
                     $startTime,
                     $endTime,
                     $paymentStatus
@@ -361,18 +374,22 @@ abstract class BaseHandler
         }
         $keyboard[] = $row;
         if ($lessons->isNotEmpty()) {
-            $keyboard[] = [['text' => 'Отметить оплату', 'callback_data' => "paymentMenu {$date}"]];
+            $keyboard[] = [
+                ['text' => 'Оплата', 'callback_data' => "paymentMenu {$date}"],
+                ['text' => 'Отмена', 'callback_data' => "cancelMenu {$date}"]
+            ];
         }
         $keyboard[] = [
             ['text' => '◀ Назад ◀', 'callback_data' => "sendMenu"],
             ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
         ];
 
+        $message = $this->escapingSymbols($message);
         $this->editMessageText([
             'chat_id' => $this->chat->id,
             'message_id' => $this->message->messageId,
             'text' => $message,
-            'parse_mode' => 'Markdown',
+            'parse_mode' => 'MarkdownV2',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
     }
