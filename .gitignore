@@ -23,3 +23,5 @@ yarn-error.log
 /app/Console/bats/loophole_stderr.log
 /app/Console/bats/loophole_stdout.log
 /app/Console/bats/start_loophole_forwarding — копия.bat
+/public/avatars
+/NUL

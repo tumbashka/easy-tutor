@@ -35,8 +35,9 @@ class ImageService
 
     public function getImageURL(string $subFolder, int $width = 300, int $height = 300): string
     {
+        $nowTimestamp = time();
         if ($this->disk->exists("{$subFolder}/{$width}x{$height}.webp")) {
-            return $this->disk->url("{$subFolder}/{$width}x{$height}.webp");
+            return $this->disk->url("{$subFolder}/{$width}x{$height}.webp")."?t={$nowTimestamp}";
         }
 
         if ($this->disk->exists("{$subFolder}/original.webp")
@@ -62,17 +63,32 @@ class ImageService
         return $this->disk->put($name, $image);
     }
 
-    public function deleteImageWithCrops(string $subFolder): void
+    public function deleteDirectory(string $subFolder): void
     {
-        if ($this->disk->exists("{$subFolder}/")) {
-            $this->disk->deleteDirectory("{$subFolder}/");
+        if ($this->disk->exists($subFolder)) {
+            $this->disk->deleteDirectory($subFolder);
+        }
+    }
+
+    public function renameFolder(string $path, string $newPath): void
+    {
+        if ($this->disk->exists($path)) {
+            $this->disk->move($path, $newPath);
         }
     }
 
     public function uploadAvatar(User $user, UploadedFile $file)
     {
-        $this->deleteImageWithCrops($user->id);
+        $this->renameFolder("{$user->id}/", "{$user->id}_old/");
+        $res = $this->saveImage($user->id, $file);
 
-        return $this->saveImage($user->id, $file);
+        if ($res) {
+            $this->deleteDirectory("{$user->id}_old/");
+            return true;
+        }else{
+            $this->deleteDirectory("{$user->id}/");
+            $this->renameFolder("{$user->id}_old/", "{$user->id}/");
+            return false;
+        }
     }
 }

@@ -20,17 +20,18 @@ class UserController extends Controller
         return view('user.profile', compact('user', 'telegram_connect_url', 'telegram_bot_url'));
     }
 
-    public function edit(User $user)
+    public function edit()
     {
-        if (auth()->user()->id == $user->id) {
+        if ($user = auth()->user()) {
             return view('user.edit', compact('user'));
         } else {
             abort(403);
         }
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request)
     {
+        $user = auth()->user();
         if ($request->hasFile('avatar')) {
             $imageService = app()->make(ImageService::class);
             $imageService->uploadAvatar($user, $request->file('avatar'));

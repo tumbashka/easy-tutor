@@ -15,8 +15,8 @@ Route::permanentRedirect('/', '/schedule');
 
 Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
     Route::get('user/profile', [UserController::class, 'index'])->name('index');
-    Route::get('user/{user}/edit', [UserController::class, 'edit'])->name('edit');
-    Route::put('user/{user}/update', [UserController::class, 'update'])->name('update');
+    Route::get('user/edit', [UserController::class, 'edit'])->name('edit');
+    Route::put('user/update', [UserController::class, 'update'])->name('update');
 });
 
 Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
