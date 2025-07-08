@@ -52,7 +52,7 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            app(ImageService::class)->setAvatar($user, $request->file('avatar'));
+            app(ImageService::class)->uploadAvatar($user, $request->file('avatar'));
         }
 
         if ($request->input('is_verify_email')) {
@@ -93,7 +93,7 @@ class UserController extends Controller
         $user->update();
 
         if ($request->hasFile('avatar')) {
-            app(ImageService::class)->setAvatar($user, $request->file('avatar'));
+            app(ImageService::class)->uploadAvatar($user, $request->file('avatar'));
         }
 
         if ($request->input('password')) {

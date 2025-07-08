@@ -12,7 +12,6 @@ class Homework extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'student_id',
         'description',

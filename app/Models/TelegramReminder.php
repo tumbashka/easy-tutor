@@ -12,7 +12,6 @@ class TelegramReminder extends Model
 {
     use HasFactory;
 
-
     protected $attributes = [
         'is_enabled' => true,
         'before_lesson_minutes' => 60,

@@ -30,7 +30,7 @@ class ImageService
     {
         $imageManager = ImageManager::gd(autoOrientation: true);
 
-        return $imageManager->read($file)->encode(new WebpEncoder());
+        return $imageManager->read($file)->scaleDown(1920,1920)->encode(new WebpEncoder());
     }
 
     public function getImageURL(string $subFolder, int $width = 300, int $height = 300): string
@@ -69,7 +69,7 @@ class ImageService
         }
     }
 
-    public function setAvatar(User $user, UploadedFile $file): bool
+    public function uploadAvatar(User $user, UploadedFile $file)
     {
         $this->deleteImageWithCrops($user->id);
 

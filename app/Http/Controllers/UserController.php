@@ -33,7 +33,7 @@ class UserController extends Controller
     {
         if ($request->hasFile('avatar')) {
             $imageService = app()->make(ImageService::class);
-            $imageService->setAvatar($user, $request->file('avatar'));
+            $imageService->uploadAvatar($user, $request->file('avatar'));
         }
 
         if ($request->password) {

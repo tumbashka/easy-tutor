@@ -10,11 +10,6 @@ class FreeTime extends Model
 {
     use HasFactory;
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
     protected $fillable = [
         'user_id',
         'week_day',
@@ -31,5 +26,10 @@ class FreeTime extends Model
             'start' => 'datetime:H:i',
             'end' => 'datetime:H:i',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

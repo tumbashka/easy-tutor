@@ -79,11 +79,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Lesson::class);
     }
 
-    public function getCountPayedLessonsAttribute(): int
-    {
-        return $this->lessons()->where('is_paid', true)->count();
-    }
-
     public function freeTimes(): HasMany
     {
         return $this->hasMany(FreeTime::class);
@@ -97,6 +92,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function getCountPayedLessonsAttribute(): int
+    {
+        return $this->lessons()->where('is_paid', true)->count();
     }
 
     public function getAvatarUrlAttribute(): string
@@ -124,7 +124,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification(): void
     {
         try {
-            $this->notify(new MyVerifyMail);
+            dispatch(function () {
+                $this->notify(new MyVerifyMail);
+            })->afterResponse();
         } catch (UnexpectedResponseException $e) {
             Auth::logout();
 
