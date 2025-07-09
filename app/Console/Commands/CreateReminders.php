@@ -34,7 +34,7 @@ class CreateReminders extends Command
             $todayLessons->put($user->email, $scheduleService->getActualLessonsOnDate($now));
         }
 
-        foreach ($todayLessons as $userEmail => $lessons) {
+        foreach ($todayLessons as $lessons) {
             /** @var $lesson Lesson */
             foreach ($lessons as $lesson) {
                 $student = $lesson->student;
