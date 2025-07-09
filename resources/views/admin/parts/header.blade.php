@@ -19,6 +19,10 @@
                     <a class="nav-link text-white {{ activeLink('admin.users*') }}"
                        href="{{ route('admin.users.index') }}">Пользователи</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ activeLink('admin.backups*') }}"
+                       href="{{ route('admin.backups') }}">Бэкапы</a>
+                </li>
             </ul>
             <ul class="nav nav-underline mb-2 mb-lg-0">
                 <li class="nav-item">

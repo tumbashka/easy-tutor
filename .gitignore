@@ -26,3 +26,4 @@ yarn-error.log
 /public/avatars
 /NUL
 /docker/db/
+/.vite/
