@@ -32,7 +32,8 @@
                             <a class="nav-link text-white {{ activeLink('tasks*') }}"
                                href="{{ route('tasks.index') }}">Список дел</a>
                         </li>
-                        <div class="time-widget d-none d-lg-flex text-white mx-3 align-self-center" id="timeWidgetDesktop"></div>
+                        <div class="time-widget d-none d-lg-flex text-white mx-3 align-self-center"
+                             id="timeWidgetDesktop"></div>
                     </ul>
                 @endif
             @endauth
@@ -68,19 +69,26 @@
                                 Статистика
                             </a>
                             <ul class="dropdown-menu">
-                                <li><hr class="dropdown-divider m-0"></li>
+                                <li>
+                                    <hr class="dropdown-divider m-0">
+                                </li>
                                 <li><h6 class="dropdown-header">Доходы</h6></li>
-                                <li><a class="dropdown-item" href="{{ route('statistic.earnings.period') }}">По
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('statistic.earnings.period') }}">По
                                         периодам</a></li>
                                 <li><a class="dropdown-item" href="{{ route('statistic.earnings.students') }}">По
                                         ученикам</a></li>
-                                <li><hr class="dropdown-divider m-0"></li>
+                                <li>
+                                    <hr class="dropdown-divider m-0">
+                                </li>
                                 <li><h6 class="dropdown-header">Занятия</h6></li>
                                 <li><a class="dropdown-item" href="{{ route('statistic.lessons.period') }}">По
                                         периодам</a></li>
                                 <li><a class="dropdown-item" href="{{ route('statistic.lessons.students') }}">По
                                         ученикам</a></li>
-                                <li><hr class="dropdown-divider m-0"></li>
+                                <li>
+                                    <hr class="dropdown-divider m-0">
+                                </li>
                                 <li><h6 class="dropdown-header">Рабочие часы</h6></li>
                                 <li><a class="dropdown-item" href="{{ route('statistic.time.period') }}">По ученикам</a>
                                 </li>
@@ -110,93 +118,95 @@
     </div>
 </nav>
 
-@auth
-    @if (auth()->user()->hasVerifiedEmail())
-        <script>
-            const lessons = {!! auth()->user()->getTodayActualLessons()->toJson() !!};
-        </script>
-    @endif
-@endauth
+@pushonce('js')
 
-<script>
-    function formatTime(date) {
-        return date.toTimeString().slice(0, 8).replace(/:/g, '<span class="colon">:</span>');
-    }
+    @auth
+        @if (auth()->user()->hasVerifiedEmail() && auth()->user()->is_active)
+            <script>
+                const lessons = {!! auth()->user()->getTodayActualLessons()->toJson() !!};
+            </script>
+        @endif
+    @endauth
 
-    function formatLessonTime(time) {
-        return time.slice(0, 5);
-    }
-
-    function calculateTimeDiff(start, end) {
-        const diffMs = end - start;
-        const hours = Math.floor(diffMs / (1000 * 60 * 60));
-        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        if (hours > 0) {
-            return `${hours} ч. ${minutes} мин.`;
-        } else {
-            return `${minutes} мин.`;
+    <script>
+        function formatTime(date) {
+            return date.toTimeString().slice(0, 8).replace(/:/g, '<span class="colon">:</span>');
         }
-    }
 
-    let lastCurrentLessonId = null;
-    let lastNextLessonId = null;
-    let isInitialLoad = true;
+        function formatLessonTime(time) {
+            return time.slice(0, 5);
+        }
 
-    function updateWidget(isLessonChange = false) {
-        const now = new Date();
-        const mobileWidget = document.getElementById('timeWidgetMobile');
-        const desktopWidget = document.getElementById('timeWidgetDesktop');
+        function calculateTimeDiff(start, end) {
+            const diffMs = end - start;
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            if (hours > 0) {
+                return `${hours} ч. ${minutes} мин.`;
+            } else {
+                return `${minutes} мин.`;
+            }
+        }
 
-        if (!lessons || lessons.length === 0) {
-            mobileWidget.innerHTML = `<div class="lesson-text${isLessonChange && !isInitialLoad ? ' animate' : ''}">Уроков нет</div>`;
-            desktopWidget.innerHTML = `
+        let lastCurrentLessonId = null;
+        let lastNextLessonId = null;
+        let isInitialLoad = true;
+
+        function updateWidget(isLessonChange = false) {
+            const now = new Date();
+            const mobileWidget = document.getElementById('timeWidgetMobile');
+            const desktopWidget = document.getElementById('timeWidgetDesktop');
+
+            if (!lessons || lessons.length === 0) {
+                mobileWidget.innerHTML = `<div class="lesson-text${isLessonChange && !isInitialLoad ? ' animate' : ''}">Уроков нет</div>`;
+                desktopWidget.innerHTML = `
                 <div class="time-container">
                     <div class="current-time">${formatTime(now)}</div>
                     <div class="lessons-container"><div class="lesson-text${isLessonChange && !isInitialLoad ? ' animate' : ''}">Уроков нет</div></div>
                 </div>`;
-            lastCurrentLessonId = null;
-            lastNextLessonId = null;
-            isInitialLoad = false;
-            return;
-        }
+                lastCurrentLessonId = null;
+                lastNextLessonId = null;
+                isInitialLoad = false;
+                return;
+            }
 
-        const activeLessons = lessons.filter(lesson => !lesson.is_canceled);
-        const currentLesson = activeLessons.find(lesson => {
-            const start = new Date(`${lesson.date}T${lesson.start}:00`);
-            const end = new Date(`${lesson.date}T${lesson.end}:00`);
-            return now >= start && now <= end;
-        });
+            const activeLessons = lessons.filter(lesson => !lesson.is_canceled);
+            const currentLesson = activeLessons.find(lesson => {
+                const start = new Date(`${lesson.date}T${lesson.start}:00`);
+                const end = new Date(`${lesson.date}T${lesson.end}:00`);
+                return now >= start && now <= end;
+            });
 
-        const nextLesson = activeLessons
-            .filter(lesson => new Date(`${lesson.date}T${lesson.start}:00`) > now)
-            .sort((a, b) => new Date(`${a.date}T${a.start}:00`) - new Date(`${b.date}T${b.start}:00`))[0];
+            const nextLesson = activeLessons
+                .filter(lesson => new Date(`${lesson.date}T${lesson.start}:00`) > now)
+                .sort((a, b) => new Date(`${a.date}T${a.start}:00`) - new Date(`${b.date}T${b.start}:00`))[0];
 
-        const currentLessonId = currentLesson ? currentLesson.id : null;
-        const nextLessonId = nextLesson ? nextLesson.id : null;
-        const hasLessonChanged = currentLessonId !== lastCurrentLessonId || nextLessonId !== lastNextLessonId;
+            const currentLessonId = currentLesson ? currentLesson.id : null;
+            const nextLessonId = nextLesson ? nextLesson.id : null;
+            const hasLessonChanged = currentLessonId !== lastCurrentLessonId || nextLessonId !== lastNextLessonId;
 
-        let mobileCurrentText = currentLesson
-            ? `${formatLessonTime(currentLesson.start)} - ${currentLesson.student_name}`
-            : 'Нет текущего урока';
-        let mobileNextText = nextLesson
-            ? `${formatLessonTime(nextLesson.start)} - ${nextLesson.student_name}`
-            : 'Нет след. урока';
+            let mobileCurrentText = currentLesson
+                ? `${formatLessonTime(currentLesson.start)} - ${currentLesson.student_name}`
+                : 'Нет текущего урока';
+            let mobileNextText = nextLesson
+                ? `${formatLessonTime(nextLesson.start)} - ${nextLesson.student_name}`
+                : 'Нет след. урока';
 
-        let desktopCurrentText = currentLesson
-            ? `${formatLessonTime(currentLesson.start)} - ${currentLesson.student_name} (осталось ${calculateTimeDiff(now, new Date(`${currentLesson.date}T${currentLesson.end}:00`))})`
-            : 'Нет текущего урока';
-        let desktopNextText = nextLesson
-            ? `${formatLessonTime(nextLesson.start)} - ${nextLesson.student_name} (через ${calculateTimeDiff(now, new Date(`${nextLesson.date}T${nextLesson.start}:00`))})`
-            : 'Нет следующего урока';
+            let desktopCurrentText = currentLesson
+                ? `${formatLessonTime(currentLesson.start)} - ${currentLesson.student_name} (осталось ${calculateTimeDiff(now, new Date(`${currentLesson.date}T${currentLesson.end}:00`))})`
+                : 'Нет текущего урока';
+            let desktopNextText = nextLesson
+                ? `${formatLessonTime(nextLesson.start)} - ${nextLesson.student_name} (через ${calculateTimeDiff(now, new Date(`${nextLesson.date}T${nextLesson.start}:00`))})`
+                : 'Нет следующего урока';
 
-        const animateClass = (isLessonChange || hasLessonChanged) && !isInitialLoad ? ' animate' : '';
+            const animateClass = (isLessonChange || hasLessonChanged) && !isInitialLoad ? ' animate' : '';
 
-        mobileWidget.innerHTML = `
+            mobileWidget.innerHTML = `
             <div class="lesson-text${animateClass}">${mobileCurrentText}</div>
             <div class="lesson-text${animateClass}">${mobileNextText}</div>
         `;
 
-        desktopWidget.innerHTML = `
+            desktopWidget.innerHTML = `
             <div class="time-container">
                 <div class="current-time">${formatTime(now)}</div>
                 <div class="lessons-container">
@@ -206,120 +216,118 @@
             </div>
         `;
 
-        lastCurrentLessonId = currentLessonId;
-        lastNextLessonId = nextLessonId;
-        isInitialLoad = false;
-    }
+            lastCurrentLessonId = currentLessonId;
+            lastNextLessonId = nextLessonId;
+            isInitialLoad = false;
+        }
 
-    setInterval(() => {
-        const now = new Date();
-        document.querySelectorAll('.current-time').forEach(el => {
-            el.innerHTML = formatTime(now);
-        });
-    }, 1000);
+        setInterval(() => {
+            const now = new Date();
+            document.querySelectorAll('.current-time').forEach(el => {
+                el.innerHTML = formatTime(now);
+            });
+        }, 1000);
 
-    function scheduleMinuteUpdate() {
-        const now = new Date();
-        const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-        setTimeout(() => {
-            updateWidget(false);
-            setInterval(() => updateWidget(false), 60000);
-        }, msUntilNextMinute);
-    }
-
-    function scheduleLessonUpdate() {
-        const now = new Date();
-        const activeLessons = lessons ? lessons.filter(lesson => !lesson.is_canceled) : [];
-        let nextUpdateTime = null;
-
-        activeLessons.forEach(lesson => {
-            const start = new Date(`${lesson.date}T${lesson.start}:00`);
-            const end = new Date(`${lesson.date}T${lesson.end}:00`);
-            if (start > now && (!nextUpdateTime || start < nextUpdateTime)) {
-                nextUpdateTime = start;
-            }
-            if (end > now && (!nextUpdateTime || end < nextUpdateTime)) {
-                nextUpdateTime = end;
-            }
-        });
-
-        if (nextUpdateTime) {
-            const msUntilNextUpdate = nextUpdateTime - now;
+        function scheduleMinuteUpdate() {
+            const now = new Date();
+            const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
             setTimeout(() => {
-                updateWidget(true);
-                scheduleLessonUpdate();
-            }, msUntilNextUpdate);
-        } else {
-            setTimeout(scheduleLessonUpdate, 3600000);
+                updateWidget(false);
+                setInterval(() => updateWidget(false), 60000);
+            }, msUntilNextMinute);
         }
-    }
 
-    updateWidget(false);
-    scheduleMinuteUpdate();
-    scheduleLessonUpdate();
-</script>
+        function scheduleLessonUpdate() {
+            const now = new Date();
+            const activeLessons = lessons ? lessons.filter(lesson => !lesson.is_canceled) : [];
+            let nextUpdateTime = null;
 
-<style>
-    .time-widget {
-        font-size: 0.9rem;
-        line-height: 1.2;
-        text-align: center;
-    }
+            activeLessons.forEach(lesson => {
+                const start = new Date(`${lesson.date}T${lesson.start}:00`);
+                const end = new Date(`${lesson.date}T${lesson.end}:00`);
+                if (start > now && (!nextUpdateTime || start < nextUpdateTime)) {
+                    nextUpdateTime = start;
+                }
+                if (end > now && (!nextUpdateTime || end < nextUpdateTime)) {
+                    nextUpdateTime = end;
+                }
+            });
 
-    .time-container {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
+            if (nextUpdateTime) {
+                const msUntilNextUpdate = nextUpdateTime - now;
+                setTimeout(() => {
+                    updateWidget(true);
+                    scheduleLessonUpdate();
+                }, msUntilNextUpdate);
+            } else {
+                setTimeout(scheduleLessonUpdate, 3600000);
+            }
+        }
 
-    .current-time {
-        font-size: 1.7rem;
-        font-weight: bold;
-    }
+        updateWidget(false);
+        scheduleMinuteUpdate();
+        scheduleLessonUpdate();
+    </script>
 
-    .colon {
-        animation: blink 1.5s ease-in-out infinite;
-    }
-
-    .lesson-text.animate {
-        animation: fadeIn 1s ease-in;
-    }
-
-    .lessons-container {
-        text-align: left;
-    }
-
-    .time-widget div {
-        white-space: nowrap;
-    }
-
-    @media (max-width: 991px) {
+    <style>
         .time-widget {
-            flex-grow: 1;
+            font-size: 0.9rem;
+            line-height: 1.2;
+            text-align: center;
         }
-    }
 
-    @media (min-width: 992px) {
-        .time-widget {
-            flex-shrink: 0;
+        .time-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
-    }
 
-    @keyframes blink {
-        0%, 50% {
-            opacity: 1;
+        .current-time {
+            font-size: 1.7rem;
+            font-weight: bold;
         }
-        51%, 100% {
-            opacity: 0.8;
-        }
-    }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
+        .colon {
+            animation: blink 1.5s ease-in-out infinite;
         }
-        to {
-            opacity: 1;
+
+        .lessons-container {
+            text-align: left;
         }
-    }
-</style>
+
+        .time-widget div {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 991px) {
+            .time-widget {
+                flex-grow: 1;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .time-widget {
+                flex-shrink: 0;
+            }
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+
+@endpushonce
