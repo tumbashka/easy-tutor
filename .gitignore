@@ -25,3 +25,4 @@ yarn-error.log
 /app/Console/bats/start_loophole_forwarding — копия.bat
 /public/avatars
 /NUL
+/docker/db/
