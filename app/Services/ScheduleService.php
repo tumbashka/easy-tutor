@@ -118,8 +118,6 @@ class ScheduleService
         foreach ($weekDays as $weekDayId => $date) {
             $lessonsOnDate = $this->getActualLessonsOnDate($date);
 
-            $this->lessonRepository->putToCacheLessonsOnDate($lessonsOnDate, $date);
-
             $lessonsOnDays->put($weekDayId, $lessonsOnDate->sortBy('start'));
         }
 
@@ -140,11 +138,12 @@ class ScheduleService
         if ($this->shouldGenerateLessons($date)) {
             $weekDayId = getWeekDayIndex($date);
             $lessonTimes = $this->lessonRepository->getWeekDayLessonTimes($weekDayId);
-
             $existingLessonTimeIds = $lessonsOnDate->pluck('lesson_time_id');
 
+            $lessonTimes->load('student');
             foreach ($lessonTimes as $lessonTime) {
                 if (! $existingLessonTimeIds->contains($lessonTime->id) && $this->createdBefore($lessonTime, $date)) {
+
                     $lessonData = $this->generateLessonData($date, $lessonTime);
 
                     $lesson = $this->saveLesson($lessonData);
@@ -153,8 +152,10 @@ class ScheduleService
                 }
             }
         }
+        $lessonsOnDate = $lessonsOnDate->sortBy('start');
+        $this->lessonRepository->putToCacheLessonsOnDate($lessonsOnDate, $date);
 
-        return $lessonsOnDate->sortBy('start');
+        return $lessonsOnDate;
     }
 
     /**
@@ -215,6 +216,6 @@ class ScheduleService
 
     private function saveLesson(LessonDTO $data): Lesson
     {
-        return Lesson::create($data->toArray());
+        return Lesson::createQuietly($data->toArray());
     }
 }
