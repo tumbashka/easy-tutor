@@ -11,7 +11,7 @@ use App\Repositories\LessonRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class ScheduleService
+class LessonService
 {
     private LessonRepository $lessonRepository;
     private User $user;

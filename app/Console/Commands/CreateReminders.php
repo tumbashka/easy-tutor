@@ -8,7 +8,7 @@ use App\Models\Reminder;
 use App\Models\Task;
 use App\Models\TelegramReminder;
 use App\Models\User;
-use App\Services\ScheduleService;
+use App\Services\LessonService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -30,7 +30,7 @@ class CreateReminders extends Command
 
         $todayLessons = new Collection;
         foreach ($actualUsers as $user) {
-            $scheduleService = app(ScheduleService::class, compact($user));
+            $scheduleService = app(LessonService::class, compact('user'));
             $todayLessons->put($user->email, $scheduleService->getActualLessonsOnDate($now));
         }
 

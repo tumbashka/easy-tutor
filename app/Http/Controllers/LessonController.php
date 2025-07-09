@@ -7,7 +7,7 @@ use App\Http\Requests\Lesson\StoreLessonRequest;
 use App\Http\Requests\Lesson\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\Student;
-use App\Services\ScheduleService;
+use App\Services\LessonService;
 use App\Services\StatisticService;
 use Illuminate\Support\Carbon;
 
@@ -15,7 +15,7 @@ class LessonController extends Controller
 {
     public function index(
         IndexFilterRequest $request,
-        ScheduleService $scheduleService,
+        LessonService $scheduleService,
         StatisticService $statisticService
     ) {
         $weekOffset = $request->input('week', 0);
@@ -27,7 +27,7 @@ class LessonController extends Controller
         return view('schedule.index', array_merge($weekDTO->toArray(), compact('statistics')));
     }
 
-    public function show(string $day, ScheduleService $scheduleService)
+    public function show(string $day, LessonService $scheduleService)
     {
         $dayCarbon = Carbon::parse($day);
         $lessons = $scheduleService->getActualLessonsOnDate($dayCarbon);

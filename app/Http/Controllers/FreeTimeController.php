@@ -8,7 +8,7 @@ use App\Models\FreeTime;
 use App\Models\LessonTime;
 use App\Models\Student;
 use App\Models\User;
-use App\Services\ScheduleService;
+use App\Services\LessonService;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class FreeTimeController extends Controller
 {
-    public function index(Request $request, ScheduleService $lessonService)
+    public function index(Request $request, LessonService $lessonService)
     {
         $url = $request->encrypted_url;
 

@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Services\ScheduleService;
+use App\Services\LessonService;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Notifications\MyVerifyMail;
 use App\Services\ImageService;
-use App\Services\ScheduleService;
+use App\Services\LessonService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -117,7 +117,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getTodayActualLessons()
     {
-        return app(ScheduleService::class)->getActualLessonsOnDate(now());
+        return app(LessonService::class)->getActualLessonsOnDate(now());
     }
 
     #[\Override]
