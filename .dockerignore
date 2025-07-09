@@ -1,0 +1,9 @@
+docker/db
+node_modules
+vendor
+storage
+*.log
+*.sqlite
+.env
+.idea
+.vscode

@@ -1,0 +1,80 @@
+services:
+  nginx:
+    build:
+      context: ../
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "81:80"
+    volumes:
+      - ../:/var/www
+    depends_on:
+      php:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  php:
+    build:
+      context: ../
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ../:/var/www
+    command: ["bash", "-c", "ls -l /var/www/docker/init.sh && chmod +x /var/www/docker/init.sh && /var/www/docker/init.sh && php-fpm"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:9.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    volumes:
+      - ../docker/db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  node:
+    build:
+      context: ../
+      dockerfile: docker/node/Dockerfile
+    working_dir: /var/www
+    ports:
+      - "5174:5174"
+    volumes:
+      - ../:/var/www
+    networks:
+      - app-network
+
+volumes:
+  redis_data:
+  db:
+
+networks:
+  app-network:
+    driver: bridge

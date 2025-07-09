@@ -3,12 +3,15 @@
 namespace App\src\Telegram;
 
 use App\Models\Homework;
+use App\Models\Lesson;
 use App\Models\TelegramReminder;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Api;
+use App\Models\User as UserModel;
 use Telegram\Bot\Objects\CallbackQuery;
 
 class CallbackQueryHandler extends BaseHandler
@@ -31,48 +34,53 @@ class CallbackQueryHandler extends BaseHandler
         $this->param = $arr_string[1] ?? null;
     }
 
-    private const array COMMAND_HANDLERS = [
-        'set_student' => 'handleSetStudent',
-        'close' => 'handleClose',
-        'disable_remind' => 'handleDisableRemind',
-        'enable_remind' => 'handleEnableRemind',
-        'set_student_menu' => 'handleSetStudentMenu',
-        'change_before_lesson_minutes' => 'handleBeforeLessonMinutesKeyboard',
-        'set_before_lesson_minutes' => 'handleSetBeforeLessonMinutes',
-        'change_homework_reminder_time' => 'handleHomeworkReminderTimeKeyboard',
-        'set_homework_reminder_time' => 'handleSetHomeworkReminderTime',
-        'add_homework' => 'handleAddHomework',
-        'get_list_homework' => 'handleGetListHomework',
-        'get_complete_homework_menu' => 'handleCompleteHomeworkMenu',
-        'change_homework_status' => 'handleChangeHomeworkStatus',
-        'complete_all_homework' => 'handleAllCompleteHomework',
+    private const array AVAILABLE_HANDLERS = [
+        'setStudent',
+        'close',
+        'reminderChangeStatus',
+        'beforeLessonMinutesKeyboard',
+        'setBeforeLessonMinutes',
+        'homeworkReminderTimeKeyboard',
+        'setHomeworkReminderTime',
+        'addHomework',
+        'getListHomework',
+        'completeHomeworkMenu',
+        'changeHomeworkStatus',
+        'allCompleteHomework',
+        'scheduleToday',
+        'scheduleAnotherDay',
+        'lessonsSchedule',
+        'paymentMenu',
+        'cancelMenu',
+        'changeLessonPayment',
+        'changeLessonStatus',
+        'sendGroupSetting',
+        'sendKeyboardSetStudent',
+        'sendMenu',
+        'sendHomeworkMenu',
+        'cancelAddingHomework',
     ];
 
     public function process(): void
     {
-        if (! $this->isConfirmedUser()) {
+        if (!$this->isConfirmedUser()) {
             $this->sendConfirmedUserError();
 
             return;
         }
 
-        if (config('app.debug')) {
-            \Log::debug('Callback Query:', ['data' => $this->callbackQuery->toArray()]);
-        }
-
-        $handler = self::COMMAND_HANDLERS[$this->command] ?? 'handleUnknownCommand';
-        $this->$handler();
+        $handler = in_array($this->command,self::AVAILABLE_HANDLERS) ? $this->command: 'handleUnknownCommand';
+        $this->$handler($this->param);
     }
 
-    private function handleUnknownCommand(): void
+    protected function handleUnknownCommand(): void
     {
-        \Log::warning('Unknown command received', ['command' => $this->command]);
-        $this->sendTextMessage('Unknown command. Please try again.');
+        $this->sendTextMessage("Команда: {$this->command} не существует.");
     }
 
-    private function handleSetStudent(): void
+    private function setStudent(): void
     {
-        if (! $this->param) {
+        if (!$this->param) {
             return;
         }
 
@@ -81,7 +89,7 @@ class CallbackQueryHandler extends BaseHandler
         $student = $user->students()
             ->firstWhere('id', $this->param);
 
-        if (! $student) {
+        if (!$student) {
             $this->sendTextMessage('Ошибка, ученик не найден');
 
             return;
@@ -92,111 +100,61 @@ class CallbackQueryHandler extends BaseHandler
             ['student_id' => $student->id]
         );
 
-        if ($telegram_reminder->is_enabled) {
-            $text_body = <<<EOD
-            Напоминания: ***включены***
-            Напоминание перед занятием за ***{$telegram_reminder->before_lesson_minutes} мин.***
-            Ежедневное напоминание о ДЗ в ***{$telegram_reminder->homework_reminder_time}***
-            EOD;
-        } else {
-            $text_body = 'Напоминания: ***выключены***';
-        }
-        $text = <<<EOD
-            Этой группе успешно назначен ученик: ***{$student->name}***.
-            {$text_body}
-            Для вызова настроек, используйте ***/settings***
-            EOD;
-
-        $this->telegram->editMessageText([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-            'text' => $text,
-            'parse_mode' => 'Markdown',
-            'reply_markup' => json_encode(['inline_keyboard' => []]),
-        ]);
-
+        $this->sendGroupSetting();
     }
 
-    private function handleClose(): void
+    private function close(): void
     {
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+        $this->deleteMessage();
     }
 
-    private function handleDisableRemind(): void
+    private function reminderChangeStatus(): void
     {
         $telegram_reminder = $this->getTelegramReminder();
-        if (! $telegram_reminder) {
+        if (!$telegram_reminder) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        $telegram_reminder->is_enabled = false;
+        $telegram_reminder->is_enabled = !$telegram_reminder->is_enabled;
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+
         $this->sendGroupSetting();
     }
 
-    private function handleEnableRemind(): void
+    private function beforeLessonMinutesKeyboard(): void
     {
-        $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
-        $telegram_reminder->is_enabled = true;
-        $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
-        $this->sendGroupSetting();
-
-    }
-
-    private function handleSetStudentMenu(): void
-    {
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
-        $this->sendKeyboardSetStudent();
-    }
-
-    private function handleBeforeLessonMinutesKeyboard(): void
-    {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
 
         $keyboard = [];
         for ($i = 5; $i <= 60; $i += 5) {
-            $keyboard[] = [['text' => "{$i} мин.", 'callback_data' => 'set_before_lesson_minutes '.$i]];
+            $keyboard[] = [['text' => "{$i} мин.", 'callback_data' => 'setBeforeLessonMinutes ' . $i]];
         }
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "sendGroupSetting"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
 
-        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
-        $this->telegram->sendMessage([
+        $this->editMessageText([
             'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
             'text' => 'Выберите, за сколько напоминать о занятии:',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
     }
 
-    private function handleSetBeforeLessonMinutes(): void
+    private function setBeforeLessonMinutes(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        if (! $this->param) {
+        if (!$this->param) {
             return;
         }
         if ($this->param <= 0 || $this->param > 1440) {
@@ -208,53 +166,55 @@ class CallbackQueryHandler extends BaseHandler
         $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
         $telegram_reminder->before_lesson_minutes = $this->param;
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
-        $this->sendGroupSetting();
 
+        $this->sendGroupSetting();
     }
 
-    private function handleHomeworkReminderTimeKeyboard(): void
+    private function homeworkReminderTimeKeyboard(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
 
         $keyboard = [];
         $time = Carbon::createFromTime(8);
         while ($time->lt('22:00')) {
             $arr = [];
-            $arr[] = ['text' => $time->format('H:i'), 'callback_data' => "set_homework_reminder_time {$time->format('H:i')}"];
+            $arr[] = [
+                'text' => $time->format('H:i'),
+                'callback_data' => "setHomeworkReminderTime {$time->format('H:i')}"
+            ];
             $time->addMinutes(30);
-            $arr[] = ['text' => $time->format('H:i'), 'callback_data' => "set_homework_reminder_time {$time->format('H:i')}"];
+            $arr[] = [
+                'text' => $time->format('H:i'),
+                'callback_data' => "setHomeworkReminderTime {$time->format('H:i')}"
+            ];
             $time->addMinutes(30);
             $keyboard[] = $arr;
         }
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "sendGroupSetting"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
 
-        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
-        $this->telegram->sendMessage([
+        $this->editMessageText([
             'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
             'text' => 'Выберите, во сколько ежедневное напоминание о ДЗ:',
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ]);
     }
 
-    private function handleSetHomeworkReminderTime(): void
+    private function setHomeworkReminderTime(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        if (! $this->param) {
+        if (!$this->param) {
             return;
         }
         $time = Carbon::createFromTimeString($this->param);
@@ -267,127 +227,110 @@ class CallbackQueryHandler extends BaseHandler
         $telegram_reminder = TelegramReminder::firstWhere('chat_id', $this->chat->id);
         $telegram_reminder->homework_reminder_time = $time->format('H:i');
         $telegram_reminder->update();
-        $this->telegram->deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
+
         $this->sendGroupSetting();
     }
 
-    private function handleAddHomework(): void
+    private function addHomework(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        $chatId = $this->chat->id;
-        Cache::put("awaiting_homework_description_{$chatId}", true, now()->addMinutes(5));
 
-        $response = $this->telegram->sendMessage([
-            'chat_id' => $chatId,
+        Cache::put("awaiting_homework_description_{$this->chat->id}", $this->message->messageId, now()->addMinutes(5));
+
+        $this->deleteMessage();
+        $this->sendMessage([
+            'chat_id' => $this->chat->id,
             'text' => 'Пожалуйста, введите краткое описание домашнего задания:',
             'reply_markup' => json_encode(['force_reply' => true]),
         ]);
-
-        $this->telegram->deleteMessage([
-            'chat_id' => $chatId,
-            'message_id' => $this->callbackQuery->message->messageId,
-        ]);
     }
 
-    private function handleGetListHomework(): void
+    private function getListHomework(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        $page = (int) $this->param;
+        $page = (int)$this->param;
         $perPage = 4;
         $homeworks = Homework::where('student_id', $this->getStudent()->id)
-            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1 ELSE 0 END ASC, created_at DESC')
+            ->orderByCompleted()
             ->paginate($perPage, ['*'], 'page', $page);
 
-        $text = $this->getHomeworkText($homeworks);
-        $keyboard = $this->getPaginationKeyboard($homeworks, 'get_list_homework');
-
-        $params = [
-            'chat_id' => $this->chat->id,
-            'text' => $text ?: 'Список домашних заданий пуст.',
-            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
-        ];
-
-        if ($this->callbackQuery->message) {
-            $params['message_id'] = $this->callbackQuery->message->messageId;
-            $this->telegram->editMessageText($params);
+        if ($homeworks->isNotEmpty()) {
+            $text = "Домашние задания:\n";
+            foreach ($homeworks as $index => $homework) {
+                $status = $homework->completed_at ? '✅' : '❌';
+                $text .= ($index + 1 + ($homeworks->firstItem() - 1)) . ". {$status} {$homework->description}\n";
+            }
+            $text .= "\nСтраница {$homeworks->currentPage()} из {$homeworks->lastPage()}";
         } else {
-            $this->telegram->sendMessage($params);
+            $text = 'Список домашних заданий пуст.';
         }
+
+        $keyboard = $this->getPaginationKeyboard($homeworks, 'getListHomework', 'sendHomeworkMenu');
+
+        $this->editMessageText([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
+            'text' => $text,
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+        ]);
     }
 
-    protected function getHomeworkText($homeworks): string
-    {
-        if ($homeworks->isEmpty()) {
-            return '';
-        }
-
-        $text = "Домашние задания:\n";
-        foreach ($homeworks as $index => $homework) {
-            $status = $homework->completed_at ? '✅' : '❌';
-            $text .= ($index + 1 + ($homeworks->firstItem() - 1)).". {$status} {$homework->description}\n";
-        }
-        $text .= "\nСтраница {$homeworks->currentPage()} из {$homeworks->lastPage()}";
-
-        return $text;
-    }
-
-    protected function getPaginationKeyboard(LengthAwarePaginator $paginator, $data_method): array
+    protected function getPaginationKeyboard(LengthAwarePaginator $paginator, $data_method, $backAction = null): array
     {
         $keyboard = [];
         if ($paginator->hasPages()) {
             $row = [];
             if ($paginator->currentPage() > 1) {
-                $row[] = ['text' => '◀ Назад', 'callback_data' => "{$data_method} ".($paginator->currentPage() - 1)];
+                $row[] = ['text' => '◀ Предыдущая', 'callback_data' => "{$data_method} " . ($paginator->currentPage() - 1)];
             }
             if ($paginator->hasMorePages()) {
-                $row[] = ['text' => 'Вперёд ▶', 'callback_data' => "{$data_method} ".($paginator->currentPage() + 1)];
+                $row[] = ['text' => 'Следующая ▶', 'callback_data' => "{$data_method} " . ($paginator->currentPage() + 1)];
             }
             $keyboard[] = $row;
         }
-        $keyboard[] = [['text' => '❌ Закрыть ❌', 'callback_data' => 'close']];
+        $buttons = [];
+        if (!is_null($backAction)) {
+            $buttons[] = ['text' => '◀ Назад ◀', 'callback_data' => $backAction];
+        }
+        $buttons[] = ['text' => '❌ Закрыть ❌', 'callback_data' => 'close'];
+
+        $keyboard[] = $buttons;
 
         return $keyboard;
     }
 
-    protected function handleAllCompleteHomework(): void
+    protected function allCompleteHomework(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
         $student = $this->getStudent();
-        $homeworks = $student->homeworks()->where('completed_at', null)->update([
+        $student->homeworks()->where('completed_at', null)->update([
             'completed_at' => now(),
         ]);
-        //        $this->telegram->deleteMessage([
-        //            'chat_id' => $this->chat->id,
-        //            'message_id' => $this->callbackQuery->message->messageId,
-        //        ]);
-        $this->sendTextMessage('Все задания отмечены как выполненные');
-        $this->handleCompleteHomeworkMenu((int) $this->param);
+
+        $this->sendHomeworkMenu('Все задания отмечены выполненными!');
     }
 
-    protected function handleCompleteHomeworkMenu(): void
+    protected function completeHomeworkMenu(): void
     {
-        if (! $this->getTelegramReminder()) {
+        if (!$this->getTelegramReminder()) {
             $this->sendStudentDontConnectError();
 
             return;
         }
-        if ($this->command === 'get_complete_homework_menu') {
-            $page = (int) $this->param;
+        if ($this->command === 'completeHomeworkMenu') {
+            $page = (int)$this->param;
         } else {
             $page = $this->pullCachedData('complete_homework_page');
         }
@@ -399,7 +342,7 @@ class CallbackQueryHandler extends BaseHandler
 
         $this->putToCacheData('complete_homework_page', $homeworks->currentPage());
 
-        if ($homeworks) {
+        if ($homeworks->isNotEmpty()) {
             $messageText = 'Нажмите на домашнее задание для смены его готовности.';
         } else {
             $messageText = 'Список домашних заданий пуст.';
@@ -408,14 +351,19 @@ class CallbackQueryHandler extends BaseHandler
         $homeworkKeyboard = [];
         foreach ($homeworks as $index => $homework) {
             $status = $homework->completed_at ? '✅' : '❌';
-            $text = ($index + 1 + ($homeworks->firstItem() - 1)).". {$status} {$homework->description}";
-            $homeworkKeyboard[] = [['text' => $text, 'callback_data' => "change_homework_status {$homework->id}"]];
+            $text = ($index + 1 + ($homeworks->firstItem() - 1)) . ". {$status} {$homework->description}";
+            $homeworkKeyboard[] = [['text' => $text, 'callback_data' => "changeHomeworkStatus {$homework->id}"]];
         }
 
-        if ($homeworks) {
-            $homeworkKeyboard[] = [['text' => '✅Отметить все задания выполненными✅', 'callback_data' => "complete_all_homework {$page}"]];
+        if ($homeworks->isNotEmpty()) {
+            $homeworkKeyboard[] = [
+                [
+                    'text' => '✅Отметить все задания выполненными✅',
+                    'callback_data' => "allCompleteHomework {$page}"
+                ]
+            ];
         }
-        $paginationKeyboard = $this->getPaginationKeyboard($homeworks, 'get_complete_homework_menu');
+        $paginationKeyboard = $this->getPaginationKeyboard($homeworks, 'completeHomeworkMenu', 'sendHomeworkMenu');
 
         $keyboard = array_merge($homeworkKeyboard, $paginationKeyboard);
 
@@ -425,12 +373,12 @@ class CallbackQueryHandler extends BaseHandler
             'text' => $messageText,
             'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
         ];
-        $this->telegram->editMessageText($params);
+        $this->editMessageText($params);
     }
 
-    protected function handleChangeHomeworkStatus(): void
+    protected function changeHomeworkStatus(): void
     {
-        $param = (int) $this->param;
+        $param = (int)$this->param;
         $homework = Homework::firstWhere('id', $param);
         if ($homework->completed_at) {
             $homework->completed_at = null;
@@ -439,6 +387,135 @@ class CallbackQueryHandler extends BaseHandler
         }
         $homework->update();
 
-        $this->handleCompleteHomeworkMenu();
+        $this->completeHomeworkMenu();
+    }
+
+    protected function paymentMenu($date = null): void
+    {
+        $date = is_null($date) ? Carbon::today() : Carbon::parse($date);
+
+        $dayOfWeek = getDayName($date);
+        $formattedDate = $date->format('d.m.Y');
+
+        $message = "📅 *Оплата занятий на {$formattedDate} {$dayOfWeek}*\n\n";
+
+        $user = UserModel::getUserByTelegramID($this->from->id);
+        $lessons = $user->getLessonsOnDate($date)->where('is_canceled', false);
+
+        $keyboard = [];
+
+        foreach ($lessons as $key => $lesson) {
+            $startTime = $lesson->start->format('H:i');
+            $endTime = $lesson->end->format('H:i');
+            $paymentStatus = $lesson->is_paid ? '✅' : '❌';
+
+            $text = sprintf(
+                "%d. %s %s–%s %s %dр.",
+                $key + 1,
+                $lesson->student_name,
+                $startTime,
+                $endTime,
+                $paymentStatus,
+                $lesson->price
+            );
+
+            $keyboard[] = [
+                [
+                    'text' => $text,
+                    'callback_data' => "changeLessonPayment {$lesson->id}"
+                ]
+            ];
+        }
+
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "lessonsSchedule {$date}"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
+
+        $this->editMessageText([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
+            'text' => $message,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+        ]);
+    }
+
+    protected function cancelMenu($date = null): void
+    {
+        $date = is_null($date) ? Carbon::today() : Carbon::parse($date);
+
+        $dayOfWeek = getDayName($date);
+        $formattedDate = $date->format('d.m.Y');
+
+        $message = "📅 *Отмена занятий на {$formattedDate} {$dayOfWeek}*\n\n";
+
+        $user = UserModel::getUserByTelegramID($this->from->id);
+        $lessons = $user->getLessonsOnDate($date);
+
+        $keyboard = [];
+
+        foreach ($lessons as $key => $lesson) {
+            $startTime = $lesson->start->format('H:i');
+            $endTime = $lesson->end->format('H:i');
+            $isCanceledStr = $lesson->is_canceled ? '❌ Отменён' : '✅ Будет';
+
+            $text = sprintf(
+                "%d. %s %s–%s %s",
+                $key + 1,
+                $lesson->student_name,
+                $startTime,
+                $endTime,
+                $isCanceledStr
+            );
+
+            $keyboard[] = [
+                [
+                    'text' => $text,
+                    'callback_data' => "changeLessonStatus {$lesson->id}"
+                ]
+            ];
+        }
+
+        $keyboard[] = [
+            ['text' => '◀ Назад ◀', 'callback_data' => "lessonsSchedule {$date}"],
+            ['text' => '❌ Закрыть ❌', 'callback_data' => 'close']
+        ];
+
+        $this->editMessageText([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->message->messageId,
+            'text' => $message,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => json_encode(['inline_keyboard' => $keyboard]),
+        ]);
+    }
+
+    protected function changeLessonPayment($lessonId): void
+    {
+        $lesson = Lesson::firstWhere('id', $lessonId);
+        if (is_null($lesson)) {
+            $this->sendTextMessage('Урок не найден');
+            return;
+        }
+
+        $lesson->is_paid = !$lesson->is_paid;
+        $lesson->update();
+
+        $this->paymentMenu($lesson->date);
+    }
+
+    protected function changeLessonStatus($lessonId): void
+    {
+        $lesson = Lesson::firstWhere('id', $lessonId);
+        if (is_null($lesson)) {
+            $this->sendTextMessage('Урок не найден');
+            return;
+        }
+
+        $lesson->is_canceled = !$lesson->is_canceled;
+        $lesson->update();
+
+        $this->cancelMenu($lesson->date);
     }
 }

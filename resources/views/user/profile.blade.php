@@ -11,7 +11,7 @@
             </x-card.body>
             <x-card.footer>
                 @if(auth()->id() && auth()->user()->id == $user->id)
-                    <x-link-button href="{{ route('user.edit', $user) }}">
+                    <x-link-button href="{{ route('user.edit') }}">
                         Редактировать
                         <i class="fa-light fa-pen-to-square fa-lg"></i>
                     </x-link-button>

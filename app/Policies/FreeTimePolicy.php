@@ -9,7 +9,7 @@ class FreeTimePolicy
 {
     public function before(User $user, string $ability): ?bool
     {
-        if ($user->isAdmin()) {
+        if ($user->is_admin) {
             return true;
         }
 

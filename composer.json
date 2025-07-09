@@ -18,7 +18,8 @@
         "livewire/livewire": "^3.5",
         "predis/predis": "^2.3",
         "propaganistas/laravel-phone": "^5.3",
-        "spatie/laravel-backup": "^9.3"
+        "spatie/laravel-backup": "^9.3",
+        "ext-zip": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

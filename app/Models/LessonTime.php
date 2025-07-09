@@ -11,16 +11,6 @@ class LessonTime extends Model
 {
     use HasFactory;
 
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(Student::class);
-    }
-
-    public function lessons(): HasMany
-    {
-        return $this->hasMany(Lesson::class);
-    }
-
     protected $fillable = [
         'student_id',
         'week_day',
@@ -34,5 +24,15 @@ class LessonTime extends Model
             'start' => 'datetime:H:i',
             'end' => 'datetime:H:i',
         ];
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class);
     }
 }

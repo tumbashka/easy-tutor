@@ -12,6 +12,22 @@ class Student extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'name',
+        'class',
+        'note',
+        'price',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'class' => 'integer',
+            'price' => 'integer',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -37,22 +53,6 @@ class Student extends Model
         return $this->hasOne(TelegramReminder::class);
     }
 
-    protected $fillable = [
-        'user_id',
-        'name',
-        'class',
-        'note',
-        'price',
-    ];
-
-    protected function casts(): array
-    {
-        return [
-            'class' => 'integer',
-            'price' => 'integer',
-        ];
-    }
-
     public function updateLessons(): void
     {
         $futureLessons = $this->getFutureLessons();
@@ -67,13 +67,11 @@ class Student extends Model
     {
         $fromTomorrowFutureLessons = $this->lessons()
             ->where('date', '>', now())
-            ->where('user_id', auth()->user()->id)
             ->get();
 
         $todayFutureLessons = $this->lessons()
             ->where('date', now()->format('Y-m-d'))
             ->where('start', '>', now()->format('H:i:s'))
-            ->where('user_id', auth()->user()->id)
             ->get();
 
         return $fromTomorrowFutureLessons->concat($todayFutureLessons);

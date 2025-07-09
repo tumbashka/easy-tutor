@@ -30,13 +30,14 @@ class ImageService
     {
         $imageManager = ImageManager::gd(autoOrientation: true);
 
-        return $imageManager->read($file)->encode(new WebpEncoder());
+        return $imageManager->read($file)->scaleDown(1920,1920)->encode(new WebpEncoder());
     }
 
     public function getImageURL(string $subFolder, int $width = 300, int $height = 300): string
     {
+        $nowTimestamp = time();
         if ($this->disk->exists("{$subFolder}/{$width}x{$height}.webp")) {
-            return $this->disk->url("{$subFolder}/{$width}x{$height}.webp");
+            return $this->disk->url("{$subFolder}/{$width}x{$height}.webp")."?t={$nowTimestamp}";
         }
 
         if ($this->disk->exists("{$subFolder}/original.webp")
@@ -62,17 +63,32 @@ class ImageService
         return $this->disk->put($name, $image);
     }
 
-    public function deleteImageWithCrops(string $subFolder): void
+    public function deleteDirectory(string $subFolder): void
     {
-        if ($this->disk->exists("{$subFolder}/")) {
-            $this->disk->deleteDirectory("{$subFolder}/");
+        if ($this->disk->exists($subFolder)) {
+            $this->disk->deleteDirectory($subFolder);
         }
     }
 
-    public function setAvatar(User $user, UploadedFile $file): bool
+    public function renameFolder(string $path, string $newPath): void
     {
-        $this->deleteImageWithCrops($user->id);
+        if ($this->disk->exists($path)) {
+            $this->disk->move($path, $newPath);
+        }
+    }
 
-        return $this->saveImage($user->id, $file);
+    public function uploadAvatar(User $user, UploadedFile $file)
+    {
+        $this->renameFolder("{$user->id}/", "{$user->id}_old/");
+        $res = $this->saveImage($user->id, $file);
+
+        if ($res) {
+            $this->deleteDirectory("{$user->id}_old/");
+            return true;
+        }else{
+            $this->deleteDirectory("{$user->id}/");
+            $this->renameFolder("{$user->id}_old/", "{$user->id}/");
+            return false;
+        }
     }
 }

@@ -11,6 +11,12 @@ class TaskCategory extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'name',
+        'color',
+    ];
+
     public function tasks(): BelongsToMany
     {
         return $this->belongsToMany(Task::class);
@@ -20,10 +26,4 @@ class TaskCategory extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    protected $fillable = [
-        'user_id',
-        'name',
-        'color',
-    ];
 }

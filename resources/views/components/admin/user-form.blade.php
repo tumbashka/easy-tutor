@@ -25,7 +25,7 @@
                     :text="'Имя'"
                     :name="'name'"/>
                 <x-form.input-float
-                    :value="$user->email  ?? ''"
+                    :value="$user->email ?? ''"
                     :type="'email'"
                     :text="'Email'"
                     :name="'email'"/>
@@ -91,7 +91,7 @@
             <x-form.input-float
                 :text="'Telegram id'"
                 :type="'number'"
-                :value="$user->telegram_id"
+                :value="$user->telegram_id ?? ''"
                 :name="'telegram_id'"/>
         </div>
     </div>

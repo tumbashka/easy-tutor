@@ -5,7 +5,7 @@
 @section('main.content')
     <x-form-container>
         <x-card.card>
-            <form action="{{ route('user.update', $user) }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('user.update') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <x-card.header :title="'Редактирование профиля'"/>
