@@ -63,7 +63,7 @@
                             @endif
                         </div>
                         <div class="col-auto ms-auto">
-                            <x-icon-modal-delete
+                            <x-icon-modal-action
                                 :id="'delete_completed'"
                                 :action="route('tasks.delete-completed')"
                                 :color="'text-white'"
@@ -105,7 +105,7 @@
 
                             </div>
                             <div class="col-1 p-0">
-                                <x-icon-modal-delete
+                                <x-icon-modal-action
                                     :id="$task->id"
                                     :action="route('tasks.destroy', $task)"
                                     :text_body="'Удалить задачу?'"

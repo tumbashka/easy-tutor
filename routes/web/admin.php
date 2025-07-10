@@ -15,4 +15,5 @@ Route::middleware(['auth', 'admin', 'active'])->prefix('/admin')->name('admin.')
     Route::get('backups/create', [BackupController::class, 'create'])->name('backups.create');
     Route::get('backups/{dir}/{file}/download', [BackupController::class, 'download'])->name('backups.download');
     Route::delete('backups/{dir}/{file}/delete', [BackupController::class, 'delete'])->name('backups.delete');
+    Route::post('backups/{dir}/{file}/restore', [BackupController::class, 'restore'])->name('backups.restore');
 });

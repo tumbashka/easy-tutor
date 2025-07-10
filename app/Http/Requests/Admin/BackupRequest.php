@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BackupDownloadRequest extends FormRequest
+class BackupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

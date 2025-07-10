@@ -12,7 +12,9 @@
                         <thead class="text-center">
                         <th>Папка</th>
                         <th>Файл</th>
-                        <th></th>
+                        <th>Скачать</th>
+                        <th>Удалить</th>
+                        <th>Восстановить</th>
                         </thead>
                         <tbody class="text-center align-middle">
                         @foreach($backups as $backup)
@@ -20,22 +22,30 @@
                                 <td>{{ $backup->dir }}</td>
                                 <td>{{ $backup->file }}</td>
                                 <td>
-                                    @if(auth()->user()->is_admin)
-                                        <div class="row ">
-                                            <div class="col my-auto">
-                                                <a class="m-2" href="{{ route('admin.backups.download', [$backup->dir, $backup->file]) }}">
-                                                    <i class="fa-solid fa-download fa-xl"></i>
-                                                </a>
-                                            </div>
-                                            <div class="col">
-                                                <x-icon-modal-delete
-                                                    action="{{route('admin.backups.delete', [$backup->dir, $backup->file])}}"
-                                                    text_body="Удалить бекап?"
-                                                />
-                                            </div>
-                                        </div>
-                                    @endif
+                                    <div class="col my-auto">
+                                        <a class="m-2" href="{{ route('admin.backups.download', [$backup->dir, $backup->file]) }}">
+                                            <i class="fa-solid fa-download fa-xl"></i>
+                                        </a>
+                                    </div>
                                 </td>
+                                <td>
+                                    <div class="col">
+                                        <x-icon-modal-action
+                                            action="{{route('admin.backups.delete', [$backup->dir, $backup->file])}}"
+                                            text_body="Удалить бекап?"
+                                        />
+                                    </div>
+                                </td>
+                                <td><div class="col">
+                                        <x-icon-modal-action
+                                            action="{{route('admin.backups.restore', [$backup->dir, $backup->file])}}"
+                                            text_body="Восстановить бекап: {{$backup->dir.'/'.$backup->file}}?"
+                                            :method="'POST'"
+                                            :icon="'fa-solid fa-database fa-xl'"
+                                            :text_btn="'Восстановить'"
+                                        />
+                                    </div></td>
+
                             </tr>
                         @endforeach
                         </tbody>
