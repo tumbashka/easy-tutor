@@ -116,22 +116,38 @@
 
                 // Фильтрация меток
                 let finalLabels = [];
+                let lastLabel = null;
+
                 labelTimes.forEach(label => {
-                    if (!label.isHour) {
-                        finalLabels.push(label);
-                    } else {
-                        let hasCloseSlot = labelTimes.some(slotLabel => {
-                            if (!slotLabel.isHour) {
-                                const diff = getTimeDifferenceInMinutes(label.time, slotLabel.time);
-                                return diff < 20;
+                    if (lastLabel) {
+                        const diffMinutes = getTimeDifferenceInMinutes(label.time, lastLabel.time);
+                        const diffY = Math.abs(label.y - lastLabel.y);
+                        const minTimeDistance = 10; // 15 минут
+                        const minYDistance = 10; // 15 пикселей
+
+                        if (diffMinutes < minTimeDistance || diffY < minYDistance) {
+                            // Объединяем метки
+                            if (!label.isHour && lastLabel.isHour) {
+                                // Приоритет метке слота
+                                lastLabel = label;
+                            } else {
+                                // Объединяем две метки слотов или часов
+                                lastLabel.timeStr = `${lastLabel.timeStr}`;
+                                lastLabel.y = (lastLabel.y + label.y) / 2;
+                                lastLabel.isCombined = true; // Отмечаем как объединенную
                             }
-                            return false;
-                        });
-                        if (!hasCloseSlot) {
-                            finalLabels.push(label);
+                        } else {
+                            finalLabels.push(lastLabel);
+                            lastLabel = label;
                         }
+                    } else {
+                        lastLabel = label;
                     }
                 });
+
+                if (lastLabel) {
+                    finalLabels.push(lastLabel);
+                }
 
                 // Удаляем дубликаты
                 finalLabels = finalLabels.filter((label, index, self) =>
@@ -162,7 +178,7 @@
                         let startTime = new Date(`2025-05-26 ${slot.start}`);
                         let endTime = new Date(`2025-05-26 ${slot.end}`);
                         let startY = (startTime.getHours() + startTime.getMinutes() / 60 - startHour) * hourHeight;
-                        let endY = (endTime.getHours() + startTime.getMinutes() / 60 - startHour) * hourHeight;
+                        let endY = (endTime.getHours() + endTime.getMinutes() / 60 - startHour) * hourHeight;
                         let minHeight = 12 + slot.students.length * 15 + 10; // Отступ сверху + имена + время
                         let slotHeight = Math.max(endY - startY, minHeight);
 
