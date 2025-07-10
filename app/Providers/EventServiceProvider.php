@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Listeners\ClearUserAllLessonsCache;
 use App\Listeners\ClearUserAllLessonSlotsCache;
 use App\Listeners\ClearUserDateLessonsCache;
+use App\Listeners\ClearUserFirstLessonCache;
 use App\Listeners\ClearUserLessonTimesCache;
 use App\Listeners\UpdateLessonTimeLessons;
 use App\Listeners\UpdateStudentLessons;
@@ -25,35 +26,35 @@ class EventServiceProvider extends ServiceProvider
             ClearUserAllLessonsCache::class,
             ClearUserLessonTimesCache::class,
         ],
-        'eloquent.deleted: App\Models\LessonTime' => [
-            ClearUserAllLessonSlotsCache::class,
-            ClearUserAllLessonsCache::class,
-            ClearUserLessonTimesCache::class,
-        ],
         'eloquent.updated: App\Models\LessonTime' => [
             ClearUserAllLessonSlotsCache::class,
             ClearUserAllLessonsCache::class,
             UpdateLessonTimeLessons::class,
             ClearUserLessonTimesCache::class,
         ],
+        'eloquent.deleted: App\Models\LessonTime' => [
+            ClearUserAllLessonSlotsCache::class,
+            ClearUserAllLessonsCache::class,
+            ClearUserLessonTimesCache::class,
+        ],
 
         //      Student
-        'eloquent.deleted: App\Models\Student' => [
-            ClearUserAllLessonsCache::class,
-        ],
         'eloquent.updated: App\Models\Student' => [
             ClearUserAllLessonsCache::class,
             UpdateStudentLessons::class,
+        ],
+        'eloquent.deleted: App\Models\Student' => [
+            ClearUserAllLessonsCache::class,
         ],
 
         //      FreeTime
         'eloquent.created: App\Models\FreeTime' => [
             ClearUserAllLessonSlotsCache::class,
         ],
-        'eloquent.deleted: App\Models\FreeTime' => [
+        'eloquent.updated: App\Models\FreeTime' => [
             ClearUserAllLessonSlotsCache::class,
         ],
-        'eloquent.updated: App\Models\FreeTime' => [
+        'eloquent.deleted: App\Models\FreeTime' => [
             ClearUserAllLessonSlotsCache::class,
         ],
 
@@ -63,6 +64,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         'eloquent.updated: App\Models\Lesson' => [
             ClearUserDateLessonsCache::class,
+            ClearUserFirstLessonCache::class,
+        ],
+        'eloquent.deleted: App\Models\Lesson' => [
+            ClearUserFirstLessonCache::class,
         ],
 
     ];

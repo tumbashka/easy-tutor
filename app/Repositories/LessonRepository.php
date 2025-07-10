@@ -31,7 +31,13 @@ class LessonRepository
 
     public function getUserFirstLesson()
     {
-        return $this->user->lessons()->oldest()->first();
+        $firstLesson =  Cache::get("user_first_lesson_{$this->user->id}}");
+        if ($firstLesson == null) {
+            $firstLesson = $this->user->lessons()->oldest()->first();
+            Cache::put("user_first_lesson_{$this->user->id}}", $firstLesson, 3600);
+        }
+
+        return $firstLesson;
     }
 
     public function getFromCacheLessonsOnDate(Carbon $date): mixed

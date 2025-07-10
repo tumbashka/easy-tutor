@@ -140,7 +140,12 @@ class LessonService
             $lessonTimes = $this->lessonRepository->getWeekDayLessonTimes($weekDayId);
             $existingLessonTimeIds = $lessonsOnDate->pluck('lesson_time_id');
 
-            $lessonTimes->load('student');
+            foreach ($lessonTimes as $lessonTime) {
+                if (! $existingLessonTimeIds->contains($lessonTime->id) && $this->createdBefore($lessonTime, $date)) {
+                    $lessonTimes->load('student');
+                   break;
+                }
+            }
             foreach ($lessonTimes as $lessonTime) {
                 if (! $existingLessonTimeIds->contains($lessonTime->id) && $this->createdBefore($lessonTime, $date)) {
 

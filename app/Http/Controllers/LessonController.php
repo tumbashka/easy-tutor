@@ -15,11 +15,11 @@ class LessonController extends Controller
 {
     public function index(
         IndexFilterRequest $request,
-        LessonService $scheduleService,
+        LessonService $lessonService,
         StatisticService $statisticService
     ) {
         $weekOffset = $request->input('week', 0);
-        $weekDTO = $scheduleService->getWeekData($weekOffset);
+        $weekDTO = $lessonService->getWeekData($weekOffset);
 
         $weekLessons = $weekDTO->lessonsOnDays->flatten(1);
         $statistics = $statisticService->getLessonsShortStatistic($weekLessons);
@@ -27,10 +27,10 @@ class LessonController extends Controller
         return view('schedule.index', array_merge($weekDTO->toArray(), compact('statistics')));
     }
 
-    public function show(string $day, LessonService $scheduleService)
+    public function show(string $day, LessonService $lessonService)
     {
         $dayCarbon = Carbon::parse($day);
-        $lessons = $scheduleService->getActualLessonsOnDate($dayCarbon);
+        $lessons = $lessonService->getActualLessonsOnDate($dayCarbon);
 
         $occupiedSlots = auth()->user()->lessons()
             ->whereDate('date', $dayCarbon)
