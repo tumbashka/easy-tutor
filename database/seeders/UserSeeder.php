@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Roles;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('123456789'),
             'email_verified_at' => now(),
             'is_active' => true,
-            'is_admin' => true,
+            'role' => Roles::Admin,
         ]);
     }
 }

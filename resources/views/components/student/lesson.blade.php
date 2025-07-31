@@ -23,7 +23,7 @@
                 </div>
                 <i class="fa-solid fa-pen-to-square fa-xl"></i></a>
         </div>
-        <x-icon-modal-delete
+        <x-icon-modal-action
         :id="$lesson_time->id"
         :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
         :text_body="'Удалить занятие?'"

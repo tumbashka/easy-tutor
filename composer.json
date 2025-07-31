@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.3",
         "ext-intl": "*",
+        "ext-zip": "*",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.11",
         "irazasyed/telegram-bot-sdk": "^3.15",
@@ -19,7 +20,7 @@
         "predis/predis": "^2.3",
         "propaganistas/laravel-phone": "^5.3",
         "spatie/laravel-backup": "^9.3",
-        "ext-zip": "*"
+        "wnx/laravel-backup-restore": "^1.6"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

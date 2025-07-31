@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Roles;
 use App\Notifications\MyVerifyMail;
 use App\Services\ImageService;
 use App\Services\LessonService;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -22,7 +24,10 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $guarded = ['is_admin'];
+    protected $guarded = [
+        'role',
+        'is_active',
+    ];
 
     protected $fillable = [
         'name',
@@ -38,27 +43,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_enabled_task_reminders',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'bool',
+            'role' => Roles::class,
             'is_active' => 'bool',
             'is_enabled_task_reminders' => 'bool',
         ];
@@ -66,7 +61,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function students(): HasMany
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class, 'user_id');
+    }
+
+    public function studentProfile(): HasOne
+    {
+        return $this->hasOne(Student::class, 'account_id');
     }
 
     public function lessonTimes(): HasManyThrough
@@ -104,9 +104,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return app(ImageService::class)->getImageURL($this->id);
     }
 
-    public function isAdmin(): bool
+    public function getIsAdminAttribute(): bool
     {
-        return $this->is_admin;
+        return $this->role == Roles::Admin;
     }
 
     public static function getUserByTelegramID($telegram_id)
@@ -189,7 +189,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         while (true) {
             $telegram_token = Str::random(64);
-            $user = User::firstWhere('telegram_token', $telegram_token);
+            $user = self::firstWhere('telegram_token', $telegram_token);
             if (!$user) {
                 break;
             }

@@ -23,13 +23,13 @@
             <div class="d-sm-none d-inline text-info">
                 Удалить
             </div>
-            <x-icon-modal-delete
+            <x-icon-modal-action
                 :action="route('task_categories.destroy', $task_category)"
                 :id="$task_category->id">
                 <x-slot:text_body>
                     <p class="m-0">Удалить категорию?</p>
                 </x-slot:text_body>
-            </x-icon-modal-delete>
+            </x-icon-modal-action>
         </div>
     </div>
 

@@ -14,10 +14,15 @@ class Student extends Model
 
     protected $fillable = [
         'user_id',
+        'account_id',
         'name',
         'class',
         'note',
         'price',
+    ];
+
+    protected $with = [
+        'account'
     ];
 
     protected function casts(): array
@@ -30,7 +35,12 @@ class Student extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'account_id');
     }
 
     public function lesson_times(): HasMany

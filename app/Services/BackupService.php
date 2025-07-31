@@ -49,4 +49,14 @@ class BackupService
     {
         return Artisan::call('backup:run', ['--only-db' => true, '--disable-notifications' => true]);
     }
+
+    public function restore(?string $name = null): int
+    {
+        $params = [];
+        if (!is_null($name)){
+            $params['--backup'] = $name;
+        }
+
+        return Artisan::call('backup:restore', $params);
+    }
 }

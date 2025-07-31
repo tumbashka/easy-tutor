@@ -1,11 +1,13 @@
 @props([
     'id' => '',
     'text_head' => 'Подтвердите удаление',
+    'text_button' => 'Удалить',
     'text_body' => 'Удалить ученика?',
     'action' => '',
+    'method' => ''
 ])
 
-<div class="modal fade" id="deleteModal{{ $id }}" aria-hidden="true" tabindex="-1">
+<div class="modal fade" id="dialogModal{{ $id }}" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content text-dark">
             <div class="modal-header">
@@ -17,10 +19,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <form action="{{ $action }}" method="post" id="deleteForm{{ $id }}">
+                <form action="{{ $action }}" method="post" id="dialogForm{{ $id }}">
                     @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-primary">Удалить</button>
+                    @method($method)
+                    <button type="submit" class="btn btn-primary">{{$text_button}}</button>
                 </form>
             </div>
         </div>
@@ -30,8 +32,8 @@
 @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('deleteModal{{ $id }}');
-            const form = document.getElementById('deleteForm{{ $id }}');
+            const modal = document.getElementById('dialogModal{{ $id }}');
+            const form = document.getElementById('dialogForm{{ $id }}');
 
             modal.addEventListener('shown.bs.modal', function () {
                 modal.focus();

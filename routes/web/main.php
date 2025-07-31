@@ -8,10 +8,21 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TaskCategoryController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Teacher\FreeTimeController;
+use App\Http\Controllers\Teacher\HomeworkController;
+use App\Http\Controllers\Teacher\LessonController;
+use App\Http\Controllers\Teacher\LessonTimeController;
+use App\Http\Controllers\Teacher\StudentAccountController;
+use App\Http\Controllers\Teacher\StudentController;
+use App\Http\Controllers\Teacher\TaskCategoryController;
+use App\Http\Controllers\Teacher\TaskController;
+use App\Http\Controllers\Teacher\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::permanentRedirect('/home', '/schedule')->name('home');
 Route::permanentRedirect('/', '/schedule');
+
+Route::get('user/{user}', [UserController::class, 'show'])->name('user.show')->where('user', '[0-9]+');
 
 Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
     Route::get('user/profile', [UserController::class, 'index'])->name('index');
@@ -19,7 +30,6 @@ Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
     Route::put('user/update', [UserController::class, 'update'])->name('update');
 });
 
-Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 
 // Route::fallback(function () {
 //    abort(404);
@@ -27,7 +37,7 @@ Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 
 Route::get('/free-time/share/{token}', [FreeTimeController::class, 'showSharedPage'])->name('free-time.show_shared_page');
 
-Route::middleware(['auth', 'verified', 'active'])->group(function () {
+Route::middleware(['auth', 'verified', 'active', 'role:teacher'])->group(function () {
     Route::prefix('/schedule')->name('schedule.')->group(function () {
         Route::get('/', [LessonController::class, 'index'])->name('index');
         Route::get('/{day}/show', [LessonController::class, 'show'])->name('show');
@@ -39,6 +49,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     });
 
     Route::resource('students', StudentController::class);
+    Route::resource('students.account', StudentAccountController::class);
     Route::resource('students.lesson-times', LessonTimeController::class)->except(['index', 'show']);
     Route::resource('students.homeworks', HomeworkController::class)->except('index', 'show');
     Route::prefix('/free-time')->name('free-time.')->group(function () {

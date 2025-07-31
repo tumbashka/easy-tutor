@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\BackupDownloadRequest;
+use App\Http\Requests\Admin\BackupRequest;
 use App\Http\Requests\Admin\DeleteBackupRequest;
 use App\Services\BackupService;
 use Illuminate\Http\Request;
@@ -29,7 +29,21 @@ class BackupController extends Controller
         return redirect()->back()->with('success', "Файл бэкапа БД спешно создан!");
     }
 
-    public function download(BackupDownloadRequest $request, BackupService $backupService)
+    public function restore(BackupRequest $request, BackupService $backupService)
+    {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+        $dir = $request->route('dir');
+        $file = $request->route('file');
+        $filename = "{$dir}/{$file}";
+        $backupService->create();
+        $backupService->restore($filename);
+
+        return redirect()->back()->with('success', "БД успешно восстановлена из бекапа {$filename}!");
+    }
+
+    public function download(BackupRequest $request, BackupService $backupService)
     {
         $dir = $request->route('dir');
         $file = $request->route('file');
