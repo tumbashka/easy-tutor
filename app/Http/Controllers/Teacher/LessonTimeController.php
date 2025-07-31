@@ -16,7 +16,7 @@ class LessonTimeController extends Controller
     {
         $lessonTimes = auth()->user()->lessonTimes()->with('student')->get();
 
-        return view('lesson_time.create', compact('student', 'lessonTimes'));
+        return view('teacher.lesson_time.create', compact('student', 'lessonTimes'));
     }
 
     public function store(StoreLessonTimeRequest $request, Student $student)
@@ -43,7 +43,7 @@ class LessonTimeController extends Controller
         $students = auth()->user()->students()->get();
         $lessonTimes = auth()->user()->lessonTimes()->with('student')->get()->except($lesson_time->id);
 
-        return view('lesson_time.edit', compact('lesson_time', 'student', 'students', 'backUrl', 'lessonTimes'));
+        return view('teacher.lesson_time.edit', compact('lesson_time', 'student', 'students', 'backUrl', 'lessonTimes'));
     }
 
     public function update(StoreLessonTimeRequest $request, Student $student, LessonTime $lesson_time)

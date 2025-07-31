@@ -25,7 +25,7 @@ class LessonController extends Controller
         $weekLessons = $weekDTO->lessonsOnDays->flatten(1);
         $statistics = $statisticService->getLessonsShortStatistic($weekLessons);
 
-        return view('schedule.index', array_merge($weekDTO->toArray(), compact('statistics')));
+        return view('teacher.schedule.index', array_merge($weekDTO->toArray(), compact('statistics')));
     }
 
     public function show(string $day, LessonService $lessonService)
@@ -46,7 +46,7 @@ class LessonController extends Controller
                 ];
             });
 
-        return view('schedule.show', compact('dayCarbon', 'lessons', 'occupiedSlots'));
+        return view('teacher.schedule.show', compact('dayCarbon', 'lessons', 'occupiedSlots'));
     }
 
     public function create($day)
@@ -71,7 +71,7 @@ class LessonController extends Controller
                 ];
             });
 
-        return view('lesson.create', compact('day', 'students', 'occupiedSlots'));
+        return view('teacher.lesson.create', compact('day', 'students', 'occupiedSlots'));
     }
 
     public function store(StoreLessonRequest $request, $day)
@@ -122,7 +122,7 @@ class LessonController extends Controller
                 ];
             });
 
-        return view('lesson.edit', compact('day', 'students', 'lesson', 'occupiedSlots'));
+        return view('teacher.lesson.edit', compact('day', 'students', 'lesson', 'occupiedSlots'));
     }
 
     public function update(UpdateLessonRequest $request, $day, Lesson $lesson)

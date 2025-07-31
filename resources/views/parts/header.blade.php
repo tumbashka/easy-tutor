@@ -103,7 +103,8 @@
                         </a>
                         <ul class="dropdown-menu">
                             @can('active-account')
-                                <li><a class="dropdown-item" href="{{ route('user.index') }}">Профиль</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.index') }}">@lang('Профиль')</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.settings') }}">@lang('Настройки')</a></li>
                             @endcan
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">

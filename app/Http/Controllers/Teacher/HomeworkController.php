@@ -12,7 +12,7 @@ class HomeworkController extends Controller
 {
     public function create(Student $student)
     {
-        return view('homework.create', compact('student'));
+        return view('teacher.homework.create', compact('student'));
     }
 
     public function store(StoreHomeworkRequest $request, Student $student)
@@ -33,7 +33,7 @@ class HomeworkController extends Controller
 
     public function edit(Student $student, Homework $homework)
     {
-        return view('homework.edit', compact('student', 'homework'));
+        return view('teacher.homework.edit', compact('student', 'homework'));
     }
 
     public function update(UpdateHomeworkRequest $request, Student $student, Homework $homework)

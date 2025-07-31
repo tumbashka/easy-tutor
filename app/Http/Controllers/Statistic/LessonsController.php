@@ -17,7 +17,7 @@ class LessonsController extends StatisticController
         $second_data = session()->pull('second_data');
         $total = session()->pull('total');
 
-        return view('statistic.lessons.period', compact('labels', 'first_data', 'second_data', 'total'));
+        return view('teacher.statistic.lessons.period', compact('labels', 'first_data', 'second_data', 'total'));
     }
 
     public function period_calculate(Request $request)
@@ -65,7 +65,7 @@ class LessonsController extends StatisticController
         $first_data = session()->pull('first_data');
         $second_data = session()->pull('second_data');
 
-        return view('statistic.lessons.students', compact('labels', 'first_data', 'second_data'));
+        return view('teacher.statistic.lessons.students', compact('labels', 'first_data', 'second_data'));
     }
 
     public function students_calculate(Request $request)

@@ -18,13 +18,13 @@ class UserController extends Controller
         $bot_username = config('telegram.bots.mybot.username');
         $telegram_bot_url = "https://t.me/{$bot_username}";
 
-        return view('user.profile', compact('user', 'telegram_connect_url', 'telegram_bot_url'));
+        return view('teacher.profile.index', compact('user', 'telegram_connect_url', 'telegram_bot_url'));
     }
 
     public function edit()
     {
         if ($user = auth()->user()) {
-            return view('user.edit', compact('user'));
+            return view('teacher.profile.edit', compact('user'));
         } else {
             abort(403);
         }
@@ -60,6 +60,6 @@ class UserController extends Controller
             abort(404);
         }
 
-        return view('user.profile', compact('user'));
+        return view('teacher.profile.index', compact('user'));
     }
 }

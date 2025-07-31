@@ -26,7 +26,7 @@ class FreeTimeController extends Controller
         $user = auth()->user();
         $allLessonSlotsOnWeekDays = $user->getAllLessonSlotsOnWeekDays();
 
-        return view('free-time.index', compact('week_days', 'allLessonSlotsOnWeekDays', 'url'));
+        return view('teacher.free-time.index', compact('week_days', 'allLessonSlotsOnWeekDays', 'url'));
     }
 
     public function create(Request $request)
@@ -36,7 +36,7 @@ class FreeTimeController extends Controller
         ]);
         $day = $request->day;
 
-        return view('free-time.create', compact('day'));
+        return view('teacher.free-time.create', compact('day'));
     }
 
     public function store(StoreFreeTimeRequest $request)
@@ -61,7 +61,7 @@ class FreeTimeController extends Controller
 
     public function edit(FreeTime $freeTime)
     {
-        return view('free-time.edit', ['day' => null, 'free_time' => $freeTime]);
+        return view('teacher.free-time.edit', ['day' => null, 'free_time' => $freeTime]);
     }
 
     public function update(UpdateFreeTimeRequest $request, FreeTime $freeTime)
@@ -100,7 +100,7 @@ class FreeTimeController extends Controller
     {
         $students = auth()->user()->students;
 
-        return view('free-time.set_student', compact('freeTime', 'students'));
+        return view('teacher.free-time.set_student', compact('freeTime', 'students'));
     }
 
     public function setStudentProcess(Request $request, FreeTime $freeTime)
