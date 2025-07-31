@@ -1,3 +1,6 @@
+html {
+scrollbar-width: none;
+}
 
 .table-35 {
     width: 35px;
@@ -178,4 +181,38 @@
 .tooltip-wrapper:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+
+.notification-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(161, 47, 74, 0.19) transparent;
+}
+
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.notification-icon {
+    width: 32px;
+    min-width: 32px;
+    text-align: center;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    padding-top: 4px;
+}
+
+.list-group-item.d-flex.align-items-start {
+    align-items: center !important;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.07); /* светло-серый фон */
+    transition: 0.1s;
+    color: #000; /* чёрный текст */
 }

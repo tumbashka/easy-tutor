@@ -1,18 +1,17 @@
-@if($success = session()->pull('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ $success }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-@if($error = session()->pull('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ $error }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-@if(session('status'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ __(session('status')) }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            @if ($success = session()->pull('success'))
+            window.showSuccessToast(@json($success));
+            @endif
+
+            @if ($error = session()->pull('error'))
+            window.showErrorToast(@json($error));
+            @endif
+
+            @if ($status = session()->pull('status'))
+            window.showSuccessToast(@json(__($status)));
+            @endif
+        });
+    </script>
+@endpush

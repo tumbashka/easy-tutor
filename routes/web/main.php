@@ -1,13 +1,6 @@
 <?php
 
-use App\Http\Controllers\FreeTimeController;
-use App\Http\Controllers\HomeworkController;
-use App\Http\Controllers\LessonController;
-use App\Http\Controllers\LessonTimeController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\TaskCategoryController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Teacher\FreeTimeController;
 use App\Http\Controllers\Teacher\HomeworkController;
 use App\Http\Controllers\Teacher\LessonController;
@@ -70,4 +63,10 @@ Route::middleware(['auth', 'verified', 'active', 'role:teacher'])->group(functio
 
     Route::delete('delete_completed_tasks', [TaskController::class, 'delete_completed'])->name('tasks.delete-completed');
     Route::get('tasks/{task}/change_completed', [TaskController::class, 'change_completed'])->name('tasks.change-completed');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications/', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 });
