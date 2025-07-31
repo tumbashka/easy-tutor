@@ -17,6 +17,8 @@ services:
     build:
       context: ../
       dockerfile: docker/php/Dockerfile
+    ports:
+      - "8080:8080"
     volumes:
       - ../:/var/www
     command: ["bash", "-c", "ls -l /var/www/docker/init.sh && chmod +x /var/www/docker/init.sh && /var/www/docker/init.sh && php-fpm"]
@@ -68,6 +70,14 @@ services:
       - "5174:5174"
     volumes:
       - ../:/var/www
+    networks:
+      - app-network
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
     networks:
       - app-network
 

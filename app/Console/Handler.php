@@ -12,5 +12,6 @@ class Handler
         $schedule->command('reminders:send')->everyFiveMinutes();
         $schedule->command('backup:run', ['--only-db' => true, '--disable-notifications' => true])->twiceDaily();
         $schedule->command('backup:clean', ['--disable-notifications' => true])->daily();
+        $schedule->command('lessons:check-start')->everyMinute();
     }
 }
