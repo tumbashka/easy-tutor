@@ -45,7 +45,7 @@
                     <thead class="text-center">
                     <th>Имя</th>
                     <th>Email</th>
-                    <th>Админ</th>
+                    <th>Роль</th>
                     <th>Активен</th>
                     <th>Изменить</th>
                     </thead>
@@ -58,9 +58,7 @@
                                     {{ $user->email }}
                                 </td>
                                 <td>
-                                    @if($user->is_admin)
-                                        <i class="fa-solid fa-check text-success"></i>
-                                    @endif
+                                    {{ __($user->role->name) }}
                                 </td>
                                 <td>
                                     @if($user->is_active)

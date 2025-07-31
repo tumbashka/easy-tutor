@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
             __DIR__.'/../routes/web/main.php',
+            __DIR__.'/../routes/web/student.php',
             __DIR__.'/../routes/web/admin.php',
             __DIR__.'/../routes/web/statistic.php',
         ],

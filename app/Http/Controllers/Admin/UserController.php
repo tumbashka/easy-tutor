@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Roles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
@@ -24,8 +25,8 @@ class UserController extends Controller
         $users = match ($filter) {
             'active' => User::where('is_active', 1)->orderBy('created_at', 'desc')->paginate(),
             'not_active' => User::where('is_active', 0)->orderBy('created_at', 'desc')->paginate(),
-            'admin' => User::where('is_admin', 1)->orderBy('created_at', 'desc')->paginate(),
-            default => User::orderBy('created_at', 'desc')->paginate(),
+            'admin' => User::where('role', Roles::Admin)->orderBy('created_at', 'desc')->paginate(),
+            default => User::orderBy('created_at', 'desc')->paginate(10),
         };
 
         return view('admin.user.index', compact('users', 'filter'));
@@ -33,7 +34,9 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.user.create');
+        $roles = Roles::cases();
+
+        return view('admin.user.create', compact('roles'));
     }
 
     public function store(StoreUserRequest $request)
@@ -73,7 +76,9 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.user.edit', compact('user'));
+        $roles = Roles::cases();
+
+        return view('admin.user.edit', compact('user', 'roles'));
     }
 
     public function update(UpdateUserRequest $request, User $user)

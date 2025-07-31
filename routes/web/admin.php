@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 
-Route::middleware(['auth', 'admin', 'active'])->prefix('/admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin', 'active'])->prefix('/admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('users', UserController::class)->except('show');

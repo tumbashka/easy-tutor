@@ -1,5 +1,6 @@
 @props([
     'user' => null,
+    'roles' => [],
 ])
 <div class="row g-0">
     <div class="col-md-4 text-center align-content-center">
@@ -38,13 +39,8 @@
                     :text="'Подтвердите пароль'"
                     :name="'password_confirmation'"/>
             </div>
-            <x-form.input-error-alert :name="'is_admin'"/>
-            <div class="d-flex border rounded py-2 px-3 mb-4">
-                <label class="me-3">Администратор:</label>
-                <div class="form-check form-switch align-items-center m-0">
-                    <input class="form-check-input" type="checkbox" {{ $user != null && $user->is_admin ? 'checked' : '' }} value="1" role="switch" name="is_admin">
-                </div>
-            </div>
+            <x-form.input-error-alert :name="'roles'"/>
+            <x-admin.role-selector class="py-2 px-3 mb-4" :roles="$roles" :selected_role="$user?->role"/>
             <x-form.input-error-alert :name="'is_active'"/>
             <div class="d-flex border rounded py-2 px-3 mb-4">
                 <label class="me-3">Активен:</label>
