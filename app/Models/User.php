@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $guarded = [
         'role',
+        'is_active',
     ];
 
     protected $fillable = [
@@ -42,21 +43,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_enabled_task_reminders',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -198,7 +189,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         while (true) {
             $telegram_token = Str::random(64);
-            $user = User::firstWhere('telegram_token', $telegram_token);
+            $user = self::firstWhere('telegram_token', $telegram_token);
             if (!$user) {
                 break;
             }

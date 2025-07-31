@@ -47,6 +47,21 @@
             </x-card.footer>
         </x-card.card>
         <x-slot:second_col>
+            <x-card.card>
+                <x-card.header :title="'Профиль'"/>
+                <x-card.body>
+                    @if($student->account)
+                        @dump($student->account)
+                    @else
+                        <p class="text-center h5">Профиль ученика не создан</p>
+                    @endif
+                </x-card.body>
+                <x-card.footer>
+                    <x-link-button :href="route('students.account.create', $student)">
+                        Создать профиль
+                    </x-link-button>
+                </x-card.footer>
+            </x-card.card>
             <livewire:homework-list :studentId="$student->id"/>
             <x-card.card>
                 <x-card.header :title="'Настройки напоминаний'"/>

@@ -21,6 +21,10 @@ class Student extends Model
         'price',
     ];
 
+    protected $with = [
+        'account'
+    ];
+
     protected function casts(): array
     {
         return [
