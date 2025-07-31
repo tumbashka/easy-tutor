@@ -21,7 +21,7 @@ class HomeworkList extends Component
     {
         $homeworks = Homework::query()
             ->where('student_id', $this->studentId)
-            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1 ELSE 0 END ASC, created_at DESC')
+            ->orderByCompleted()
             ->paginate(4);
 
         return view('livewire.homework-list', ['homeworks' => $homeworks]);

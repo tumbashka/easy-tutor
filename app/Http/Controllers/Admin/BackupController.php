@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\BackupRequest;
 use App\Http\Requests\Admin\DeleteBackupRequest;
 use App\Services\BackupService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 class BackupController extends Controller
 {

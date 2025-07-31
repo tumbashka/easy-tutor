@@ -1,5 +1,9 @@
 @extends('layouts.main')
-@vite('resources/js/tom-select.js')
+
+@pushonce('css')
+    @vite('resources/js/tom-select.js')
+@endpushonce
+
 @section('title', 'Изменение занятия ')
 
 @section('main.content')
@@ -27,11 +31,3 @@
         </form>
     </x-form-container>
 @endsection
-
-
-
-
-
-
-
-

@@ -15,8 +15,6 @@
                     label: '{{ $label_data }}',
                     data: {!! json_encode($numbers) !!},
                     backgroundColor: 'rgb(255,151,54)',
-                    // borderColor: 'rgb(189,117,63)',
-                    // borderWidth: 2
                 }]
             },
             options: {

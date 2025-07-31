@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Teacher;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\FreeTime\StoreFreeTimeRequest;
 use App\Http\Requests\FreeTime\UpdateFreeTimeRequest;
 use App\Models\FreeTime;

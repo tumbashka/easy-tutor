@@ -1,11 +1,11 @@
-<nav class="navbar navbar-dark navbar-expand-lg bg-info bg-gradient shadow mb-3">
+<nav class="navbar navbar-dark navbar-expand-xl bg-info bg-gradient shadow mb-3">
     <div class="container">
         <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
             <i class="fa-solid fa-tractor fa-xl"></i>
         </a>
 
-        <div class="time-widget d-lg-none text-white mx-2" id="timeWidgetMobile"></div>
+        <div class="time-widget d-xl-none text-white mx-2" id="timeWidgetMobile"></div>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent"
@@ -32,7 +32,7 @@
                             <a class="nav-link text-white {{ activeLink('tasks*') }}"
                                href="{{ route('tasks.index') }}">Список дел</a>
                         </li>
-                        <div class="time-widget d-none d-lg-flex text-white mx-3 align-self-center"
+                        <div class="time-widget d-none d-xl-flex text-white mx-3 align-self-center"
                              id="timeWidgetDesktop"></div>
                     </ul>
                 @endif
@@ -95,6 +95,7 @@
                             </ul>
                         </li>
                     @endif
+                    <x-notifications.notifications-dropdown/>
                     <li class="nav-item dropdown-center">
                         <a class="nav-link link-light dropdown-toggle {{ activeLink('user*') }}" href="#"
                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -328,6 +329,12 @@
                 opacity: 1;
             }
         }
-    </style>
 
+        /* Скрываем часы только между 992px и 1399.98px */
+        @media (min-width: 992px) and (max-width: 1399.98px) {
+            .current-time {
+                display: none !important;
+            }
+        }
+    </style>
 @endpushonce

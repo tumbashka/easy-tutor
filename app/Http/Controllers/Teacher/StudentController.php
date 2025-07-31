@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Teacher;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Student\StoreStudentRequest;
 use App\Http\Requests\Student\UpdateStudentRequest;
 use App\Models\Homework;
@@ -56,11 +57,7 @@ class StudentController extends Controller
 
         $homeworks = Homework::query()
             ->where('student_id', $student->id)
-            ->orderByRaw(
-                'CASE WHEN completed_at IS NOT NULL THEN 1
-                                        ELSE 0
-                                        END ASC, created_at DESC'
-            )
+            ->orderByCompleted()
             ->paginate(4);
 
         return view('student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));

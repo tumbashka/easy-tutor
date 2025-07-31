@@ -337,7 +337,7 @@ class CallbackQueryHandler extends BaseHandler
 
         $perPage = 4;
         $homeworks = Homework::where('student_id', $this->getStudent()->id)
-            ->orderByRaw('CASE WHEN completed_at IS NOT NULL THEN 1 ELSE 0 END ASC, created_at DESC')
+            ->orderByCompleted()
             ->paginate($perPage, ['*'], 'page', $page);
 
         $this->putToCacheData('complete_homework_page', $homeworks->currentPage());
