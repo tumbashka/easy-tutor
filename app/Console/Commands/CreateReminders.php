@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Roles;
 use App\Models\Homework;
 use App\Models\Lesson;
 use App\Models\Reminder;
@@ -25,13 +26,14 @@ class CreateReminders extends Command
 
         $actualUsers = User::query()
             ->where('is_active', true)
+            ->whereIn('role', [Roles::Teacher, Roles::Admin])
             ->where('email_verified_at', '!=', null)
             ->get();
 
         $todayLessons = new Collection;
         foreach ($actualUsers as $user) {
-            $scheduleService = app(LessonService::class, compact('user'));
-            $todayLessons->put($user->email, $scheduleService->getActualLessonsOnDate($now));
+            $lessonService = app(LessonService::class, compact('user'));
+            $todayLessons->put($user->email, $lessonService->getActualLessonsOnDate($now));
         }
 
         foreach ($todayLessons as $lessons) {

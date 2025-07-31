@@ -13,7 +13,7 @@
                     :url="route('admin.users.index')"
                 />
                 <x-card.body>
-                    <x-admin.user-form/>
+                    <x-admin.user-form :roles="$roles"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">
