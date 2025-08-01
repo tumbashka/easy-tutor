@@ -25,6 +25,7 @@ class StoreLessonTimeRequest extends FormRequest
             'week_day' => ['required', 'integer', 'max:6', 'min:0'],
             'start' => ['required', 'date_format:H:i'],
             'end' => ['required', 'date_format:H:i', 'after:start'],
+            'subject' => ['nullable', 'exists:subjects,id'],
         ];
     }
 }

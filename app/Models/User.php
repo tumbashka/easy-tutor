@@ -94,6 +94,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Task::class);
     }
 
+    public function subjects(): HasMany
+    {
+        return $this->hasMany(Subject::class);
+    }
+
     public function getCountPayedLessonsAttribute(): int
     {
         return $this->lessons()->where('is_paid', true)->count();

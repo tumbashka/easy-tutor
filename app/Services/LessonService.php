@@ -205,6 +205,7 @@ class LessonService
 
     private function generateLessonData(Carbon $date, LessonTime $lessonTime): LessonDTO
     {
+        $lessonTime->load('subject');
         return LessonDTO::create([
             'student_id' => $lessonTime->student_id,
             'user_id' => $this->user->id,
@@ -216,6 +217,8 @@ class LessonService
             'is_canceled' => false,
             'price' => getLessonPrice($lessonTime->start, $lessonTime->end, $lessonTime->student->price),
             'lesson_time_id' => $lessonTime->id,
+            'subject_id' => $lessonTime->subject?->id,
+            'subject_name' => $lessonTime->subject?->name,
         ]);
     }
 

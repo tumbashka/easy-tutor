@@ -8,6 +8,7 @@ use App\Http\Requests\Lesson\StoreLessonRequest;
 use App\Http\Requests\Lesson\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\Student;
+use App\Models\Subject;
 use App\Services\LessonService;
 use App\Services\StatisticService;
 use Illuminate\Support\Carbon;
@@ -57,6 +58,7 @@ class LessonController extends Controller
         $students = $user->students()
             ->orderBy('name')
             ->get();
+        $subjects = $user->subjects;
 
         $occupiedSlots = $user->lessons()
             ->whereDate('date', $day)
@@ -71,13 +73,14 @@ class LessonController extends Controller
                 ];
             });
 
-        return view('teacher.lesson.create', compact('day', 'students', 'occupiedSlots'));
+        return view('teacher.lesson.create', compact('day', 'students', 'occupiedSlots', 'subjects'));
     }
 
     public function store(StoreLessonRequest $request, $day)
     {
         $day = new Carbon($day);
         $student_name = Student::find($request->student)->name;
+        $subject = Subject::find($request->subject);
 
         $lesson = Lesson::create([
             'student_id' => $request->student,
@@ -88,6 +91,8 @@ class LessonController extends Controller
             'end' => $request->end,
             'price' => $request->price,
             'note' => $request->note,
+            'subject_id' => $subject?->id,
+            'subject_name' => $subject?->name,
         ]);
 
         if ($lesson) {
@@ -102,17 +107,18 @@ class LessonController extends Controller
     public function edit($day, Lesson $lesson)
     {
         $day = new Carbon($day);
-        $students = auth()
-            ->user()
-            ->students()
+        $user = auth()->user();
+
+        $students = $user->students()
             ->orderBy('name')
             ->get();
+        $subjects = $user->subjects;
 
         $occupiedSlots = auth()->user()->lessons()
             ->whereDate('date', $day)
             ->where('is_canceled', false)
             ->whereNot('id', $lesson->id)
-            ->with('student') // Предполагается, что у модели Lesson есть связь с Student
+            ->with('student')
             ->get(['start', 'end', 'student_id'])
             ->map(function ($lesson) {
                 return [
@@ -122,12 +128,13 @@ class LessonController extends Controller
                 ];
             });
 
-        return view('teacher.lesson.edit', compact('day', 'students', 'lesson', 'occupiedSlots'));
+        return view('teacher.lesson.edit', compact('day', 'students', 'lesson', 'occupiedSlots', 'subjects'));
     }
 
     public function update(UpdateLessonRequest $request, $day, Lesson $lesson)
     {
         $student = Student::find($request->student);
+        $subject = Subject::find($request->subject);
 
         $lesson->student_id = $request->student;
         $lesson->student_name = $student->name;
@@ -135,6 +142,8 @@ class LessonController extends Controller
         $lesson->end = $request->end;
         $lesson->price = $request->price;
         $lesson->note = $request->note;
+        $lesson->subject_id = $subject?->id;
+        $lesson->subject_name = $subject?->name;
 
         if ($lesson->update()) {
             session(['success' => 'Занятие успешно сохранено!']);

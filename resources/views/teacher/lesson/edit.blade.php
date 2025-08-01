@@ -20,7 +20,7 @@
                     </x-slot:title>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson.form :lesson="$lesson" :students="$students" :occupied-slots="$occupiedSlots"/>
+                    <x-lesson.form :lesson="$lesson" :students="$students" :occupied-slots="$occupiedSlots" :subjects="$subjects"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">

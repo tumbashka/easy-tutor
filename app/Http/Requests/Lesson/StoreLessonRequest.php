@@ -36,6 +36,7 @@ class StoreLessonRequest extends FormRequest
             'end' => ['required', 'date_format:H:i', 'after:start'],
             'price' => ['required', 'integer', 'max:200000', 'min:0'],
             'note' => ['nullable', 'string', 'max:65000'],
+            'subject' => ['nullable', 'exists:subjects,id'],
         ];
     }
 }

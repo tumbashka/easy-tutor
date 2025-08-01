@@ -18,6 +18,8 @@ class LessonDTO
         public ?bool $is_canceled = null,
         public ?int $price = null,
         public ?int $lesson_time_id = null,
+        public ?int $subject_id = null,
+        public ?string $subject_name = null,
     ) {}
 
     public function toArray(): array

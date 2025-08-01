@@ -20,7 +20,7 @@
                     </x-slot:text>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson-time.form :student="$student" :lesson_time="$lesson_time" :lesson-times="$lessonTimes" />
+                    <x-lesson-time.form :student="$student" :lesson_time="$lesson_time" :lesson-times="$lessonTimes" :subjects="$subjects"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">

@@ -7,17 +7,6 @@ use Illuminate\Support\Facades\Log;
 
 class UpdateStudentLessons
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Handle the event.
-     */
     public function handle(Model $model): void
     {
         Log::info('Update Student Lessons');

@@ -2,10 +2,32 @@
     'student' => null,
     'lessonTime' => null,
     'lessonTimes' => null,
+    'subjects' => null,
 ])
 
 <div class="row">
     <div class="col-sm-8">
+        <div class="row align-items-center">
+            <div class="col-sm-3">
+                <p class="mb-0">Предмет</p>
+            </div>
+            <div class="col-sm-9">
+                <x-form.input-error-alert :name="'subject'"/>
+                <select name="subject" class="form-select">
+                    <option value="">
+                        Не указан
+                    </option>
+                   @foreach($subjects as $subject)
+                        <option value="{{ $subject->id }}"
+                            @selected(old('subject') === $subject->id || (!$lessonTime && $subject->is_default) || ($lessonTime?->subject?->id == $subject->id ))
+                        >
+                            {{ $subject->name }}
+                        </option>
+                   @endforeach
+                </select>
+            </div>
+        </div>
+        <hr>
         <div class="row align-items-center">
             <div class="col-sm-3">
                 <p class="mb-0 required-input">День недели</p>

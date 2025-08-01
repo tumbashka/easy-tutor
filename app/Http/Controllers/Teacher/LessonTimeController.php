@@ -8,15 +8,18 @@ use App\Models\FreeTime;
 use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class LessonTimeController extends Controller
 {
     public function create(Student $student)
     {
-        $lessonTimes = auth()->user()->lessonTimes()->with('student')->get();
+        $user = auth()->user();
+        $lessonTimes = $user->lessonTimes()->with('student')->get();
+        $subjects = $user->subjects;
 
-        return view('teacher.lesson_time.create', compact('student', 'lessonTimes'));
+        return view('teacher.lesson_time.create', compact('student', 'lessonTimes', 'subjects'));
     }
 
     public function store(StoreLessonTimeRequest $request, Student $student)
@@ -26,6 +29,7 @@ class LessonTimeController extends Controller
             'week_day' => $request->week_day,
             'start' => $request->start,
             'end' => $request->end,
+            'subject_id' => $request->subject,
         ]);
 
         if ($lesson_time) {
@@ -39,11 +43,13 @@ class LessonTimeController extends Controller
 
     public function edit(Student $student, LessonTime $lesson_time, Request $request)
     {
+        $user = auth()->user();
         $backUrl = $request->backUrl;
-        $students = auth()->user()->students()->get();
-        $lessonTimes = auth()->user()->lessonTimes()->with('student')->get()->except($lesson_time->id);
+        $students = $user->students;
+        $lessonTimes = $user->lessonTimes()->with('student')->get()->except($lesson_time->id);
+        $subjects = $user->subjects;
 
-        return view('teacher.lesson_time.edit', compact('lesson_time', 'student', 'students', 'backUrl', 'lessonTimes'));
+        return view('teacher.lesson_time.edit', compact('lesson_time', 'student', 'students', 'backUrl', 'lessonTimes', 'subjects'));
     }
 
     public function update(StoreLessonTimeRequest $request, Student $student, LessonTime $lesson_time)
@@ -51,6 +57,7 @@ class LessonTimeController extends Controller
         $lesson_time->week_day = $request->week_day;
         $lesson_time->start = $request->start;
         $lesson_time->end = $request->end;
+        $lesson_time->subject_id = $request->subject;
 
         if ($lesson_time->save()) {
             session(['success' => 'Обновление успешно!']);

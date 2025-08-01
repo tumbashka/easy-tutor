@@ -9,6 +9,7 @@ use App\Http\Controllers\Teacher\StudentAccountController;
 use App\Http\Controllers\Teacher\StudentController;
 use App\Http\Controllers\Teacher\TaskCategoryController;
 use App\Http\Controllers\Teacher\TaskController;
+use App\Http\Controllers\Teacher\TeacherSettingsController;
 use App\Http\Controllers\Teacher\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,10 +18,17 @@ Route::permanentRedirect('/', '/schedule');
 
 Route::get('user/{user}', [UserController::class, 'show'])->name('user.show')->where('user', '[0-9]+');
 
-Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
-    Route::get('user/profile', [UserController::class, 'index'])->name('index');
-    Route::get('user/edit', [UserController::class, 'edit'])->name('edit');
-    Route::put('user/update', [UserController::class, 'update'])->name('update');
+Route::middleware(['auth', 'verified', 'role:teacher'])->name('user.')->prefix('/user')->group(function () {
+    Route::get('/profile', [UserController::class, 'index'])->name('index');
+    Route::get('/edit', [UserController::class, 'edit'])->name('edit');
+    Route::put('/update', [UserController::class, 'update'])->name('update');
+
+    Route::prefix('/settings')->name('settings.')->group(function () {
+        Route::get('/', [TeacherSettingsController::class, 'index'])->name('index');
+        Route::post('/store_subject', [TeacherSettingsController::class, 'subjectStore'])->name('store-subject');
+        Route::delete('/subject/{subject}', [TeacherSettingsController::class, 'subjectDelete'])->name('delete-subject');
+        Route::put('/subject/{subject}', [TeacherSettingsController::class, 'subjectUpdate'])->name('update-subject');
+    });
 });
 
 
