@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark navbar-expand-lg bg-info bg-gradient shadow mb-3">
+<nav class="navbar navbar-dark navbar-expand-lg bg-primary bg-gradient shadow mb-3">
     <div class="container">
         <a class="navbar-brand m-0 h1 text-white my-auto align-items-center" href="{{ route('admin.dashboard') }}">
             Easy Admin

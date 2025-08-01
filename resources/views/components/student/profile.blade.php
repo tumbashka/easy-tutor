@@ -3,7 +3,7 @@
 ])
 <div class="row g-0">
     <div class="col-md-4 text-center align-content-center">
-        <i class="text-info  fa-duotone fa-solid fa-user-graduate fa-flip-horizontal fa-5x"></i>
+        <i class="text-primary fa-duotone fa-solid fa-user-graduate fa-flip-horizontal fa-5x"></i>
         <h4>{{ $student->name }}</h4>
     </div>
     <div class="col-md-8">

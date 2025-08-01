@@ -13,14 +13,14 @@
     </div>
     <div class="col-sm-2 my-sm-auto  mb-2 d-flex justify-content-around">
         <div class="align-self-center">
-            <div class="d-sm-none d-inline text-info">
+            <div class="d-sm-none d-inline text-primary">
                 Редактировать
             </div>
             <a href="{{ route('task_categories.edit', $task_category) }}"
                class="me-2 d-inline"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
         </div>
         <div>
-            <div class="d-sm-none d-inline text-info">
+            <div class="d-sm-none d-inline text-primary">
                 Удалить
             </div>
             <x-icon-modal-action

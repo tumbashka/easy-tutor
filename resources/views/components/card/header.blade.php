@@ -1,6 +1,6 @@
 @props([
     'title' => '',
-    'bg_color' => 'bg-info',
+    'bg_color' => 'bg-primary',
     'text_color' => 'text-white',
     ])
 <div class="card-header {{ $bg_color }} bg-gradient">

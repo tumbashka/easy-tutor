@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark navbar-expand-xl bg-info bg-gradient shadow mb-3">
+<nav class="navbar navbar-dark navbar-expand-xl bg-primary bg-gradient shadow mb-3">
     <div class="container">
         <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
@@ -104,7 +104,7 @@
                         <ul class="dropdown-menu">
                             @can('active-account')
                                 <li><a class="dropdown-item" href="{{ route('user.index') }}">@lang('Профиль')</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.settings') }}">@lang('Настройки')</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.settings.index') }}">@lang('Настройки')</a></li>
                             @endcan
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">

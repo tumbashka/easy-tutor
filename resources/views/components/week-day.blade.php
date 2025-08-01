@@ -6,10 +6,10 @@
 
 <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xxl-4 mb-3">
     <table
-        class="{{ $weekDay->isToday()? 'highlight-element' : '' }} rounded-table table table-highlighted shadow table-bordered table-hover table-sm mb-0">
+        class="{{ $weekDay->isToday()? 'highlight-element' : '' }} rounded-table table table-highlighted shadow table-hover table-sm mb-0">
         <thead>
-        <tr class="text-center table-info ">
-            <th colspan="4">
+        <tr class="text-center table-primary ">
+            <th colspan="5">
                 <h2 class="h5 fw-normal text-center mb-1 text-white">
                     {{ getShortDayName($dayIndex) }}. {{ $weekDay->translatedFormat('d F') }}
                     <a href="{{ route('schedule.show',$weekDay->format('Y-m-d')) }}">
