@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Student;
+namespace App\Http\Requests\Teacher\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreStudentAccountRequest extends FormRequest
+class StoreStudentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasVerifiedEmail() && $this->student->user_id == auth()->user()->id;
+        return auth()->user()->hasVerifiedEmail();
     }
 
     /**
@@ -23,7 +23,9 @@ class StoreStudentAccountRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100', 'min:2'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'class' => ['required', 'integer', 'max:11', 'min:1'],
+            'price' => ['required', 'integer', 'max:65000', 'min:0'],
+            'note' => ['nullable', 'string', 'max:65000'],
         ];
     }
 }

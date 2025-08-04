@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Enums\Roles;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Student\StoreStudentAccountRequest;
+use App\Http\Requests\Teacher\Student\StoreStudentAccountRequest;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\MyVerifyMail;

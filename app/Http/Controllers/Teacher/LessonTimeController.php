@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LessonTime\StoreLessonTimeRequest;
+use App\Http\Requests\Teacher\LessonTime\StoreLessonTimeRequest;
 use App\Models\FreeTime;
 use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\Student;
-use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class LessonTimeController extends Controller

@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\FreeTime;
+namespace App\Http\Requests\Teacher\FreeTime;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreFreeTimeRequest extends FormRequest
+class UpdateFreeTimeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasVerifiedEmail();
+        return $this->user()->can('update', $this->free_time);
     }
 
     /**

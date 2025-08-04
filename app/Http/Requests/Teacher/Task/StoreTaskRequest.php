@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Task;
+namespace App\Http\Requests\Teacher\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTaskRequest extends FormRequest
+class StoreTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->task);
+        return auth()->user()->hasVerifiedEmail();
     }
 
     public function prepareForValidation()

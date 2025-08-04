@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FreeTime\StoreFreeTimeRequest;
-use App\Http\Requests\FreeTime\UpdateFreeTimeRequest;
+use App\Http\Requests\Teacher\FreeTime\StoreFreeTimeRequest;
+use App\Http\Requests\Teacher\FreeTime\UpdateFreeTimeRequest;
 use App\Models\FreeTime;
 use App\Models\LessonTime;
 use App\Models\Student;

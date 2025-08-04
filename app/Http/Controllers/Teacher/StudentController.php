@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Student\StoreStudentRequest;
-use App\Http\Requests\Student\UpdateStudentRequest;
+use App\Http\Requests\Teacher\Student\StoreStudentRequest;
+use App\Http\Requests\Teacher\Student\UpdateStudentRequest;
 use App\Models\Homework;
 use App\Models\Student;
 use Illuminate\Http\Request;

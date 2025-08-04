@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Statistic;
 
-use App\Http\Requests\EarningsStudentsRequest;
+use App\Http\Requests\Teacher\Statistic\EarningsStudentsRequest;
 use App\Models\Lesson;
 use App\src\Statistic\EarningsTimeStatistic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Number;
 
 class EarningsController extends StatisticController

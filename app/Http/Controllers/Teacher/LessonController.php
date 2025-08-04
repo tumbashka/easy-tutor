@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Lesson\IndexFilterRequest;
-use App\Http\Requests\Lesson\StoreLessonRequest;
-use App\Http\Requests\Lesson\UpdateLessonRequest;
+use App\Http\Requests\Teacher\Lesson\IndexFilterRequest;
+use App\Http\Requests\Teacher\Lesson\StoreLessonRequest;
+use App\Http\Requests\Teacher\Lesson\UpdateLessonRequest;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\Subject;

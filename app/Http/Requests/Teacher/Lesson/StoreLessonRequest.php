@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Lesson;
+namespace App\Http\Requests\Teacher\Lesson;
 
 use App\Rules\TimeNotOccupied;
 use Illuminate\Foundation\Http\FormRequest;

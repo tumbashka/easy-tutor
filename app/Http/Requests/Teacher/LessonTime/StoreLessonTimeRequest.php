@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\LessonTime;
+namespace App\Http\Requests\Teacher\LessonTime;
 
 use Illuminate\Foundation\Http\FormRequest;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Homework;
+namespace App\Http\Requests\Teacher\Homework;
 
 use Illuminate\Foundation\Http\FormRequest;
 

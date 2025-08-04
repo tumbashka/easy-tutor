@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Teacher\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Propaganistas\LaravelPhone\Rules\Phone;

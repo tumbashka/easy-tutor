@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Subject\DeleteSubjectRequest;
-use App\Http\Requests\Subject\StoreSubjectRequest;
-use App\Http\Requests\Subject\UpdateSubjectRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\Teacher\Subject\DeleteSubjectRequest;
+use App\Http\Requests\Teacher\Subject\StoreSubjectRequest;
+use App\Http\Requests\Teacher\Subject\UpdateSubjectRequest;
 use App\Models\Subject;
-use App\Models\User;
-use App\Services\ImageService;
 
 class TeacherSettingsController extends Controller
 {

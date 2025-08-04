@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Task;
+namespace App\Http\Requests\Teacher\Lesson;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TaskIndexRequest extends FormRequest
+class IndexFilterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class TaskIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_category' => ['nullable', 'exists:task_categories,id'],
+            'week' => ['nullable', 'integer'],
         ];
     }
 }
