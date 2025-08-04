@@ -45,12 +45,12 @@
     <div class="col-md-6 text-center">
         @if($task->deadline)
             <h6>
-                <i class="text-info fa-solid fa-calendar-clock fa-lg"></i>
+                <i class="text-primary fa-solid fa-calendar-clock fa-lg"></i>
                 {{ \Illuminate\Support\Carbon::create($task->deadline)->translatedFormat('d F Yг. в H:i') }}
             </h6>
         @else
             <h6>
-                <i class="text-info fa-solid fa-calendar-clock fa-lg"></i>
+                <i class="text-primary fa-solid fa-calendar-clock fa-lg"></i>
                 Дедлайн не установлен
             </h6>
         @endif
@@ -58,12 +58,12 @@
     <div class="col-md-6 text-center">
         @if($task->completed_at)
             <h6>
-                <i class="text-info fa-solid fa-calendar-check fa-lg"></i>
+                <i class="text-primary fa-solid fa-calendar-check fa-lg"></i>
                 {{ \Illuminate\Support\Carbon::create($task->completed_at)->translatedFormat('d F Yг. в H:i') }}
             </h6>
         @else
             <h6>
-                <i class="text-info fa-solid fa-calendar-xmark fa-lg"></i>
+                <i class="text-primary fa-solid fa-calendar-xmark fa-lg"></i>
                 Не выполнено
             </h6>
         @endif

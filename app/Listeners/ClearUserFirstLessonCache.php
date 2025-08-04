@@ -9,17 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class ClearUserFirstLessonCache
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Handle the event.
-     */
     public function handle(Lesson $firstLesson): void
     {
         $user = $firstLesson->user;

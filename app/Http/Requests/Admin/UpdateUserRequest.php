@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\Roles;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,13 +30,13 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:100', Rule::unique('users')->ignore($this->user)],
             'password' => ['nullable', 'string', 'min:7', 'confirmed'],
-            'is_admin' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'is_verify_email' => ['nullable', 'boolean'],
             'about' => ['nullable', 'string', 'max:16700000'],
             'phone' => ['nullable', 'string', 'max:20', (new Phone)->country('RU')->mobile()],
             'telegram_username' => ['nullable', 'string', 'max:50'],
             'telegram_id' => ['nullable', 'string', 'max:64'],
+            'role' => ['required', Rule::enum(Roles::class)],
         ];
     }
 

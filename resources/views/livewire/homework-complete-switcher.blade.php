@@ -1,5 +1,5 @@
 <div class="align-self-center ms-1">
-    <div class="d-sm-none d-inline text-info">
+    <div class="d-sm-none d-inline text-primary">
         @if($is_completed)
             Выполнено
         @else

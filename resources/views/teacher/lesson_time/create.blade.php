@@ -3,6 +3,8 @@
 ])
 @extends('layouts.main')
 
+@vite('resources/js/tom-select.js')
+
 @section('title', $title)
 
 @section('main.content')
@@ -16,7 +18,7 @@
                     </x-slot:text>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson-time.form :student="$student" :lesson-times="$lessonTimes"/>
+                    <x-lesson-time.form :student="$student" :lesson-times="$lessonTimes" :subjects="$subjects"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">
@@ -27,11 +29,3 @@
         </form>
     </x-form-container>
 @endsection
-
-
-
-
-
-
-
-

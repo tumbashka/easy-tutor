@@ -1,6 +1,6 @@
-<nav class="navbar navbar-dark navbar-expand-xl bg-info bg-gradient shadow mb-3">
+<nav class="navbar sticky-top navbar-dark navbar-expand-xl bg-primary bg-gradient shadow mb-3">
     <div class="container">
-        <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
+        <a class="navbar-brand active mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
             <i class="fa-solid fa-tractor fa-xl"></i>
         </a>
@@ -19,6 +19,10 @@
                         <li class="nav-item">
                             <a class="nav-link text-white {{ activeLink('schedule*') }}"
                                href="{{ route('home') }}">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ activeLink('boards*') }}"
+                               href="{{ route('boards.index') }}">Доски</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white {{ activeLink('student*') }}"
@@ -103,7 +107,8 @@
                         </a>
                         <ul class="dropdown-menu">
                             @can('active-account')
-                                <li><a class="dropdown-item" href="{{ route('user.index') }}">Профиль</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.index') }}">@lang('Профиль')</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.settings.index') }}">@lang('Настройки')</a></li>
                             @endcan
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">

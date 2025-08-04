@@ -9,6 +9,7 @@ use App\Services\LessonService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -92,6 +93,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function subjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Subject::class)->withPivot('is_default');
+    }
+
+    public function boards(): HasMany
+    {
+        return $this->hasMany(Board::class);
     }
 
     public function getCountPayedLessonsAttribute(): int

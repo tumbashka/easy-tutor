@@ -1,5 +1,6 @@
 @props([
     'students' => null,
+    'subjects' => null,
     'lesson' => null,
     'occupiedSlots' => [],
 ])
@@ -13,6 +14,25 @@
             <div class="col-sm-9">
                 <x-form.input-error-alert :name="'student'"/>
                 <x-input.student :old_student_id="old('student', $lesson?->student_id )" :students="$students"/>
+            </div>
+        </div>
+        <hr>
+        <div class="row align-items-center">
+            <div class="col-sm-3">
+                <p class="mb-0">Предмет</p>
+            </div>
+            <div class="col-sm-9">
+                <x-form.input-error-alert :name="'subject'"/>
+                <select name="subject" class="form-select" data-tom-select-single>
+                    <option value="">Не указан</option>
+                    @foreach($subjects as $subject)
+                        <option value="{{ $subject->id }}"
+                            @selected(old('subject') === $subject->id || (!$lesson && $subject->pivot->is_default) || ($lesson?->subject?->id === $subject->id ))
+                        >
+                            {{ $subject->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <hr>

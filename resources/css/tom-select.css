@@ -8,3 +8,22 @@
 .ts-dropdown-content {
     max-height: 400px;
 }
+
+.ts-wrapper.form-select-sm {
+    height: calc(1.8125rem + 2px); /* высота .form-control-sm */
+    font-size: 0.875rem;
+}
+
+.ts-wrapper.form-select-sm .ts-control {
+    height: 100%;
+    padding: 0.25rem 0.5rem;
+    min-height: unset;
+    font-size: inherit;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.ts-wrapper.form-select-sm .ts-control input::placeholder {
+    color: #505050; /* Стандартный Bootstrap placeholder */
+    opacity: 1;     /* Некоторые браузеры делают placeholder прозрачным */
+}

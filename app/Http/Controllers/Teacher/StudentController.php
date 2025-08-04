@@ -17,12 +17,12 @@ class StudentController extends Controller
 
         $students = $user->studentsOnClasses();
 
-        return view('student.index', compact('students'));
+        return view('teacher.student.index', compact('students'));
     }
 
     public function create(Request $request)
     {
-        return view('student.create', ['free_time' => $request->free_time]);
+        return view('teacher.student.create', ['free_time' => $request->free_time]);
     }
 
     public function store(StoreStudentRequest $request)
@@ -49,9 +49,10 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        $lesson_times = $student->lesson_times->sortBy(function ($lesson_time) {
-            return [$lesson_time->week_day, $lesson_time->start];
-        });
+        $lesson_times = $student->lesson_times()
+            ->orderBy('week_day')
+            ->orderBy('start')
+            ->get();
 
         $reminder = $student->telegram_reminder;
 
@@ -60,12 +61,12 @@ class StudentController extends Controller
             ->orderByCompleted()
             ->paginate(4);
 
-        return view('student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));
+        return view('teacher.student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));
     }
 
     public function edit(Student $student)
     {
-        return view('student.edit', compact('student'));
+        return view('teacher.student.edit', compact('student'));
     }
 
     public function update(UpdateStudentRequest $request, Student $student)

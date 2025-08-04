@@ -1,25 +1,30 @@
 @extends('layouts.main')
-@vite('resources/js/tom-select.js')
-@section('title', 'Добавление занятия')
+
+@pushonce('css')
+    @vite('resources/js/tom-select.js')
+@endpushonce
+
+@section('title', 'Изменение занятия ')
 
 @section('main.content')
     <x-form-container>
-    <form action="{{ route('schedule.lesson.store',['day' => $day->format('Y-m-d')]) }}" method="post">
+        <form action="{{ route('schedule.lesson.update',['day' => $day->format('Y-m-d'), 'lesson' => $lesson->id]) }}" method="post">
             @csrf
+            @method('PUT')
             <x-card.card>
                 <x-card.header-nav
                     :text="'Назад'"
                     :url="route('schedule.show', ['day' => $day->format('Y-m-d')])">
                     <x-slot:title>
-                        Новое занятие {{ getShortDayName($day) }}. {{ $day->translatedFormat('d F') }}
+                        Редактирование занятия {{ $day->translatedFormat('d F') }}
                     </x-slot:title>
                 </x-card.header-nav>
                 <x-card.body>
-                    <x-lesson.form :students="$students" :occupied-slots="$occupiedSlots"/>
+                    <x-lesson.form :lesson="$lesson" :students="$students" :occupied-slots="$occupiedSlots" :subjects="$subjects"/>
                 </x-card.body>
                 <x-card.footer>
                     <x-button type="submit">
-                        Добавить занятие
+                        Сохранить занятие
                     </x-button>
                 </x-card.footer>
             </x-card.card>

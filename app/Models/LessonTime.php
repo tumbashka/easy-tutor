@@ -16,6 +16,11 @@ class LessonTime extends Model
         'week_day',
         'start',
         'end',
+        'subject_id',
+    ];
+
+    protected $with = [
+        'subject',
     ];
 
     protected function casts(): array
@@ -34,5 +39,10 @@ class LessonTime extends Model
     public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
     }
 }

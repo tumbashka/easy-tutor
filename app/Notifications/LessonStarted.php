@@ -74,6 +74,4 @@ class LessonStarted extends Notification implements ShouldQueue
     {
         return 'lesson.started';
     }
-
-
 }

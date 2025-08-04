@@ -15,7 +15,7 @@ class TimeController extends StatisticController
         $label = session()->pull('label');
         $total = session()->pull('total');
 
-        return view('statistic.time.period', compact('labels', 'numbers', 'label', 'total'));
+        return view('teacher.statistic.time.period', compact('labels', 'numbers', 'label', 'total'));
     }
 
     public function period_calculate(Request $request)

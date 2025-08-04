@@ -1,17 +1,35 @@
 @props([
     'action' => '',
+    'type' => 'icon',
     'method' => 'DELETE',
     'text_btn' => 'Удалить',
     'text_head' => 'Подтвердите действие',
-    'text_body' => 'Удалить ученика?',
     'id' => '',
-    'icon' => 'fa-solid fa-trash-can fa-xl',
-    'color' => 'text-info',
+    'icon' => '<i class="fa-solid fa-trash-can fa-xl"></i>',
+    'color' => 'text-primary',
 ])
-<div class="d-inline">
-    <button type="button" class="btn {{$color}}" data-bs-toggle="modal" data-bs-target="#dialogModal{{ $action.$id }}">
-        <i class="{{ $icon }}"></i>
+<div {{ $attributes->merge(['class' => 'd-inline']) }}>
+    <button type="button" class="btn {{ $color }}" data-bs-toggle="modal"
+            data-bs-target="#dialogModal{{ $action.$method.$id }}">
+        @switch($icon)
+            @case('delete')
+                <i class="fa-solid fa-trash-can fa-xl"></i>
+                @break
+            @case('edit')
+                <i class="fa-solid fa-pen-to-square fa-xl"></i>
+                @break
+            @default
+                {!! $icon !!}
+        @endswitch
     </button>
-    <x-modal-dialog :text_button="$text_btn" :method="$method" :text_head="$text_head" :text_body="$text_body" :action="$action" :id="$action.$id"/>
+    <x-modal-dialog
+        :text_button="$text_btn"
+        :method="$method"
+        :text_head="$text_head"
+        :action="$action"
+        :id="$action.$method.$id"
+    >
+        {!! $slot !!}
+    </x-modal-dialog>
 </div>
 

@@ -3,7 +3,7 @@
     'text' => '',
     'url' => '',
     ])
-<div class="card-header bg-info bg-gradient">
+<div class="card-header bg-primary bg-gradient">
     <div class="row justify-content-center mx-0">
         <div class="m-0 rounded-3 text-center">
             <div class="row">

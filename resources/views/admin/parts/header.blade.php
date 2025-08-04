@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark navbar-expand-lg bg-info bg-gradient shadow mb-3">
+<nav class="navbar navbar-dark navbar-expand-lg bg-primary bg-gradient shadow mb-3">
     <div class="container">
         <a class="navbar-brand m-0 h1 text-white my-auto align-items-center" href="{{ route('admin.dashboard') }}">
             Easy Admin
@@ -18,6 +18,10 @@
                 <li class="nav-item">
                     <a class="nav-link text-white {{ activeLink('admin.users*') }}"
                        href="{{ route('admin.users.index') }}">Пользователи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ activeLink('admin.subjects*') }}"
+                       href="{{ route('admin.subjects.index') }}">Предметы</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white {{ activeLink('admin.backups*') }}"

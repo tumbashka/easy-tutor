@@ -9,17 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class ClearUserLessonTimesCache
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Handle the event.
-     */
     public function handle(LessonTime $lessonTime): void
     {
         $weekDayId = $lessonTime->week_day;

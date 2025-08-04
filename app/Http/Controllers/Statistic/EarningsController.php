@@ -19,7 +19,7 @@ class EarningsController extends StatisticController
         $label = session()->pull('label');
         $total = session()->pull('total');
 
-        return view('statistic.earnings.period', compact('labels', 'numbers', 'label', 'total'));
+        return view('teacher.statistic.earnings.period', compact('labels', 'numbers', 'label', 'total'));
     }
 
     public function periodCalculate(Request $request)
@@ -59,7 +59,7 @@ class EarningsController extends StatisticController
         $numbers = session()->pull('numbers');
         $colors = session()->pull('colors');
 
-        return view('statistic.earnings.students', compact('labels', 'numbers', 'colors'));
+        return view('teacher.statistic.earnings.students', compact('labels', 'numbers', 'colors'));
     }
 
     public function studentsCalculate(EarningsStudentsRequest $request)

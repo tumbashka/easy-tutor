@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Teacher\BoardController;
 use App\Http\Controllers\Teacher\FreeTimeController;
 use App\Http\Controllers\Teacher\HomeworkController;
 use App\Http\Controllers\Teacher\LessonController;
@@ -9,28 +10,27 @@ use App\Http\Controllers\Teacher\StudentAccountController;
 use App\Http\Controllers\Teacher\StudentController;
 use App\Http\Controllers\Teacher\TaskCategoryController;
 use App\Http\Controllers\Teacher\TaskController;
+use App\Http\Controllers\Teacher\TeacherSettingsController;
+use App\Http\Controllers\Teacher\TeacherSubjectsController;
 use App\Http\Controllers\Teacher\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::permanentRedirect('/home', '/schedule')->name('home');
-Route::permanentRedirect('/', '/schedule');
+Route::middleware(['auth', 'verified', 'role:teacher'])->name('user.')->prefix('/user')->group(function () {
+    Route::get('/profile', [UserController::class, 'index'])->name('index');
+    Route::get('/edit', [UserController::class, 'edit'])->name('edit');
+    Route::put('/update', [UserController::class, 'update'])->name('update');
 
-Route::get('user/{user}', [UserController::class, 'show'])->name('user.show')->where('user', '[0-9]+');
+    Route::prefix('/settings')->name('settings.')->group(function () {
+        Route::get('/', [TeacherSettingsController::class, 'index'])->name('index');
 
-Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
-    Route::get('user/profile', [UserController::class, 'index'])->name('index');
-    Route::get('user/edit', [UserController::class, 'edit'])->name('edit');
-    Route::put('user/update', [UserController::class, 'update'])->name('update');
+        Route::get('subjects', [TeacherSubjectsController::class, 'index'])->name('subjects.index');
+        Route::get('subjects/{subject}/add', [TeacherSubjectsController::class, 'add'])->name('subjects.add');
+        Route::get('subjects/{subject}/remove', [TeacherSubjectsController::class, 'remove'])->name('subjects.remove');
+        Route::get('subjects/{subject}/default', [TeacherSubjectsController::class, 'default'])->name('subjects.default');
+    });
 });
 
-
-// Route::fallback(function () {
-//    abort(404);
-// });
-
-Route::get('/free-time/share/{token}', [FreeTimeController::class, 'showSharedPage'])->name('free-time.show_shared_page');
-
-Route::middleware(['auth', 'verified', 'active', 'role:teacher'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:teacher', 'active'])->group(function () {
     Route::prefix('/schedule')->name('schedule.')->group(function () {
         Route::get('/', [LessonController::class, 'index'])->name('index');
         Route::get('/{day}/show', [LessonController::class, 'show'])->name('show');
@@ -63,10 +63,10 @@ Route::middleware(['auth', 'verified', 'active', 'role:teacher'])->group(functio
 
     Route::delete('delete_completed_tasks', [TaskController::class, 'delete_completed'])->name('tasks.delete-completed');
     Route::get('tasks/{task}/change_completed', [TaskController::class, 'change_completed'])->name('tasks.change-completed');
+
+    Route::prefix('/boards')->name('boards.')->group(function () {
+        Route::get('/', [BoardController::class, 'index'])->name('index');
+    });
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/notifications/', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
-});
+

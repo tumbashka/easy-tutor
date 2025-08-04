@@ -32,18 +32,20 @@
                                     <div class="col">
                                         <x-icon-modal-action
                                             action="{{route('admin.backups.delete', [$backup->dir, $backup->file])}}"
-                                            text_body="Удалить бекап?"
-                                        />
+                                        >
+                                            Удалить бекап?
+                                        </x-icon-modal-action>
                                     </div>
                                 </td>
                                 <td><div class="col">
                                         <x-icon-modal-action
                                             action="{{route('admin.backups.restore', [$backup->dir, $backup->file])}}"
-                                            text_body="Восстановить бекап: {{$backup->dir.'/'.$backup->file}}?"
-                                            :method="'POST'"
-                                            :icon="'fa-solid fa-database fa-xl'"
-                                            :text_btn="'Восстановить'"
-                                        />
+                                            method='POST'
+                                            icon='<i class="fa-solid fa-database fa-xl"></i>'
+                                            text_btn='Восстановить'
+                                        >
+                                            Восстановить бекап: <b>{{$backup->dir.'/'.$backup->file}}</b>?
+                                        </x-icon-modal-action>
                                     </div></td>
 
                             </tr>

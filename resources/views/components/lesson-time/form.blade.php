@@ -2,20 +2,41 @@
     'student' => null,
     'lessonTime' => null,
     'lessonTimes' => null,
+    'subjects' => null,
 ])
 
 <div class="row">
     <div class="col-sm-8">
         <div class="row align-items-center">
             <div class="col-sm-3">
+                <p class="mb-0">Предмет</p>
+            </div>
+            <div class="col-sm-9">
+                <x-form.input-error-alert :name="'subject'"/>
+                <select name="subject" class="form-select" id="subject" data-tom-select-single placeholder="Не указан">
+                    <option value="">Не указан</option>
+                    @foreach($subjects as $subject)
+                        <option value="{{ $subject->id }}"
+                            @selected(old('subject') === $subject->id || (!$lessonTime && $subject->pivot->is_default) || ($lessonTime?->subject?->id == $subject->id ))
+                        >
+                            {{ $subject->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <hr>
+        <div class="row align-items-center">
+            <div class="col-sm-3">
                 <p class="mb-0 required-input">День недели</p>
             </div>
             <div class="col-sm-9">
                 <x-form.input-error-alert :name="'week_day'"/>
-                <select name="week_day" class="form-select" id="week-day-select">
+                <select name="week_day" class="form-select" id="week-day" data-tom-select-single
+                        placeholder="Выберите день недели">
                     @for($i = 0; $i <= 6; $i++)
                         <option
-                            {{ (old('week_day') == $i) ? 'selected' : (isset($lessonTime->week_day) && $i == $lessonTime->week_day ? 'selected' : '') }} value="{{ $i }}">{{ getDayName($i) }}
+                            {{ (old('week_day') === $i) ? 'selected' : ($lessonTime?->week_day && $i == $lessonTime->week_day ? 'selected' : '') }} value="{{ $i }}">{{ getDayName($i) }}
                         </option>
                     @endfor
                 </select>
@@ -29,21 +50,26 @@
             <div class="col-sm-9">
                 <x-form.input-error-alert :name="'start'"/>
                 <x-form.input-error-alert :name="'end'"/>
-                <div class="input-group">
-                    <span class="input-group-text">С</span>
-                    <input name="start" type="time" class="form-control" id="start-time"
-                           value="{{ old('start') ?? ($lessonTime != null ? $lessonTime->start->format('H:i') : '' )}}"/>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group">
+                            <span class="input-group-text">С</span>
+                            <input name="start" type="time" class="form-control" id="start-time"
+                                   value="{{ old('start') ?? ($lessonTime != null ? $lessonTime->start->format('H:i') : '' )}}"/>
+
+                            <span class="input-group-text">До</span>
+                            <input name="end" type="time" class="form-control" id="end-time"
+                                   value="{{ old('end') ?? ($lessonTime != null ? $lessonTime->end->format('H:i') : '' ) }}"/>
+                        </div>
+                    </div>
                 </div>
-                <div class="mt-3">
-                    <label for="duration">Длительность: <span id="duration-label">1 ч.</span></label>
-                    <input type="range" name="duration" id="duration" min="5" max="240" step="5"
-                           value="{{ old('duration', $lessonTime ? min($lessonTime->end->diffInMinutes($lessonTime->start), 240) : 60) }}"
-                           class="form-range"/>
-                </div>
-                <div class="input-group mt-3">
-                    <span class="input-group-text">До</span>
-                    <input name="end" type="time" class="form-control" id="end-time"
-                           value="{{ old('end') ?? ($lessonTime != null ? $lessonTime->end->format('H:i') : '' ) }}"/>
+                <div class="row">
+                    <div class="col text-center">
+                        <span id="duration-label">1 ч.</span>
+                        <input type="range" name="duration" id="duration" min="5" max="240" step="5"
+                               value="{{ old('duration', $lessonTime ? min($lessonTime->end->diffInMinutes($lessonTime->start), 240) : 60) }}"
+                               class="form-range"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,12 +89,15 @@
         .form-range::-webkit-slider-thumb {
             background: #0d6efd;
         }
+
         .form-range::-moz-range-thumb {
             background: #0d6efd;
         }
+
         .is-invalid ~ .invalid-feedback {
             display: block;
         }
+
         input[type="time"] {
             height: calc(1.5em + 0.75rem + 2px);
         }
@@ -81,7 +110,7 @@
         const durationInput = document.getElementById('duration');
         const endTimeInput = document.getElementById('end-time');
         const durationLabel = document.getElementById('duration-label');
-        const weekDaySelect = document.getElementById('week-day-select');
+        const weekDaySelect = document.getElementById('week-day');
         const lessonTimes = @json($lessonTimes);
 
         // Форматирование длительности
@@ -107,7 +136,7 @@
 
                 // Отправка события для обновления таймлайна
                 document.dispatchEvent(new CustomEvent('new-lesson-updated', {
-                    detail: { start: startTimeInput.value, end: endTimeInput.value }
+                    detail: {start: startTimeInput.value, end: endTimeInput.value}
                 }));
 
                 // Проверка конфликтов
@@ -157,7 +186,7 @@
 
                 // Отправка события для обновления таймлайна
                 document.dispatchEvent(new CustomEvent('new-lesson-updated', {
-                    detail: { start: startTimeInput.value, end: endTimeInput.value }
+                    detail: {start: startTimeInput.value, end: endTimeInput.value}
                 }));
 
                 // Проверка конфликтов
@@ -189,11 +218,11 @@
             weekDaySelect.addEventListener('change', () => {
                 // Отправка события смены дня
                 document.dispatchEvent(new CustomEvent('day-changed', {
-                    detail: { day: parseInt(weekDaySelect.value) }
+                    detail: {day: parseInt(weekDaySelect.value)}
                 }));
                 // Отправка события для обновления таймлайна с текущими значениями времени
                 document.dispatchEvent(new CustomEvent('new-lesson-updated', {
-                    detail: { start: startTimeInput.value, end: endTimeInput.value }
+                    detail: {start: startTimeInput.value, end: endTimeInput.value}
                 }));
             });
             if (startTimeInput.value && endTimeInput.value) updateDuration();

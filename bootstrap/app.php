@@ -12,7 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([__DIR__.'/../app/Console/Commands'])
     ->withRouting(
         web: [
-            __DIR__.'/../routes/web/main.php',
+            __DIR__.'/../routes/web/common.php',
+            __DIR__.'/../routes/web/teacher.php',
             __DIR__.'/../routes/web/student.php',
             __DIR__.'/../routes/web/admin.php',
             __DIR__.'/../routes/web/statistic.php',

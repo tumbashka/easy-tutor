@@ -11,7 +11,7 @@
 </div>
 <div class="d-flex flex-row align-items-center mb-4">
     @if($icon)
-        <i class="{{ $icon }} text-info "></i>
+        <i class="{{ $icon }} text-primary "></i>
     @endif
     <div class="form-floating flex-fill mb-0">
         <input type="{{ $type }}" class="form-control

@@ -28,7 +28,7 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Запланировано
                                         <span
-                                            class="badge bg-info rounded-pill">{{ $statistics['toConductLessons'] }}</span>
+                                            class="badge bg-primary rounded-pill">{{ $statistics['toConductLessons'] }}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Отменено
@@ -57,7 +57,7 @@
                                     $earnedPercent = $statistics['totalPossibleEarnings'] > 0 ? ($statistics['earned'] / $statistics['totalPossibleEarnings']) * 100 : 0;
                                 @endphp
                                 <div class="progress" style="height: 20px;">
-                                    <div class="progress-bar bg-info" role="progressbar"
+                                    <div class="progress-bar bg-primary" role="progressbar"
                                          style="width: {{ $earnedPercent }}%;"
                                          aria-valuenow="{{ $statistics['earned'] }}" aria-valuemin="0"
                                          aria-valuemax="{{ $statistics['totalPossibleEarnings'] }}">

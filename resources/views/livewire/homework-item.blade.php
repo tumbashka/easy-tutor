@@ -7,14 +7,14 @@
         <div class="align-self-center">
             <a href="{{ route('students.homeworks.edit', ['student' => $homework->student_id, 'homework' => $homework]) }}"
                class="me-2 d-inline link-underline link-underline-opacity-0">
-                <div class="d-sm-none d-inline text-info">Редактировать</div>
+                <div class="d-sm-none d-inline text-primary">Редактировать</div>
                 <i class="fa-solid fa-pen-to-square fa-xl"></i>
             </a>
         </div>
         <div class="align-self-center">
-            <button type="button" class="btn text-info" data-bs-toggle="modal"
+            <button type="button" class="btn text-primary" data-bs-toggle="modal"
                     data-bs-target="#deleteModal{{ $homework->id }}">
-                <div class="d-sm-none d-inline text-info">Удалить</div>
+                <div class="d-sm-none d-inline text-primary">Удалить</div>
                 <i class="fa-solid fa-trash-can fa-xl"></i>
             </button>
 
@@ -24,7 +24,7 @@
                 :id="$homework->id"/>
         </div>
         <div class="align-self-center ms-1">
-            <div class="d-sm-none d-inline text-info">
+            <div class="d-sm-none d-inline text-primary">
                 @if($is_completed)
                     Выполнено
                 @else

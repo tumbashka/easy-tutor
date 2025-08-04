@@ -59,13 +59,4 @@
                 <x-lesson.timeline :occupied-slots="$occupiedSlots"/>
         </x-slot:second_col>
     </x-form-container>
-
 @endsection
-
-
-
-
-
-
-
-

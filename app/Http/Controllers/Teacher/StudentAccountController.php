@@ -15,7 +15,7 @@ class StudentAccountController extends Controller
 {
     public function create(Student $student)
     {
-        return view('student_account.create', compact('student'));
+        return view('teacher.student_account.create', compact('student'));
     }
 
     public function store(StoreStudentAccountRequest $request, Student $student)

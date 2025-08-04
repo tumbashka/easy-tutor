@@ -26,7 +26,7 @@ class TaskController extends Controller
             ->paginate()
             ->appends(compact('task_category'));
 
-        return view('tasks.index', compact('task_categories', 'category', 'tasks'));
+        return view('teacher.tasks.index', compact('task_categories', 'category', 'tasks'));
     }
 
     public function create(Request $request)
@@ -36,7 +36,7 @@ class TaskController extends Controller
 
         $students_on_classes = $user->studentsOnClasses();
 
-        return view('tasks.create', compact('task_categories', 'students_on_classes'));
+        return view('teacher.tasks.create', compact('task_categories', 'students_on_classes'));
     }
 
     public function store(StoreTaskRequest $request)
@@ -66,7 +66,7 @@ class TaskController extends Controller
     {
         $task->load(['task_categories', 'students']);
 
-        return view('tasks.show', compact('task'));
+        return view('teacher.tasks.show', compact('task'));
     }
 
     public function edit(Task $task)
@@ -77,7 +77,7 @@ class TaskController extends Controller
 
         $task->load(['task_categories', 'students']);
 
-        return view('tasks.edit', compact('task', 'task_categories', 'students_on_classes'));
+        return view('teacher.tasks.edit', compact('task', 'task_categories', 'students_on_classes'));
     }
 
     public function update(UpdateTaskRequest $request, Task $task)
@@ -141,6 +141,6 @@ class TaskController extends Controller
             ->whereNotNull('completed_at')
             ->delete();
 
-        return back();
+        return back()->withSuccess('Выполненные задачи успешно удалены');
     }
 }

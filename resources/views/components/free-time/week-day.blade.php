@@ -6,7 +6,7 @@
 <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xxl-4 mb-3">
     <table class="rounded-table table table-highlighted shadow table-bordered table-hover table-sm mb-0">
         <thead>
-        <tr class="text-center table-info ">
+        <tr class="text-center table-primary ">
             <th colspan="4">
                 <h2 class="h5 fw-normal text-center mb-1 text-white">
                     {{ getDayName($dayIndex) }}

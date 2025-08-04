@@ -14,12 +14,12 @@ class TaskCategoryController extends Controller
         $user = auth()->user();
         $task_categories = $user->taskCategories;
 
-        return view('task_category.index', compact('task_categories'));
+        return view('teacher.task_category.index', compact('task_categories'));
     }
 
     public function create()
     {
-        return view('task_category.create');
+        return view('teacher.task_category.create');
     }
 
     public function store(Request $request)
@@ -46,7 +46,7 @@ class TaskCategoryController extends Controller
     public function edit(TaskCategory $task_category)
     {
 
-        return view('task_category.edit', compact('task_category'));
+        return view('teacher.task_category.edit', compact('task_category'));
     }
 
     public function update(Request $request, TaskCategory $task_category)
