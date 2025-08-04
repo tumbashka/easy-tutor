@@ -6,7 +6,6 @@
     <option value="">Выберите ученика</option>
     @foreach($students as $student)
         <option value="{{ $student->id }}"
-                data-color="{{ $student->color }}"
                 data-price="{{ $student->price }}"
             @selected($old_student_id == $student->id)>
             {{ $student->name }}

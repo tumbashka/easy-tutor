@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\UserController;
 
 Route::middleware(['auth', 'role:admin', 'active'])->prefix('/admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('users', UserController::class)->except('show');
+    Route::resource('subjects', SubjectController::class)->except('show');
 //    Route::get('users/students', [UserController::class, 'students'])->name('users.students');
 //    Route::get('users/dashboard', [UserController::class, 'dashboard'])->name('users.dashboard');
 

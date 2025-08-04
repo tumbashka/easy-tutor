@@ -34,6 +34,7 @@ class UserController extends Controller
 
     public function create()
     {
+        $this->authorize('create', User::class);
         $roles = Roles::cases();
 
         return view('admin.user.create', compact('roles'));
@@ -41,31 +42,26 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        if (auth()->user()->cant('create', User::class)) {
-            abort(403);
-        }
-        $user = User::create([
+        $this->authorize('create', User::class);
+
+        $user = User::forceCreate([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => bcrypt($request->input('password')),
             'about' => $request->input('about'),
             'phone' => $request->input('phone'),
-            'telegram_username' => $request->input('telegram'),
+            'telegram_username' => $request->input('telegram_username'),
             'telegram_id' => $request->input('telegram_id'),
+            'role' => $request->input('role'),
+            'is_active' => $request->input('is_active'),
+            'email_verified_at' => $request->input('is_verify_email') ? now() : null,
         ]);
 
         if ($request->hasFile('avatar')) {
             app(ImageService::class)->uploadAvatar($user, $request->file('avatar'));
         }
 
-        if ($request->input('is_verify_email')) {
-            $user->email_verified_at = now();
-        }
-
-        $user->is_admin = (bool) $request->input('is_admin');
-        $user->is_active = (bool) $request->input('is_active');
-
-        if ($user->update()) {
+        if ($user) {
             session(['success' => 'Пользователь успешно добавлен!']);
         } else {
             session(['error' => 'Ошибка добавления пользователя!']);
@@ -83,19 +79,17 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
 
-        if (auth()->user()->cant('update', $user)) {
-            abort(403);
-        }
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        $user->is_admin = (bool) $request->input('is_admin');
         $user->is_active = (bool) $request->input('is_active');
+        $user->email_verified_at = $request->input('is_verify_email') ? now() : null;
         $user->about = $request->input('about');
         $user->phone = $request->input('phone');
         $user->telegram_username = $request->input('telegram_username');
         $user->telegram_id = $request->input('telegram_id');
-        $user->update();
+        $user->role = $request->input('role');
 
         if ($request->hasFile('avatar')) {
             app(ImageService::class)->uploadAvatar($user, $request->file('avatar'));
@@ -103,12 +97,6 @@ class UserController extends Controller
 
         if ($request->input('password')) {
             $user->password = $request->input('password');
-        }
-
-        if ($request->input('is_verify_email')) {
-            $user->email_verified_at = now();
-        } else {
-            $user->email_verified_at = null;
         }
 
         if ($user->update()) {
@@ -122,9 +110,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if (auth()->user()->cant('delete', $user)) {
-            abort(403);
-        }
+        $this->authorize('delete', $user);
 
         if ($user->delete()) {
             session(['success' => 'Пользователь успешно удалён!']);

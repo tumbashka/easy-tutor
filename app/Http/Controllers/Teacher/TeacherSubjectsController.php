@@ -11,15 +11,47 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Services\ImageService;
 
-class TeacherSettingsController extends Controller
+class TeacherSubjectsController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
-        $subjects = $user->subjects()->withPivot('is_default')->get();
 
+        $subjects = Subject::where('is_active', true)->paginate(15);
+        $userSubjects = $user->subjects()->whereIn('name', $subjects->pluck('name'))->get();
 
-        return view('teacher.settings.index', compact('subjects', 'user'));
+        return view('teacher.settings.subjects.index', compact('subjects', 'userSubjects'));
+    }
+
+    public function add(Subject $subject)
+    {
+        $user = auth()->user();
+        $user->subjects()->attach($subject);
+
+        return redirect()->back();
+    }
+
+    public function remove(Subject $subject)
+    {
+        $user = auth()->user();
+        $user->subjects()->detach($subject);
+
+        return redirect()->back();
+    }
+
+    public function default(Subject $subject)
+    {
+        $user = auth()->user();
+        $user->subjects->map(function ($userSubject) use ($subject) {
+            if ($subject->id === $userSubject->id) {
+                $userSubject->pivot->is_default = true;
+            } else {
+                $userSubject->pivot->is_default = false;
+            }
+            $userSubject->pivot->save();
+        });
+
+        return redirect()->back();
     }
 
     public function subjectStore(StoreSubjectRequest $request)
@@ -31,7 +63,7 @@ class TeacherSettingsController extends Controller
                 'name' => $request->input('name'),
                 'user_id' => auth()->user()->id,
             ];
-        }else{
+        } else {
             $params = [
                 'name' => $request->input('name'),
                 'user_id' => auth()->user()->id,
@@ -46,7 +78,7 @@ class TeacherSettingsController extends Controller
     public function subjectUpdate(UpdateSubjectRequest $request, Subject $subject)
     {
         $user = auth()->user();
-        if($request->input('is_default')){
+        if ($request->input('is_default')) {
             $user->subjects()->update([
                 'is_default' => false,
             ]);
@@ -54,7 +86,7 @@ class TeacherSettingsController extends Controller
                 'name' => $request->input('name'),
                 'is_default' => $request->input('is_default'),
             ]);
-        }else{
+        } else {
             $subject->update([
                 'name' => $request->input('name'),
             ]);
@@ -67,7 +99,7 @@ class TeacherSettingsController extends Controller
     public function subjectDelete(DeleteSubjectRequest $request, Subject $subject)
     {
         $subject->deleteOrFail();
-        if($subject->is_default && auth()->user()->subjects()->count()){
+        if ($subject->is_default && auth()->user()->subjects()->count()) {
             auth()->user()->subjects()->first()->update([
                 'is_default' => true,
             ]);

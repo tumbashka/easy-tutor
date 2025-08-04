@@ -3,6 +3,8 @@
 ])
 @extends('layouts.main')
 
+@vite('resources/js/tom-select.js')
+
 @section('title', $title)
 
 @section('main.content')
@@ -27,11 +29,3 @@
         </form>
     </x-form-container>
 @endsection
-
-
-
-
-
-
-
-

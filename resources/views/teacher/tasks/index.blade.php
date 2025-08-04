@@ -64,12 +64,12 @@
                         </div>
                         <div class="col-auto ms-auto">
                             <x-icon-modal-action
-                                :id="'delete_completed'"
+                                id='delete_completed'
                                 :action="route('tasks.delete-completed')"
-                                :color="'text-white'"
-                                :text_body="'Удалить выполненные задачи?'"
-                                :icon="'fa-solid  fa-trash-can fa-xl'"
-                            />
+                                color='text-white'
+                            >
+                                Удалить выполненные задачи?
+                            </x-icon-modal-action>
                         </div>
                     </div>
                 </x-slot:title>

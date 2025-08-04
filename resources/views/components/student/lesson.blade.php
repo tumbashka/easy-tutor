@@ -25,10 +25,11 @@
                 <i class="fa-solid fa-pen-to-square fa-xl"></i></a>
         </div>
         <x-icon-modal-action
-        :id="$lesson_time->id"
-        :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
-        :text_body="'Удалить занятие?'"
-        />
+            :id="$lesson_time->id"
+            :action="route('students.lesson-times.destroy', ['student' => $lesson_time->student_id, 'lesson_time' => $lesson_time])"
+        >
+            Удалить занятие?
+        </x-icon-modal-action>
     </div>
 
 </div>

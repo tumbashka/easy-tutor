@@ -20,6 +20,10 @@
                        href="{{ route('admin.users.index') }}">Пользователи</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-white {{ activeLink('admin.subjects*') }}"
+                       href="{{ route('admin.subjects.index') }}">Предметы</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white {{ activeLink('admin.backups*') }}"
                        href="{{ route('admin.backups') }}">Бэкапы</a>
                 </li>

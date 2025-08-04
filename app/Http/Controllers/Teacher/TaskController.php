@@ -141,6 +141,6 @@ class TaskController extends Controller
             ->whereNotNull('completed_at')
             ->delete();
 
-        return back();
+        return back()->withSuccess('Выполненные задачи успешно удалены');
     }
 }

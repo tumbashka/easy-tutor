@@ -23,13 +23,11 @@
             </div>
             <div class="col-sm-9">
                 <x-form.input-error-alert :name="'subject'"/>
-                <select name="subject" class="form-select">
-                    <option value="">
-                        Не указан
-                    </option>
+                <select name="subject" class="form-select" data-tom-select-single>
+                    <option value="">Не указан</option>
                     @foreach($subjects as $subject)
                         <option value="{{ $subject->id }}"
-                            @selected(old('subject') === $subject->id || (!$lesson && $subject->is_default) || ($lesson?->subject?->id == $subject->id ))
+                            @selected(old('subject') === $subject->id || (!$lesson && $subject->pivot->is_default) || ($lesson?->subject?->id === $subject->id ))
                         >
                             {{ $subject->name }}
                         </option>

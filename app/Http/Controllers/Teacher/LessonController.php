@@ -80,7 +80,8 @@ class LessonController extends Controller
     {
         $day = new Carbon($day);
         $student_name = Student::find($request->student)->name;
-        $subject = Subject::find($request->subject);
+        $user = auth()->user();
+        $subject = $user->subjects()->where('subject_id', $request->subject)->first();
 
         $lesson = Lesson::create([
             'student_id' => $request->student,

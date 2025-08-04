@@ -8,61 +8,36 @@
         <x-card>
             <x-card.header :title="'Список предметов'"/>
             <x-card.body>
-                <table class="table table-hover" id="subjectsTable">
-                    <tbody>
-                    @foreach($subjects as $subject)
-                        <tr id="subjectRow{{ $subject->id }}">
-                            <td>{{ $subject->name }} {!!   $subject->is_default ? '<span class="badge rounded-pill text-bg-success fw-normal text-white">По умолчанию</span>' : '' !!}</td>
-                            <td>
-                                <x-icon-modal-action
-                                    :action="route('user.settings.update-subject', $subject->id)"
-                                    :method="'PUT'"
-                                    :icon="'edit'"
-                                    :text_btn="'Сохранить'"
-                                    :text_head="'Редактирование'"
-                                >
-                                    <div class="mb-3">
-                                        <label class="form-label">Название предмета</label>
-                                        <input type="text" class="form-control"
-                                               name="name" value="{{ $subject->name }}" required>
-                                    </div>
-                                    <div class="form-check form-switch">
-                                        <label class="form-label">Предмет по умолчанию</label>
-                                        <input class="form-check-input" type="checkbox" value="1"
-                                               name="is_default" {{ $subject->is_default ? 'checked disabled' : '' }}>
-                                    </div>
-                                </x-icon-modal-action>
-
-                                <x-icon-modal-action :action="route('user.settings.delete-subject', $subject->id)">
-                                    Удалить предмет?
-                                </x-icon-modal-action>
-                            </td>
-                        </tr>
-
-                    @endforeach
-                    </tbody>
-                </table>
-            </x-card.body>
-        </x-card>
-
-        <!-- Добавить предмет -->
-        <x-card>
-            <form action="{{ route('user.settings.store-subject') }}" method="POST">
-                @csrf
-                <x-card.header :title="'Добавить предмет'"/>
-                <x-card.body>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" id="newSubject" name="name"
-                               placeholder="Введите название предмета" required>
-                        <div id="subjectError" class="text-danger mt-1" style="display: none;">
-                            <ul class="mb-0" id="errorList"></ul>
+                @forelse($subjects as $subject)
+                    <div class="row">
+                        <div class="col">
+                            {{ $subject->name }}
+                            @if($subject->pivot->is_default)
+                                <span
+                                    class="badge rounded-pill text-bg-success fw-normal text-white">По умолчанию</span>
+                            @endif
+                        </div>
+                        <div class="col-sm-4">
+                            @if(!$subject->pivot->is_default)
+                                <x-link-button :href="route('user.settings.subjects.default', $subject)"
+                                               :color="'primary'"
+                                               class="btn-sm text-light">
+                                    Сделать по умолчанию
+                                </x-link-button>
+                            @endif
                         </div>
                     </div>
-                </x-card.body>
-                <x-card.footer>
-                    <x-button type="submit">Добавить</x-button>
-                </x-card.footer>
-            </form>
+                    @if(!$loop->last)
+                        <hr class="my-2">
+                    @endif
+                @empty
+                    <h5 class="text-center">Предметы еще не выбраны</h5>
+                @endforelse
+
+            </x-card.body>
+            <x-card.footer>
+                <x-link-button :href="route('user.settings.subjects.index')">Все доступные предметы</x-link-button>
+            </x-card.footer>
         </x-card>
 
         <!-- Настройки уведомлений -->

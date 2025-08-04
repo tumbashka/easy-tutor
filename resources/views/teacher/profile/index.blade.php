@@ -43,7 +43,7 @@
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" id="encrypted_url"
                                    value="{{ '/start '.$user->telegram_token }}" readonly>
-                            <button type="button" class="btn btn-outline-info btn-copy" data-bs-toggle="tooltip"
+                            <button type="button" class="btn btn-outline-primary btn-copy" data-bs-toggle="tooltip"
                                     data-clipboard-target="#encrypted_url">
                                 <i class="far fa-copy"></i>
                             </button>

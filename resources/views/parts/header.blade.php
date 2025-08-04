@@ -1,6 +1,6 @@
-<nav class="navbar navbar-dark navbar-expand-xl bg-primary bg-gradient shadow mb-3">
+<nav class="navbar sticky-top navbar-dark navbar-expand-xl bg-primary bg-gradient shadow mb-3">
     <div class="container">
-        <a class="navbar-brand mb-0 h1 text-white my-auto" href="{{ route('home') }}">
+        <a class="navbar-brand active mb-0 h1 text-white my-auto" href="{{ route('home') }}">
             {{ config('app.name') }}
             <i class="fa-solid fa-tractor fa-xl"></i>
         </a>
@@ -19,6 +19,10 @@
                         <li class="nav-item">
                             <a class="nav-link text-white {{ activeLink('schedule*') }}"
                                href="{{ route('home') }}">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ activeLink('boards*') }}"
+                               href="{{ route('boards.index') }}">Доски</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white {{ activeLink('student*') }}"

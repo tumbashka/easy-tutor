@@ -11,16 +11,14 @@
     <span class="input-group-text">С</span>
     <input name="start" type="time" class="form-control" id="start-time"
            value="{{ old('start', $lesson ? $lesson->start->format('H:i') : '') }}"/>
-</div>
-<div class="mt-3">
-    <label for="duration">Длительность: <span id="duration-label">1 ч.</span></label>
-    <input type="range" name="duration" id="duration" min="5" max="240" step="5" value="{{ old('duration', $lesson ? min($lesson->end->diffInMinutes($lesson->start), 240) : 60) }}"
-           class="form-range"/>
-</div>
-<div class="input-group mt-3">
     <span class="input-group-text">До</span>
     <input name="end" type="time" class="form-control" id="end-time"
            value="{{ old('end', $lesson ? $lesson->end->format('H:i') : '') }}"/>
+</div>
+<div class="mt-3 text-center">
+    <span id="duration-label">1 ч.</span>
+    <input type="range" name="duration" id="duration" min="5" max="240" step="5" value="{{ old('duration', $lesson ? min($lesson->end->diffInMinutes($lesson->start), 240) : 60) }}"
+           class="form-range"/>
 </div>
 
 @pushonce('css')
@@ -201,8 +199,7 @@
                 const endDate = new Date(`1970-01-01T${end}:00`);
                 const durationMinutes = (endDate - startDate) / (1000 * 60);
                 if (durationMinutes > 0) {
-                    const price = (studentPrice * durationMinutes / 60).toFixed(0);
-                    priceInput.value = price;
+                    priceInput.value = (studentPrice * durationMinutes / 60).toFixed(0);
                 } else {
                     priceInput.value = '';
                 }

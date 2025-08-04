@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@vite('resources/js/tom-select.js')
+
 @section('title', 'Добавление пользователя')
 
 @section('main.content')

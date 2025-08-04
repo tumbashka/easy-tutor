@@ -21,7 +21,7 @@ $table-variants: (
     "dark":       $dark,
 );
 
-$btn-link-color:              $info;
-$btn-link-hover-color:        $info;
-$btn-link-disabled-color:     $info;
-
+$btn-link-color:              $primary;
+$btn-link-hover-color:        $primary;
+$btn-link-disabled-color:     $primary;
+$component-active-bg:         $primary;
