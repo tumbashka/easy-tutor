@@ -10,8 +10,8 @@ use App\Http\Controllers\Teacher\StudentAccountController;
 use App\Http\Controllers\Teacher\StudentController;
 use App\Http\Controllers\Teacher\TaskCategoryController;
 use App\Http\Controllers\Teacher\TaskController;
-use App\Http\Controllers\Teacher\TeacherSettingsController;
-use App\Http\Controllers\Teacher\TeacherSubjectsController;
+use App\Http\Controllers\Teacher\SettingsController;
+use App\Http\Controllers\Teacher\SubjectsController;
 use App\Http\Controllers\Teacher\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,12 +21,12 @@ Route::middleware(['auth', 'verified', 'role:teacher'])->name('user.')->prefix('
     Route::put('/update', [UserController::class, 'update'])->name('update');
 
     Route::prefix('/settings')->name('settings.')->group(function () {
-        Route::get('/', [TeacherSettingsController::class, 'index'])->name('index');
+        Route::get('/', [SettingsController::class, 'index'])->name('index');
 
-        Route::get('subjects', [TeacherSubjectsController::class, 'index'])->name('subjects.index');
-        Route::get('subjects/{subject}/add', [TeacherSubjectsController::class, 'add'])->name('subjects.add');
-        Route::get('subjects/{subject}/remove', [TeacherSubjectsController::class, 'remove'])->name('subjects.remove');
-        Route::get('subjects/{subject}/default', [TeacherSubjectsController::class, 'default'])->name('subjects.default');
+        Route::get('subjects', [SubjectsController::class, 'index'])->name('subjects.index');
+        Route::get('subjects/{subject}/add', [SubjectsController::class, 'add'])->name('subjects.add');
+        Route::get('subjects/{subject}/remove', [SubjectsController::class, 'remove'])->name('subjects.remove');
+        Route::get('subjects/{subject}/default', [SubjectsController::class, 'default'])->name('subjects.default');
     });
 });
 
@@ -66,6 +66,10 @@ Route::middleware(['auth', 'verified', 'role:teacher', 'active'])->group(functio
 
     Route::prefix('/boards')->name('boards.')->group(function () {
         Route::get('/', [BoardController::class, 'index'])->name('index');
+        Route::post('/', [BoardController::class, 'store'])->name('store');
+        Route::put('/{board}', [BoardController::class, 'update'])->name('update');
+        Route::delete('/{board}', [BoardController::class, 'delete'])->name('delete');
+        Route::post('/{board}/copy', [BoardController::class, 'copy'])->name('copy');
     });
 });
 

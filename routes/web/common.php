@@ -9,7 +9,7 @@ use App\Http\Controllers\Teacher\StudentAccountController;
 use App\Http\Controllers\Teacher\StudentController;
 use App\Http\Controllers\Teacher\TaskCategoryController;
 use App\Http\Controllers\Teacher\TaskController;
-use App\Http\Controllers\Teacher\TeacherSettingsController;
+use App\Http\Controllers\Teacher\SettingsController;
 use App\Http\Controllers\Teacher\UserController;
 use Illuminate\Support\Facades\Route;
 

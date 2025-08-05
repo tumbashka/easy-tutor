@@ -1,6 +1,5 @@
 @props([
     'action' => '',
-    'type' => 'icon',
     'method' => 'DELETE',
     'text_btn' => 'Удалить',
     'text_head' => 'Подтвердите действие',

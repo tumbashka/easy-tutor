@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Statistic;
+namespace App\Http\Controllers\Teacher\Statistic;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;

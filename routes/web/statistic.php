@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Statistic\EarningsController;
-use App\Http\Controllers\Statistic\LessonsController;
-use App\Http\Controllers\Statistic\TimeController;
+use App\Http\Controllers\Teacher\Statistic\EarningsController;
+use App\Http\Controllers\Teacher\Statistic\LessonsController;
+use App\Http\Controllers\Teacher\Statistic\TimeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {

@@ -8,7 +8,7 @@ use App\Http\Requests\Teacher\Subject\StoreSubjectRequest;
 use App\Http\Requests\Teacher\Subject\UpdateSubjectRequest;
 use App\Models\Subject;
 
-class TeacherSubjectsController extends Controller
+class SubjectsController extends Controller
 {
     public function index()
     {
