@@ -16,7 +16,7 @@
                         <i class="fa-light fa-pen-to-square fa-lg"></i>
                     </x-link-button>
                 @else
-                    <x-link-button href="">
+                    <x-link-button href="{{ route('chat.personal.find_or_create', $user) }}">
                         Открыть чат
                     </x-link-button>
                 @endif

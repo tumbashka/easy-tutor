@@ -102,9 +102,6 @@ function addNotificationToList(notification) {
     }
 }
 
-
-
-
 function subscribeToUserNotifications(userId) {
     Echo.private(`App.Models.User.${userId}`)
         .notification((notification) => {

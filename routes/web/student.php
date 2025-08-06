@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Student\BoardsController;
 use App\Http\Controllers\Student\HomeworkController;
 use App\Http\Controllers\Student\LessonController;
@@ -32,8 +33,5 @@ Route::middleware(['auth', 'verified', 'active', 'role:student'])
         });
         Route::prefix('teachers')->name('teachers.')->group(function () {
             Route::get('/', [TeachersController::class, 'index'])->name('index');
-        });
-        Route::prefix('messages')->name('messages.')->group(function () {
-            Route::get('/', [MessagesController::class, 'index'])->name('index');
         });
     });

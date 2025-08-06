@@ -1,15 +1,8 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Teacher\FreeTimeController;
-use App\Http\Controllers\Teacher\HomeworkController;
-use App\Http\Controllers\Teacher\LessonController;
-use App\Http\Controllers\Teacher\LessonTimeController;
-use App\Http\Controllers\Teacher\StudentAccountController;
-use App\Http\Controllers\Teacher\StudentController;
-use App\Http\Controllers\Teacher\TaskCategoryController;
-use App\Http\Controllers\Teacher\TaskController;
-use App\Http\Controllers\Teacher\SettingsController;
 use App\Http\Controllers\Teacher\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +18,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/chat/user/{}', [ChatController::class, 'index'])->name('notifications.index');
+Route::middleware(['auth', 'verified'])->prefix('/chat')->name('chat.')->group(function () {
+    Route::get('/', [ChatController::class, 'index'])->name('index');
+    Route::get('/personal/{user}', [ChatController::class, 'findUserChatOrCreate'])->name('personal.find_or_create');
+    Route::get('/{chat}', [ChatController::class, 'show'])->name('show');
+    Route::get('/{chat}/accept', [ChatController::class, 'accept'])->name('accept');
+    Route::get('/{chat}/cancel', [ChatController::class, 'cancel'])->name('cancel');
+    Route::get('/{chat}/ban', [ChatController::class, 'ban'])->name('ban');
+    Route::post('/{chat}/message', [ChatController::class, 'store_message'])->name('message.store');
 });

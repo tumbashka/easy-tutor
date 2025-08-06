@@ -36,6 +36,10 @@
                             <a class="nav-link text-white {{ activeLink('tasks*') }}"
                                href="{{ route('tasks.index') }}">Список дел</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ activeLink('chat.*') }}"
+                               href="{{ route('chat.index') }}">Сообщения</a>
+                        </li>
                         <div class="time-widget d-none d-xl-flex text-white mx-3 align-self-center"
                              id="timeWidgetDesktop"></div>
                     </ul>

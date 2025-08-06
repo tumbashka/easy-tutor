@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('chat_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('user_name');
-            $table->text('message');
+            $table->text('text');
             $table->timestamps();
         });
     }

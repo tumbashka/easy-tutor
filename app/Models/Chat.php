@@ -23,7 +23,7 @@ class Chat extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withPivot(['last_read_message_id', 'user_name', 'accepted']);
+        return $this->belongsToMany(User::class)->withPivot(['user_name', 'accepted'])->withTimestamps();
     }
 
     public function messages(): HasMany
@@ -39,6 +39,21 @@ class Chat extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        switch ($this->type) {
+            case ChatType::Personal:
+                return $this->users->firstWhere('id', '!=', auth()->id())->avatar_url;
+            default:
+                return '';
+        }
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->name ?? $this->users->first(fn($user) => $user->id !== auth()->id())->name;
     }
 
 }
