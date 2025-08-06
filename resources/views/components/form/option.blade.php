@@ -3,7 +3,7 @@
     'source_var' => null,
     'value' => '',
 ])
-<option {{ (old($form_name) == $value) ? 'selected' :
-            (isset($source_var) && $source_var == $value ? 'selected' : '') }} value="{{ $value }}">
+<option @selected((old($form_name) == $value || $source_var === $value))
+        value="{{ $value }}">
     {{ $slot }}
 </option>

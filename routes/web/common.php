@@ -24,3 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read_all');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/chat/user/{}', [ChatController::class, 'index'])->name('notifications.index');
+});

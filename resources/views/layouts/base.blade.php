@@ -18,13 +18,17 @@
     <title>{{ config('app.name') }} - @yield('title', config('app.name'))</title>
 </head>
 <body class="bg-pink">
-@if(isAdminLink())
+
+@if(auth()->user()?->is_admin && isAdminLink())
     @include('admin.parts.header')
+@elseif(auth()->user()?->is_student)
+    @include('student.parts.header')
 @else
     @include('parts.header')
 @endif
 
 @yield('content')
+@dump($errors)
 
 @include('parts.footer')
 

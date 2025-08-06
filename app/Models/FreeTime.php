@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\FreeTimeStatus;
+use App\Enums\FreeTimeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +27,8 @@ class FreeTime extends Model
         return [
             'start' => 'datetime:H:i',
             'end' => 'datetime:H:i',
+            'status' => FreeTimeStatus::class,
+            'type' => FreeTimeType::class,
         ];
     }
 

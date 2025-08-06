@@ -18,7 +18,7 @@ class ActiveUser
         if ($request->user()->is_active) {
             return $next($request);
         }
-        abort(403, 'Ваш аккаунт отключен, ожидайте активации');
+        abort(403, 'Ваш аккаунт отключен');
 
     }
 }

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
+use App\Enums\Roles;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -31,7 +32,15 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::registerView(function () {
-            return view('registration.index');
+            return view(
+                'registration.index',
+                [
+                    'roles' => [
+                        'names' => [Roles::Teacher->name, Roles::Student->name],
+                        'values' => [Roles::Teacher->value, Roles::Student->value],
+                    ]
+                ]
+            );
         });
 
         Fortify::verifyEmailView(function () {
@@ -82,10 +91,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
-
     }
 }

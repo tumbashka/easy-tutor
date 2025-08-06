@@ -61,6 +61,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-tom-select-multiple]').forEach(function (element) {
+        new TomSelect(element, {
+            plugins: ['remove_button'],
+            create: false,
+            maxOptions: null,
+            maxItems: null,
+            searchField: 'text',
+            render: {
+                no_results: function (data, escape) {
+                    return '<div class="no-results">Для "' + escape(data.input) + '" ничего не найдено</div>';
+                }
+            },
+        });
+    });
+});
+
 function isDarkColor(color) {
     // Преобразуем цвет в RGB
     var r = parseInt(color.substr(1, 2), 16);

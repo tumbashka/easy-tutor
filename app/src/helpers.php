@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
+use Random\RandomException;
 
 if (!function_exists('activeLink')) {
     /**
@@ -115,6 +116,7 @@ if (!function_exists('getLessonPrice')) {
 if (!function_exists('getRandomRGB')) {
     /**
      * Получение случайного RBG цвета
+     * @throws RandomException
      */
     function getRandomRGB(int $count = 1, int $minColor = 70, int $maxColor = 255): array|string
     {
@@ -148,35 +150,6 @@ if (!function_exists('getHiFormatTime')) {
     }
 }
 
-if (!function_exists('getLessonType')) {
-    /**
-     * Получение названия для типа занятия
-     */
-    function getLessonType($type): string
-    {
-        return match ($type) {
-            'online' => 'Онлайн',
-            'face-to-face' => 'Очно',
-            'all' => 'Онлайн/Очно',
-            default => '',
-        };
-    }
-}
-
-if (!function_exists('getLessonStatus')) {
-    /**
-     * Получение строки статуса занятия
-     */
-    function getLessonStatus($status): string
-    {
-        return match ($status) {
-            'free' => 'Время не занято',
-            'trial' => 'Назначено пробное занятие',
-            default => '',
-        };
-    }
-}
-
 if (!function_exists('getRGBFromHex')) {
     /**
      * Получение массива цветов по каналам(R,G,B) из HEX цвета
@@ -206,7 +179,9 @@ if (!function_exists('getTextContrastColor')) {
 
 if (!function_exists('pluralRu')) {
     /**
-     * Постановка правильного окончания существительного в зависимости от количества.
+     * Постановка правильного окончания существительного в зависимости от количества для русского языка.
+     * Принимает количество и массив форм существительного
+     *  ['Куст', 'Куста', 'Кустов']
      */
     function pluralRu(int $number, array $words): string
     {
@@ -214,20 +189,10 @@ if (!function_exists('pluralRu')) {
         if ($number > 19) {
             $number = $number % 10;
         }
-        switch ($number) {
-            case 1:
-
-                return $words[0];
-
-            case 2:
-            case 3:
-            case 4:
-
-                return $words[1];
-
-            default:
-
-                return $words[2];
-        }
+        return match ($number) {
+            1 => $words[0],
+            2, 3, 4 => $words[1],
+            default => $words[2],
+        };
     }
 }

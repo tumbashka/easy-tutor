@@ -47,12 +47,11 @@
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'status'"/>
         <select name="status" class="form-select {{ $errors->has('status') ? 'is-invalid' : '' }}">
-            <x-form.option :form_name="'status'" :source_var="$free_time->status ?? null" :value="'free'">
-                Свободно
-            </x-form.option>
-            <x-form.option :form_name="'status'" :source_var="$free_time->status ?? null" :value="'trial'">
-                Назначено пробное занятие
-            </x-form.option>
+            @foreach(\App\Enums\FreeTimeStatus::cases() as $free_time_status)
+                <x-form.option form_name='status' :source_var="$free_time->status ?? null" :value="$free_time_status">
+                    @lang($free_time_status->name)
+                </x-form.option>
+            @endforeach
         </select>
     </div>
 </div>
@@ -64,15 +63,11 @@
     <div class="col-sm-9">
         <x-form.input-error-alert :name="'type'"/>
         <select name="type" class="form-select {{ $errors->has('type') ? 'is-invalid' : '' }}">
-            <x-form.option :form_name="'type'" :source_var="$free_time->type ?? null" :value="'all'">
-                Онлайн/Очно
-            </x-form.option>
-            <x-form.option :form_name="'type'" :source_var="$free_time->type ?? null" :value="'online'">
-                Онлайн
-            </x-form.option>
-            <x-form.option :form_name="'type'" :source_var="$free_time->type ?? null" :value="'face-to-face'">
-                Очно
-            </x-form.option>
+            @foreach(\App\Enums\FreeTimeType::cases() as $free_time_type)
+                <x-form.option form_name='type' :source_var="$free_time->type ?? null" :value="$free_time_type">
+                    @lang($free_time_type->name)
+                </x-form.option>
+            @endforeach
         </select>
     </div>
 </div>

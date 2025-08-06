@@ -7,6 +7,7 @@ use App\Notifications\MyVerifyMail;
 use App\Services\ImageService;
 use App\Services\LessonService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -65,9 +66,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Student::class, 'user_id');
     }
 
-    public function studentProfile(): HasOne
+
+    /**
+     * Модели Student созданные учителями для ученика
+     * @return HasMany
+     */
+    public function studentProfiles(): HasMany
     {
-        return $this->hasOne(Student::class, 'account_id');
+        return $this->hasMany(Student::class, 'account_id');
+    }
+
+    public function teachers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'students', 'user_id', 'account_id');
     }
 
     public function lessonTimes(): HasManyThrough
@@ -105,9 +116,31 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Board::class);
     }
 
+    public function chats(): BelongsToMany
+    {
+        return $this->belongsToMany(Chat::class)
+            ->withPivot(['last_read_message_id', 'user_name', 'accepted'])
+            ->withTimestamps();
+    }
+
     public function getCountPayedLessonsAttribute(): int
     {
         return $this->lessons()->where('is_paid', true)->count();
+    }
+    public function getCountPastLessonsAttribute(): int
+    {
+        $pastLessonsCount =  $this->lessons()
+            ->where('is_canceled', false)
+            ->whereBeforeToday('date')
+            ->count();
+
+        $todayPastLessonsCount =  $this->lessons()
+            ->where('is_canceled', false)
+            ->whereToday('date')
+            ->whereTime('end', '<=', now())
+            ->count();
+
+        return $pastLessonsCount + $todayPastLessonsCount;
     }
 
     public function getAvatarUrlAttribute(): string
@@ -118,6 +151,31 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getIsAdminAttribute(): bool
     {
         return $this->role == Roles::Admin;
+    }
+
+    public function getIsTeacherAttribute(): bool
+    {
+        return $this->role == Roles::Teacher;
+    }
+
+    public function getIsStudentAttribute(): bool
+    {
+        return $this->role == Roles::Student;
+    }
+
+    public function scopeActiveAndVerified(Builder $query): Builder
+    {
+        return $query->active()->whereEmailVerified();
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeWhereEmailVerified(Builder $query): Builder
+    {
+        return $query->where('email_verified_at',  '!=', null);
     }
 
     public static function getUserByTelegramID($telegram_id)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Teacher\FreeTime\CreateFreeTimeRequest;
 use App\Http\Requests\Teacher\FreeTime\StoreFreeTimeRequest;
 use App\Http\Requests\Teacher\FreeTime\UpdateFreeTimeRequest;
 use App\Models\FreeTime;
@@ -29,7 +30,7 @@ class FreeTimeController extends Controller
         return view('teacher.free-time.index', compact('week_days', 'allLessonSlotsOnWeekDays', 'url'));
     }
 
-    public function create(Request $request)
+    public function create(CreateFreeTimeRequest $request)
     {
         $request->validate([
             'day' => ['nullable', 'integer', 'min:0', 'max:6'],
@@ -163,7 +164,7 @@ class FreeTimeController extends Controller
 
             $expires = (new Carbon($data['expires']))->longAbsoluteDiffForHumans(now());
 
-            return view('free-time.shared-page', compact('allLessonSlotsOnWeekDays', 'user', 'expires'));
+            return view('teacher.free-time.shared-page', compact('allLessonSlotsOnWeekDays', 'user', 'expires'));
         } catch (DecryptException $exception) {
             abort(404);
         }

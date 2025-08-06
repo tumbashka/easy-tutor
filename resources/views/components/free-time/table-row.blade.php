@@ -4,10 +4,10 @@
 @php
     $highlight = '';
     $edit_url = '';
-    if(isset($lesson_slot['status'])){
-        $highlight = match ($lesson_slot['status']){
-            'free' => 'highlight-element-green',
-            'trial' => 'highlight-element-yellow',
+    if($lesson_slot->status){
+        $highlight = match ($lesson_slot->status){
+            \App\Enums\FreeTimeStatus::Free => 'highlight-element-green',
+            \App\Enums\FreeTimeStatus::Trial => 'highlight-element-yellow',
             default => '',
         };
         $edit_url = route('free-time.edit', ['free_time' => $lesson_slot['id']]);
@@ -22,7 +22,6 @@
 <tr class="{{ $highlight }}">
     <td style="width: 95px;">
         <a
-            {{--            href="{{ route('schedule.lesson_slot.edit', ['day' => $lesson_slot->date, 'lesson_slot' => $lesson_slot->id]) }}"--}}
             class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
             {{ getHiFormatTime($lesson_slot['start']) }}-{{ getHiFormatTime($lesson_slot['end']) }}
         </a>
@@ -31,8 +30,8 @@
         <td class="text-start">{{ $lesson_slot['student']['name'] }}</td>
     @else
         <td class="text-start">
-            <p class="m-0 p-0">{{ getLessonType($lesson_slot['type']) }}</p>
-            <p class="m-0 p-0">{{ getLessonStatus($lesson_slot['status']) }}</p>
+            <p class="m-0 p-0">@lang($lesson_slot->type->name)</p>
+            <p class="m-0 p-0">@lang($lesson_slot->status->name)</p>
         </td>
     @endif
     <td style="width: 30px;" class="text-end">

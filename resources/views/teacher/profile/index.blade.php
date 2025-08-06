@@ -15,6 +15,10 @@
                         Редактировать
                         <i class="fa-light fa-pen-to-square fa-lg"></i>
                     </x-link-button>
+                @else
+                    <x-link-button href="">
+                        Открыть чат
+                    </x-link-button>
                 @endif
             </x-card.footer>
         </x-card.card>

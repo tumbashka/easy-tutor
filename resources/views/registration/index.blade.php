@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@vite('resources/js/tom-select.js')
+
 @section('title', 'Регистрация')
 
 @section('main.content')
@@ -9,10 +11,17 @@
             <x-card.card>
                 <x-card.header :title="'Регистрация'"/>
                 <x-card.body>
-                    {{--                    justify-content-center--}}
                     <div class="row  p-sm-4">
+                        <i class=""></i>
+                        <x-form.select-float
+                            :icon="'fas fa-user-tag fa-lg me-3 fa-fw'"
+                            :text="'Выберите роль'"
+                            :name="'role'"
+                            :values="$roles['values']"
+                            :names="$roles['names']"
+                        />
                         <x-form.input-float
-                            :icon="'fas fa-user fa-lg me-3 fa-fw'"
+                            :icon="'fas fa-id-card fa-lg me-3 fa-fw'"
                             :text="'Имя'"
                             :name="'name'"/>
                         <x-form.input-float

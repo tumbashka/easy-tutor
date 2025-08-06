@@ -8,7 +8,7 @@
 @endphp
 
 <li class="nav-item dropdown-center">
-    <a class="nav-link link-light position-relative" href="#" role="button" data-bs-toggle="dropdown"
+    <a class="nav-link link-light position-relative" role="button" data-bs-toggle="dropdown"
        aria-expanded="false">
         <i class="fas fa-bell fa-lg text-white"></i>
         @if($unreadCount > 0)
@@ -24,15 +24,19 @@
          style="width: 380px; border-radius: 0.5rem; overflow: hidden;">
         <div class="notification-list" style="max-height: 340px; overflow-y: auto;">
             <div class="list-group list-group-flush" id="notification-list">
-                @foreach($initialNotifications as $notification)
+                @forelse($initialNotifications as $notification)
                     <x-notifications.notification-item :notification="$notification"/>
-                @endforeach
+                @empty
+
+                    <div class="empty-notifications text-center my-3">Уведомлений нет</div>
+                @endforelse
             </div>
         </div>
-
-        <div class="border-top p-2 text-center bg-white">
-            <button class="btn btn-sm btn-outline-primary">@lang('Отметить всё прочитанным')</button>
-        </div>
+        @if($initialNotifications->isNotEmpty())
+            <div class="border-top p-2 text-center bg-white read-all-notifications-button">
+                <button class="btn btn-sm btn-outline-primary">@lang('Отметить всё прочитанным')</button>
+            </div>
+        @endif
     </div>
 </li>
 
