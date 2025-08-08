@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Roles;
+use App\Enums\Role;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,9 +26,9 @@ class CheckRole
 
         if (auth()->check()) {
             switch ($request->user()->role) {
-                case Roles::Student:
+                case Role::Student:
                     return redirect()->route('student.home');
-                case Roles::Teacher:
+                case Role::Teacher:
                     return redirect()->route('schedule.index');
             }
         }

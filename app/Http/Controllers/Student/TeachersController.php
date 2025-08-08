@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Enums\FreeTimeStatus;
-use App\Enums\Roles;
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Student\SearchTeacherRequest;
 use App\Models\Subject;
@@ -15,7 +15,7 @@ class TeachersController extends Controller
     public function index(SearchTeacherRequest $request)
     {
         $query = User::activeAndVerified()
-            ->whereRole(Roles::Teacher)
+            ->whereRole(Role::Teacher)
             ->with('subjects', 'freeTimes')
             ->withCount([
                 'lessons' => function ($query) {

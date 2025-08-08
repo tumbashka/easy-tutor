@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Enums\Roles;
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teacher\Student\StoreStudentAccountRequest;
 use App\Models\Student;
@@ -22,7 +22,7 @@ class StudentAccountController extends Controller
     {
         $password = Str::password(12);
         $account = User::forceCreate([
-            'role' => Roles::Student,
+            'role' => Role::Student,
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => bcrypt($password),

@@ -1,3 +1,6 @@
+@php
+    $unreadCount = auth()->user()->count_unread_chats
+@endphp
 <nav class="navbar sticky-top navbar-dark navbar-expand-xl bg-primary bg-gradient shadow mb-3">
     <div class="container">
         <a class="navbar-brand active mb-0 h1 text-white my-auto" href="{{ route('home') }}">
@@ -32,9 +35,17 @@
                             <a class="nav-link text-white {{ activeLink('student.teachers.*') }}"
                                href="{{ route('student.teachers.index') }}">Преподаватели</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item position-relative"  id="unread-messages-container">
                             <a class="nav-link text-white {{ activeLink('chat.*') }}"
                                href="{{ route('chat.index') }}">Сообщения</a>
+                            @if($unreadCount > 0)
+                                <div id="unread-messages-badge"
+                                     class="position-absolute top-0 start-100 translate-middle badge text-white border ms-1 mt-1"
+                                     style="font-size: 0.8rem; padding: 2px 4px;">
+                                    {{ $unreadCount }}
+                                    <div class="visually-hidden">непрочитанных сообщений</div>
+                                </div>
+                            @endif
                         </li>
                         <div class="time-widget d-none d-xl-flex text-white mx-3 align-self-center"
                              id="timeWidgetDesktop"></div>

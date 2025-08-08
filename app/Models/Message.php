@@ -43,4 +43,14 @@ class Message extends Model
 
         return (bool)$this->reads()->where('user_id', $user->id)->count();
     }
+
+    public function getReadByUsersAttribute()
+    {
+        return $this->reads()->with('user')->get()->map(function ($read) {
+            return [
+                'user_name' => $read->user->name,
+                'read_at' => $read->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Roles;
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
@@ -25,7 +25,7 @@ class UserController extends Controller
         $users = match ($filter) {
             'active' => User::where('is_active', 1)->orderBy('created_at', 'desc')->paginate(),
             'not_active' => User::where('is_active', 0)->orderBy('created_at', 'desc')->paginate(),
-            'admin' => User::where('role', Roles::Admin)->orderBy('created_at', 'desc')->paginate(),
+            'admin' => User::where('role', Role::Admin)->orderBy('created_at', 'desc')->paginate(),
             default => User::orderBy('created_at', 'desc')->paginate(10),
         };
 
@@ -35,7 +35,7 @@ class UserController extends Controller
     public function create()
     {
         $this->authorize('create', User::class);
-        $roles = Roles::cases();
+        $roles = Role::cases();
 
         return view('admin.user.create', compact('roles'));
     }
@@ -72,7 +72,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $roles = Roles::cases();
+        $roles = Role::cases();
 
         return view('admin.user.edit', compact('user', 'roles'));
     }

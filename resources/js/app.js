@@ -4,6 +4,10 @@ import ClipboardJS from 'clipboard';
 import Inputmask from 'inputmask';
 import './toastify.js';
 
+import './event-handling.js'
+import './chat-observer.js'
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const clipboard = new ClipboardJS('.btn-copy', {
         text: function (trigger) {
@@ -42,12 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function subscribeToUserEvents(userId) {
     Echo.private(`App.Models.User.${userId}`)
-    // .listen('.lesson.started', e => {
-    //     showInfoToast(`Занятие с ${e.lesson.student_name} начинается в ${e.lesson.start}`, 'success');
-    // })
-    // .listen('.message.received', e => {
-    //     showNotification(`Новое сообщение от ${e.sender.name}`);
-    // });
+        .listen('.new-message-on-chat', event => {
+            console.log('Пришло сообщение', event);
+            newMessageHandle(event);
+        })
+        .listen('.message-read', event => {
+            messageReadHandle(event);
+        });
 }
 
 window.subscribeToUserEvents = subscribeToUserEvents;

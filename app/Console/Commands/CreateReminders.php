@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\Roles;
+use App\Enums\Role;
 use App\Models\Homework;
 use App\Models\Lesson;
 use App\Models\Reminder;
@@ -26,7 +26,7 @@ class CreateReminders extends Command
 
         $actualUsers = User::query()
             ->where('is_active', true)
-            ->whereIn('role', [Roles::Teacher, Roles::Admin])
+            ->whereIn('role', [Role::Teacher, Role::Admin])
             ->where('email_verified_at', '!=', null)
             ->get();
 
@@ -37,8 +37,9 @@ class CreateReminders extends Command
         }
 
         foreach ($todayLessons as $lessons) {
-            /** @var $lesson Lesson */
             foreach ($lessons as $lesson) {
+                /** @var $lesson Lesson */
+
                 $student = $lesson->student;
                 $reminderSettings = $student->telegram_reminder;
                 if ($reminderSettings) {
@@ -54,8 +55,9 @@ class CreateReminders extends Command
 
     private function createTasksReminders(\Illuminate\Database\Eloquent\Collection $users, Carbon $now): void
     {
-        /** @var $user User */
         foreach ($users as $user) {
+            /** @var $user User */
+
             if (! $user->is_enabled_task_reminders) {
                 continue;
             }

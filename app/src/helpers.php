@@ -89,7 +89,7 @@ if (!function_exists('getWeekOffset')) {
         $startOfCurrentWeek = $now->copy()->startOfWeek();
         $startOfInputWeek = $day->copy()->startOfWeek();
 
-        return $startOfCurrentWeek->diffInWeeks($startOfInputWeek);
+        return (int)$startOfCurrentWeek->diffInWeeks($startOfInputWeek);
     }
 }
 

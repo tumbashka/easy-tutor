@@ -20,10 +20,15 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->prefix('/chat')->name('chat.')->group(function () {
     Route::get('/', [ChatController::class, 'index'])->name('index');
+    Route::get('/count-unread', [ChatController::class, 'countUnread'])->name('countUnread');
     Route::get('/personal/{user}', [ChatController::class, 'findUserChatOrCreate'])->name('personal.find_or_create');
     Route::get('/{chat}', [ChatController::class, 'show'])->name('show');
     Route::get('/{chat}/accept', [ChatController::class, 'accept'])->name('accept');
     Route::get('/{chat}/cancel', [ChatController::class, 'cancel'])->name('cancel');
     Route::get('/{chat}/ban', [ChatController::class, 'ban'])->name('ban');
-    Route::post('/{chat}/message', [ChatController::class, 'store_message'])->name('message.store');
+    Route::get('/{chat}/message/{message}/reads', [ChatController::class, 'getMessageReads'])->name('message.reads');
+    Route::get('/{chat}/unread-count', [ChatController::class, 'countUnreadMessages'])->name('unread-count');
+    Route::post('/{chat}/message', [ChatController::class, 'storeMessage'])->name('message.store');
+    Route::post('/{chat}/message/{message}/read', [ChatController::class, 'make_read'])->name('message.make_read');
+    Route::get('/{chat}/load-more', [ChatController::class, 'loadMoreMessages'])->name('loadMore');
 });

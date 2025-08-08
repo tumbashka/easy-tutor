@@ -41,7 +41,7 @@ class Chat extends Model
         return $this->belongsTo(User::class, 'admin_id');
     }
 
-    public function getAvatarUrlAttribute()
+    public function getAvatarUrlAttribute(): string
     {
         switch ($this->type) {
             case ChatType::Personal:
@@ -51,9 +51,14 @@ class Chat extends Model
         }
     }
 
-    public function getNameAttribute()
+    public function getNameAttribute(): string
     {
         return $this->name ?? $this->users->first(fn($user) => $user->id !== auth()->id())->name;
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return route('chat.show', ['chat' => $this->id]);
     }
 
 }

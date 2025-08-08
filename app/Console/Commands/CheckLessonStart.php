@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Lesson;
+use App\Models\User;
 use App\Notifications\LessonStarted;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -28,6 +29,8 @@ class CheckLessonStart extends Command
 
         foreach ($lessons as $lesson) {
             $user = $lesson->user;
+            /** @var $user User*/
+
             $user->notify(new LessonStarted($lesson));
 //            event(new LessonStarted($lesson));
         }

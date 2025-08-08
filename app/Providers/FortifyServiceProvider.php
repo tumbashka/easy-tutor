@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
-use App\Enums\Roles;
+use App\Enums\Role;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -36,8 +36,8 @@ class FortifyServiceProvider extends ServiceProvider
                 'registration.index',
                 [
                     'roles' => [
-                        'names' => [Roles::Teacher->name, Roles::Student->name],
-                        'values' => [Roles::Teacher->value, Roles::Student->value],
+                        'names' => [Role::Teacher->name, Role::Student->name],
+                        'values' => [Role::Teacher->value, Role::Student->value],
                     ]
                 ]
             );

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Roles;
+use App\Enums\Role;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('is_admin');
-            $table->string('role', 20)->after('name')->default(Roles::Teacher->value);
+            $table->string('role', 20)->after('name')->default(Role::Teacher->value);
         });
     }
 

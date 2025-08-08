@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\Roles;
+use App\Enums\Role;
 use App\Notifications\MyVerifyMail;
 use App\Services\ImageService;
 use App\Services\LessonService;
@@ -55,7 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => Roles::class,
+            'role' => Role::class,
             'is_active' => 'bool',
             'is_enabled_task_reminders' => 'bool',
         ];
@@ -123,6 +123,17 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withTimestamps();
     }
 
+    public function getCountUnreadChatsAttribute(): int
+    {
+        return $this->chats()
+            ->with('lastMessage.reads')
+            ->whereHas('lastMessage', function (Builder $query) {
+                $query->whereDoesntHave('reads', function (Builder $query) {
+                    $query->where('user_id', $this->id);
+                })->where('user_id', '!=', $this->id);
+            })->count();
+    }
+
     public function getCountPayedLessonsAttribute(): int
     {
         return $this->lessons()->where('is_paid', true)->count();
@@ -150,17 +161,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getIsAdminAttribute(): bool
     {
-        return $this->role == Roles::Admin;
+        return $this->role == Role::Admin;
     }
 
     public function getIsTeacherAttribute(): bool
     {
-        return $this->role == Roles::Teacher;
+        return $this->role == Role::Teacher;
     }
 
     public function getIsStudentAttribute(): bool
     {
-        return $this->role == Roles::Student;
+        return $this->role == Role::Student;
     }
 
     public function scopeActiveAndVerified(Builder $query): Builder
