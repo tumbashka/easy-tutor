@@ -36,9 +36,14 @@ Route::middleware(['auth', 'verified', 'role:teacher', 'active'])->group(functio
         Route::get('/{day}/show', [LessonController::class, 'show'])->name('show');
         Route::get('/{day}/create', [LessonController::class, 'create'])->name('lesson.create');
         Route::post('/{day}', [LessonController::class, 'store'])->name('lesson.store');
-        Route::get('/{day}/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
-        Route::put('/{day}/{lesson}', [LessonController::class, 'update'])->name('lesson.update');
-        Route::get('/{day}/{lesson}/change_status', [LessonController::class, 'change_status'])->name('lesson.change_status');
+    });
+
+    Route::prefix('/lessons')->name('lessons.')->group(function () {
+        Route::get('/{lesson}/edit', [LessonController::class, 'edit'])->name('edit');
+        Route::put('/{lesson}', [LessonController::class, 'update'])->name('update');
+        Route::get('/{lesson}/change_status', [LessonController::class, 'change_status'])->name('change_status');
+        Route::get('/{lesson}/set_payment', [LessonController::class, 'set_payment'])->name('set_payment');
+        Route::get('/{lesson}/unset_payment', [LessonController::class, 'unset_payment'])->name('unset_payment');
     });
 
     Route::resource('students', StudentController::class);
@@ -54,15 +59,21 @@ Route::middleware(['auth', 'verified', 'role:teacher', 'active'])->group(functio
         Route::delete('/{free_time}', [FreeTimeController::class, 'delete'])->name('delete');
 
         Route::get('/{free_time}/set_student', [FreeTimeController::class, 'setStudent'])->name('set-student');
-        Route::post('/{free_time}/set_student', [FreeTimeController::class, 'setStudentProcess'])->name('set-student-process');
+        Route::post('/{free_time}/set_student', [FreeTimeController::class, 'setStudentProcess'])->name(
+            'set-student-process'
+        );
         Route::post('/share/', [FreeTimeController::class, 'generateEncryptedUrl'])->name('encrypt-url');
     });
 
     Route::resource('tasks', TaskController::class);
     Route::resource('task_categories', TaskCategoryController::class)->except('show');
 
-    Route::delete('delete_completed_tasks', [TaskController::class, 'delete_completed'])->name('tasks.delete-completed');
-    Route::get('tasks/{task}/change_completed', [TaskController::class, 'change_completed'])->name('tasks.change-completed');
+    Route::delete('delete_completed_tasks', [TaskController::class, 'delete_completed'])->name(
+        'tasks.delete-completed'
+    );
+    Route::get('tasks/{task}/change_completed', [TaskController::class, 'change_completed'])->name(
+        'tasks.change-completed'
+    );
 
     Route::prefix('/boards')->name('boards.')->group(function () {
         Route::get('/', [BoardController::class, 'index'])->name('index');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Teacher\Student;
 
+use App\Models\Student;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreStudentRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreStudentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasVerifiedEmail();
+        return $this->user()->can('create', Student::class);
     }
 
     /**
@@ -23,7 +24,7 @@ class StoreStudentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100', 'min:2'],
-            'class' => ['required', 'integer', 'max:11', 'min:1'],
+            'class' => ['nullable', 'integer', 'max:11', 'min:1'],
             'price' => ['required', 'integer', 'max:65000', 'min:0'],
             'note' => ['nullable', 'string', 'max:65000'],
         ];

@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
+import vuetify from "vite-plugin-vuetify";
 
 export default defineConfig({
     plugins: [
@@ -14,6 +16,8 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        vue(),
+        vuetify({ autoImport: true }),
     ],
     server: {
         host: '0.0.0.0',
@@ -27,6 +31,7 @@ export default defineConfig({
     base: process.env.APP_URL || 'http://localhost:81',
     resolve: {
         alias: {
+            vue: 'vue/dist/vue.esm-bundler.js',
             '$': 'jQuery'
         },
     },

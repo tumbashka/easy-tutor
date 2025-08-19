@@ -32,3 +32,7 @@ Route::middleware(['auth', 'verified'])->prefix('/chat')->name('chat.')->group(f
     Route::post('/{chat}/message/{message}/read', [ChatController::class, 'make_read'])->name('message.make_read');
     Route::get('/{chat}/load-more', [ChatController::class, 'loadMoreMessages'])->name('loadMore');
 });
+
+Route::get('inertia/user/{user}', function (\App\Models\User $user) {
+    return Inertia\Inertia::render('User/Show', compact('user'));
+});

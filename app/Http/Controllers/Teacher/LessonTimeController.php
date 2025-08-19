@@ -8,17 +8,20 @@ use App\Models\FreeTime;
 use App\Models\Lesson;
 use App\Models\LessonTime;
 use App\Models\Student;
+use App\Services\SubjectsService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LessonTimeController extends Controller
 {
     public function create(Student $student)
     {
+        $this->authorize('create', LessonTime::class);
         $user = auth()->user();
         $lessonTimes = $user->lessonTimes()->with('student')->get();
         $subjects = $user->subjects;
 
-        return view('teacher.lesson_time.create', compact('student', 'lessonTimes', 'subjects'));
+        return Inertia::render('Teacher/LessonTime/Create', compact('student', 'lessonTimes', 'subjects'));
     }
 
     public function store(StoreLessonTimeRequest $request, Student $student)
@@ -40,15 +43,18 @@ class LessonTimeController extends Controller
         return redirect()->route('students.show', $student);
     }
 
-    public function edit(Student $student, LessonTime $lesson_time, Request $request)
+    public function edit(Student $student, LessonTime $lessonTime, Request $request)
     {
-        $user = auth()->user();
-        $backUrl = $request->backUrl;
-        $students = $user->students;
-        $lessonTimes = $user->lessonTimes()->with('student')->get()->except($lesson_time->id);
-        $subjects = $user->subjects;
+        $this->authorize('update', $lessonTime);
 
-        return view('teacher.lesson_time.edit', compact('lesson_time', 'student', 'students', 'backUrl', 'lessonTimes', 'subjects'));
+        $user = auth()->user();
+        $students = $user->students;
+        $lessonTimes = $user->lessonTimes()->with('student')->get()->except($lessonTime->id);
+        $subjects = $user->subjects;
+        $defaultSubject = $user->default_subject;
+        $title = 'Редактирование времени занятия';
+
+        return Inertia::render('Teacher/LessonTime/Edit', compact('title','lessonTime', 'student', 'students', 'lessonTimes', 'subjects', 'defaultSubject'));
     }
 
     public function update(StoreLessonTimeRequest $request, Student $student, LessonTime $lesson_time)
@@ -73,10 +79,7 @@ class LessonTimeController extends Controller
 
     public function destroy(Student $student, LessonTime $lesson_time, Request $request)
     {
-        $user = auth()->user();
-        if (! ($user->can('update', $student) && $lesson_time->student_id == $student->id)) {
-            abort(403);
-        }
+        $this->authorize('delete', $lesson_time);
 
         Lesson::where('date', '>', now())
             ->where('lesson_time_id', $lesson_time->id)

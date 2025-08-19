@@ -3,10 +3,18 @@
 namespace App\Services;
 
 use App\Models\LessonTime;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 
 class LessonTimeService
 {
+    private User $user;
+
+    public function __construct(?User $user = null)
+    {
+        $this->user = $user ?? auth()->user();
+    }
+
     public function updateFutureLessons(LessonTime $lessonTime): void
     {
         $lessonTime->load('subject');

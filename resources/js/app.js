@@ -7,6 +7,52 @@ import './toastify.js';
 import './event-handling.js'
 import './chat-observer.js'
 
+import {createApp, h} from 'vue'
+import {createInertiaApp} from '@inertiajs/vue3'
+import MainLayout from './Layouts/Main.vue'
+import {ZiggyVue} from 'ziggy-js';
+import {Ziggy} from './ziggy.js';
+import {AuthMixin} from './Mixins/authMixin.js'
+import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
+import {createVuetify} from 'vuetify'
+import { ru } from 'vuetify/locale'
+
+const vuetify = createVuetify({
+    locale: {
+        locale: 'ru',
+        messages: { ru },
+    },
+    theme: {
+        defaultTheme: 'customTheme',
+        themes: {
+            customTheme: {
+                dark: false,
+                colors: {
+                    primary: '#a12f4a',
+                },
+            },
+        },
+    },
+});
+
+createInertiaApp({
+    resolve: name => {
+        const pages = import.meta.glob('./Pages/**/*.vue', {eager: true})
+        let page = pages[`./Pages/${name}.vue`]
+        page.default.layout = page.default.layout || MainLayout
+        return page
+    },
+    setup({el, App, props, plugin}) {
+        createApp({render: () => h(App, props)})
+            .use(vuetify)
+            .use(plugin)
+            .use(ZiggyVue, Ziggy)
+            .mixin(AuthMixin)
+            .mount(el)
+    },
+})
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const clipboard = new ClipboardJS('.btn-copy', {

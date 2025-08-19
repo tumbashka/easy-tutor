@@ -17,7 +17,7 @@
     @livewireStyles
     <title>{{ config('app.name') }} - @yield('title', config('app.name'))</title>
 </head>
-<body class="bg-pink">
+<body class="">
 
 @if(auth()->user()?->is_admin && isAdminLink())
     @include('admin.parts.header')
@@ -28,7 +28,6 @@
 @endif
 
 @yield('content')
-@dump($errors)
 
 @include('parts.footer')
 

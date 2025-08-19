@@ -20,14 +20,18 @@ class Handler
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \App\Http\Middleware\CheckRole::class,
         'active' => \App\Http\Middleware\ActiveUser::class,
+        'inertia' => \App\Http\Middleware\HandleInertiaRequests::class,
     ];
 
     public function __invoke(BaseMiddleware $middleware): BaseMiddleware
     {
-
         if ($this->aliases) {
             $middleware->alias($this->aliases);
         }
+
+        $middleware->web(append: [
+            HandleInertiaRequests::class,
+        ]);
 
         return $middleware;
     }

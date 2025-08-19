@@ -1,27 +1,28 @@
-// Body
-$body-bg: #f8fafc;
-
-$primary: #a12f4a; // Основной цвет (primary)
-$secondary: #6c757d; // Вторичный цвет (secondary)
-$success: #28a745; // Цвет успеха (success)
-$danger: #dc3545; // Цвет ошибки (danger)
-$warning: #ff9800; // Цвет предупреждения (warning)
-$info: #0DCAF0FF; // Информационный цвет (info)
-$light: #fdfdfd; // Светлый цвет (light)
-$dark: #343a40; // Темный цвет (dark)
-
-$table-variants: (
-    "primary":   $primary,
-    "secondary": $secondary,
-    "success":   $success,
-    "info":      $info,
-    "warning":   $warning,
-    "danger":    $danger,
-    "light":      $light,
-    "dark":       $dark,
-);
-
-$btn-link-color:              $primary;
-$btn-link-hover-color:        $primary;
-$btn-link-disabled-color:     $primary;
-$component-active-bg:         $primary;
+//// Body
+//$body-bg: #f8fafc;
+//
+$brand-color: #a12f4a;
+//$primary: #a12f4a; // Основной цвет (primary)
+//$secondary: #6c757d; // Вторичный цвет (secondary)
+//$success: #28a745; // Цвет успеха (success)
+//$danger: #dc3545; // Цвет ошибки (danger)
+//$warning: #ff9800; // Цвет предупреждения (warning)
+//$info: #0DCAF0FF; // Информационный цвет (info)
+//$light: #fdfdfd; // Светлый цвет (light)
+//$dark: #343a40; // Темный цвет (dark)
+//
+//$table-variants: (
+//    "primary":   $primary,
+//    "secondary": $secondary,
+//    "success":   $success,
+//    "info":      $info,
+//    "warning":   $warning,
+//    "danger":    $danger,
+//    "light":      $light,
+//    "dark":       $dark,
+//);
+//
+//$btn-link-color:              $primary;
+//$btn-link-hover-color:        $primary;
+//$btn-link-disabled-color:     $primary;
+//$component-active-bg:         $primary;

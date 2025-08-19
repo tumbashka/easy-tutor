@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Teacher\Lesson;
 
+use App\Models\Lesson;
 use App\Rules\TimeNotOccupied;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,7 @@ class StoreLessonRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasVerifiedEmail();
+        return auth()->user()->can('create', Lesson::class);
     }
 
     /**

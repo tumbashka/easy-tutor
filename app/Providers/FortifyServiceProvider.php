@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Http\Requests\LoginRequest;
 
@@ -28,31 +29,34 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::loginView(function () {
-            return view('login.index');
+            return Inertia::render('Auth/Login');
         });
+        $roles = collect([Role::Teacher, Role::Student]);
 
-        Fortify::registerView(function () {
-            return view(
-                'registration.index',
+        Fortify::registerView(function () use ($roles) {
+            return Inertia::render(
+                'Auth/Register',
                 [
-                    'roles' => [
-                        'names' => [Role::Teacher->name, Role::Student->name],
-                        'values' => [Role::Teacher->value, Role::Student->value],
-                    ]
+                    'roles' => $roles->map(function (Role $role) {
+                        return ['title' => __($role->name), 'value' => $role->value];
+                    }),
                 ]
             );
         });
 
         Fortify::verifyEmailView(function () {
-            return view('login.email-verify');
+            return Inertia::render('Auth/Email-verify');
         });
 
         Fortify::resetPasswordView(function () {
-            return view('login.reset-password');
+            return Inertia::render('Auth/Reset-password', [
+                'token' => request()->route('token'),
+                'email' => request()->email,
+            ]);
         });
 
         Fortify::requestPasswordResetLinkView(function () {
-            return view('login.forgot');
+            return Inertia::render('Auth/Forgot');
         });
 
         Fortify::authenticateUsing(function (LoginRequest $request) {

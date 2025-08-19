@@ -66,11 +66,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Student::class, 'user_id');
     }
 
-
-    /**
-     * Модели Student созданные учителями для ученика
-     * @return HasMany
-     */
     public function studentProfiles(): HasMany
     {
         return $this->hasMany(Student::class, 'account_id');
@@ -121,6 +116,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Chat::class)
             ->withPivot(['user_name', 'accepted'])
             ->withTimestamps();
+    }
+
+    public function getIsActiveAndVerifiedAttribute(): string
+    {
+        return $this->is_active && $this->email_verified_at;
+    }
+
+    public function getDefaultSubjectAttribute()
+    {
+        return $this->subjects->where('pivot.is_default', true)->first();
     }
 
     public function getCountUnreadChatsAttribute(): int

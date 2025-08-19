@@ -134,7 +134,7 @@ class LessonService
     public function getActualLessonsOnDate(Carbon $date): \Illuminate\Database\Eloquent\Collection
     {
         $lessonsOnDate = $this->lessonRepository->getLessonsOnDate($date);
-
+//        dd($lessonsOnDate);
         if ($this->shouldGenerateLessons($date)) {
             $weekDayId = getWeekDayIndex($date);
             $lessonTimes = $this->lessonRepository->getWeekDayLessonTimes($weekDayId);

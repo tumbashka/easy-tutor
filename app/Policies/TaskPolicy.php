@@ -9,6 +9,9 @@ class TaskPolicy
 {
     public function before(User $user, string $ability): ?bool
     {
+        if(!$user->is_active_and_verified){
+            return false;
+        }
         if ($user->is_admin) {
             return true;
         }

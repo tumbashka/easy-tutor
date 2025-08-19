@@ -9,7 +9,7 @@ return [
     |
     | This value sets the root class namespace for Livewire component classes in
     | your application. This value will change where component auto-discovery
-    | finds components. It's also referenced by the file creation commands.
+    | finds Components. It's also referenced by the file creation commands.
     |
     */
 
@@ -38,15 +38,15 @@ return [
     |
     */
 
-    'layout' => 'components.layouts.app',
+    'layout' => 'Components.layouts.app',
 
     /*
     |---------------------------------------------------------------------------
     | Lazy Loading Placeholder
     |---------------------------------------------------------------------------
-    | Livewire allows you to lazy load components that would otherwise slow down
+    | Livewire allows you to lazy load Components that would otherwise slow down
     | the initial page load. Every component can have a custom placeholder or
-    | you can define the default placeholder view for all components below.
+    | you can define the default placeholder view for all Components below.
     |
     */
 
@@ -109,7 +109,7 @@ return [
     |---------------------------------------------------------------------------
     |
     | By default, Livewire automatically injects its JavaScript and CSS into the
-    | <head> and <body> of pages containing Livewire components. By disabling
+    | <head> and <body> of pages containing Livewire Components. By disabling
     | this behavior, you need to use @livewireStyles and @livewireScripts.
     |
     */

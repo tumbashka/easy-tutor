@@ -11,6 +11,7 @@ use App\Models\Message;
 use App\Models\User;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ChatController extends Controller
 {

@@ -12,6 +12,8 @@ use App\Models\Subject;
 use App\Services\LessonService;
 use App\Services\StatisticService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class LessonController extends Controller
 {
@@ -20,22 +22,28 @@ class LessonController extends Controller
         LessonService $lessonService,
         StatisticService $statisticService
     ) {
-        $weekOffset = $request->input('week', 0);
+        $weekOffset = (int)$request->input('week', 0);
         $weekDTO = $lessonService->getWeekData($weekOffset);
-
         $weekLessons = $weekDTO->lessonsOnDays->flatten(1);
         $statistics = $statisticService->getLessonsShortStatistic($weekLessons);
 
-        return view('teacher.schedule.index', array_merge($weekDTO->toArray(), compact('statistics')));
+//        dd($weekDTO);
+        return Inertia::render(
+            'Teacher/Schedule/Index',
+            array_merge(
+                $weekDTO->toArray(),
+                compact('statistics')
+            )
+        );
     }
 
     public function show(string $day, LessonService $lessonService)
     {
-        $dayCarbon = Carbon::parse($day);
-        $lessons = $lessonService->getActualLessonsOnDate($dayCarbon);
+        $day = Carbon::parse($day);
+        $lessons = $lessonService->getActualLessonsOnDate($day);
 
         $occupiedSlots = auth()->user()->lessons()
-            ->whereDate('date', $dayCarbon)
+            ->whereDate('date', $day)
             ->where('is_canceled', false)
             ->with('student')
             ->get(['start', 'end', 'student_id'])
@@ -46,12 +54,14 @@ class LessonController extends Controller
                     'student_name' => $lesson->student ? $lesson->student->name : 'Без имени',
                 ];
             });
+        $title = 'Занятия на ' . $day->translatedFormat('d F') . " (" . Str::lower(getShortDayName($day))  . '.)'  ;
 
-        return view('teacher.schedule.show', compact('dayCarbon', 'lessons', 'occupiedSlots'));
+        return Inertia::render('Teacher/Schedule/Show', compact('title', 'day', 'lessons', 'occupiedSlots'));
     }
 
     public function create($day)
     {
+        $this->authorize('create', Lesson::class);
         $day = Carbon::parse($day);
         $user = auth()->user();
 
@@ -105,9 +115,11 @@ class LessonController extends Controller
         return redirect()->route('schedule.show', ['day' => $day->format('Y-m-d')]);
     }
 
-    public function edit($day, Lesson $lesson)
+    public function edit(Lesson $lesson)
     {
-        $day = new Carbon($day);
+        $this->authorize('update', $lesson);
+
+//        $day = new Carbon($day);
         $user = auth()->user();
 
         $students = $user->students()
@@ -116,7 +128,7 @@ class LessonController extends Controller
         $subjects = $user->subjects;
 
         $occupiedSlots = auth()->user()->lessons()
-            ->whereDate('date', $day)
+            ->whereDate('date', $lesson->date)
             ->where('is_canceled', false)
             ->whereNot('id', $lesson->id)
             ->with('student')
@@ -129,10 +141,10 @@ class LessonController extends Controller
                 ];
             });
 
-        return view('teacher.lesson.edit', compact('day', 'students', 'lesson', 'occupiedSlots', 'subjects'));
+        return Inertia::render('Teacher/Lesson/Edit', compact('students', 'lesson', 'occupiedSlots', 'subjects'));
     }
 
-    public function update(UpdateLessonRequest $request, $day, Lesson $lesson)
+    public function update(UpdateLessonRequest $request, Lesson $lesson)
     {
         $student = Student::find($request->student);
         $subject = Subject::find($request->subject);
@@ -151,17 +163,35 @@ class LessonController extends Controller
         } else {
             session(['error' => 'Ошибка изменения занятия!']);
         }
-        $week = getWeekOffset(new Carbon($day));
+        $week = getWeekOffset($lesson->date);
 
         return redirect()->route('schedule.index', compact('week'));
     }
 
-    public function change_status($day, Lesson $lesson)
+    public function change_status(Lesson $lesson)
     {
-        $day = Carbon::parse($day);
+        $this->authorize('update', $lesson);
         $lesson->is_canceled = ! $lesson->is_canceled;
         $lesson->save();
 
-        return redirect()->route('schedule.show', ['day' => $day->format('Y-m-d')]);
+        return redirect()->back();
+    }
+
+    public function set_payment(Lesson $lesson)
+    {
+        $this->authorize('update', $lesson);
+        $lesson->is_paid = true;
+        $lesson->save();
+
+        return redirect()->back();
+    }
+
+    public function unset_payment(Lesson $lesson)
+    {
+        $this->authorize('update', $lesson);
+        $lesson->is_paid = false;
+        $lesson->save();
+
+        return redirect()->back();
     }
 }

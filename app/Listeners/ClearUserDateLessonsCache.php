@@ -18,6 +18,6 @@ class ClearUserDateLessonsCache
         }
 
         Log::info("очистка кэша занятий на {$lesson->date} у {$lesson->user->email}");
-        Cache::tags("lessons_{$lesson->user->id}")->forget("lessons_{$lesson->user->id}_{$lesson->date}");
+        $res = Cache::tags("lessons_{$lesson->user->id}")->forget("lessons_{$lesson->user->id}_{$lesson->date->format('Y-m-d')}");
     }
 }

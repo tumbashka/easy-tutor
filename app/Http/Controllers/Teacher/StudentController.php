@@ -7,22 +7,26 @@ use App\Http\Requests\Teacher\Student\StoreStudentRequest;
 use App\Http\Requests\Teacher\Student\UpdateStudentRequest;
 use App\Models\Homework;
 use App\Models\Student;
+use App\Services\StudentService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class StudentController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, StudentService $service)
     {
-        $user = $request->user();
+        $this->authorize('view-any', Student::class);
+        $studentsOnClasses = $service->getStudentsDataForView();
 
-        $students = $user->studentsOnClasses();
-
-        return view('teacher.student.index', compact('students'));
+        return Inertia::render('Teacher/Student/Index', compact('studentsOnClasses'));
     }
 
-    public function create(Request $request)
+    public function create(Request $request, StudentService $service)
     {
-        return view('teacher.student.create', ['free_time' => $request->free_time]);
+        $this->authorize('create', Student::class);
+        $classesData = $service->getClassesDataForVue();
+
+        return Inertia::render('Teacher/Student/Create', ['classesData' => $classesData, 'free_time' => $request->free_time]);
     }
 
     public function store(StoreStudentRequest $request)
@@ -49,24 +53,28 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
+        $this->authorize('view', $student);
         $lesson_times = $student->lesson_times()
             ->orderBy('week_day')
             ->orderBy('start')
             ->get();
 
-        $reminder = $student->telegram_reminder;
+//        $reminder = $student->telegram_reminder;
+//
+//        $homeworks = Homework::query()
+//            ->where('student_id', $student->id)
+//            ->orderByCompleted()
+//            ->paginate(4);
 
-        $homeworks = Homework::query()
-            ->where('student_id', $student->id)
-            ->orderByCompleted()
-            ->paginate(4);
-
-        return view('teacher.student.show', compact('student', 'lesson_times', 'reminder', 'homeworks'));
+        return Inertia::render('Teacher/Student/Show', compact('student', 'lesson_times'));
     }
 
-    public function edit(Student $student)
+    public function edit(Student $student, StudentService $service)
     {
-        return view('teacher.student.edit', compact('student'));
+        $this->authorize('update', $student);
+        $classesData = $service->getClassesDataForVue();
+
+        return Inertia::render('Teacher/Student/Edit', compact('classesData', 'student'));
     }
 
     public function update(UpdateStudentRequest $request, Student $student)
@@ -87,6 +95,7 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
+        $this->authorize('delete', $student);
         $student->lessons()
             ->where('date', '>', now())
             ->where('user_id', auth()->user()->id)

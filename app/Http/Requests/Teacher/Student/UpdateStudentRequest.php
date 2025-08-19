@@ -23,7 +23,7 @@ class UpdateStudentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100', 'min:2'],
-            'class' => ['required', 'integer', 'max:11', 'min:1'],
+            'class' => ['nullable', 'integer', 'max:11', 'min:1'],
             'price' => ['required', 'integer', 'max:65000', 'min:0'],
             'note' => ['nullable', 'string', 'max:65000'],
         ];

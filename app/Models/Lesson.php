@@ -31,6 +31,7 @@ class Lesson extends Model
         return [
             'start' => 'datetime:H:i',
             'end' => 'datetime:H:i',
+            'date' => 'datetime:Y-m-d',
             'is_paid' => 'boolean',
             'is_canceled' => 'boolean',
         ];
